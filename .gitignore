@@ -1,0 +1,4 @@
+.mypy_cache
+julia_pkg
+__pycache__
+/*.log

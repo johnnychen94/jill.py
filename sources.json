@@ -1,0 +1,12 @@
+{
+    "upstream": [
+        {
+            "name": "University of Science and Technology of China",
+            "url": "https://mirrors.ustc.edu.cn/julia/releases/$vminor_version/$filename"
+        },
+        {
+            "name": "Zhejiang University",
+            "url": "https://mirrors.zju.edu.cn/julia/releases/$vminor_version/$filename"
+        }
+    ]
+}

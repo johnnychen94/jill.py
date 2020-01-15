@@ -1,4 +1,4 @@
-from jill.mirror import Mirror, MirrorConfig
+from jill import Mirror, MirrorConfig
 
 import fire
 import time

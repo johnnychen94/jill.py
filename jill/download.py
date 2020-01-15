@@ -62,7 +62,7 @@ def download_package(version, system, architecture,
         if r.status_code == 404:
             logging.debug(f"failed: 404 error")
             continue
-        rst = _download_package(url, out)
+        rst = _download_package(url, outpath)
         if rst:
             return rst
 

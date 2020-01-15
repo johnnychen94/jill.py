@@ -67,11 +67,11 @@ def read_upstream():
     """
     read configure file from:
     1. `./sources.json`
-    2. `~/.config/sources.json`
+    2. `~/.config/jill/sources.json`
     """
     cfg_file = os.path.abspath(os.path.expanduser(SOURCE_CONFIGFILE))
-    file_list = [os.path.split(cfg_file)[1], cfg_file]
-    file_list = list(filter(os.path.isfile, file_list))
+    temp_file_list = [os.path.split(cfg_file)[1], cfg_file]
+    file_list = list(filter(os.path.isfile, temp_file_list))
     if not len(file_list):
         return {}
     with open(file_list[0], 'r') as f:

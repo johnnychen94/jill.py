@@ -20,14 +20,14 @@ rules_arch = {
 rules_osarch = {
     "win-i686": "win32",
     "win-x86_64": "win64",
-    "mac-x86_64": "mac64",
+    "macos-x86_64": "mac64",
     "linux-ARMv7": "linux-armv7l",
     "linux-ARMv8": "linux-aarch64"
 }
 rules_extension = {
     "windows": "exe",
     "linux": "tar.gz",
-    "mac": "dmg",
+    "macos": "dmg",
     "freebsd": "tar.gz"
 }
 rules_bit = {
@@ -37,8 +37,8 @@ rules_bit = {
     "ARMv7": 32,
 }
 
-VALID_SYSTEM = ["windows", "linux", "freebsd", "mac"]
-VALID_OS = ["win", "linux", "freebsd", "mac"]
+VALID_SYSTEM = ["windows", "linux", "freebsd", "macos"]
+VALID_OS = ["win", "linux", "freebsd", "macos"]
 VALID_ARCHITECTURE = list(rules_arch.keys())
 VALID_ARCH = list(rules_arch.values())
 
@@ -78,7 +78,7 @@ def is_valid_release(version, system, architecture):
     if (system == "windows"
             and architecture not in ["i686", "x86_64"]):
         return False
-    if (system == "mac"
+    if (system == "macos"
             and architecture not in ["x86_64"]):
         return False
     if (system == "freebsd"
@@ -86,7 +86,7 @@ def is_valid_release(version, system, architecture):
         return False
     if (version == "latest" and (
             architecture not in ["i686", "x86_64"]
-            or system not in ["windows", "mac", "linux"])):
+            or system not in ["windows", "macos", "linux"])):
         return False
     return True
 

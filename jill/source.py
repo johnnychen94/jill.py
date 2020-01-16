@@ -24,6 +24,7 @@ class ReleaseSource:
                  url: str,
                  filename: str = default_filename_template,
                  latest_filename: str = default_latest_filename_template):
+        # TODO: merge filename and lastest_filename to a list
         self.name = name
 
         self.url_template = Template(url)
@@ -89,6 +90,7 @@ def get_download_sources(max_sources=10, timeout=2, sources=[]):
     origin_list = [ReleaseSource(**item) for item in read_upstream()]
 
     # sort upstreams according to responsing time
+    # TODO: stop checking new servers if there're already max_sources
     response_times = [port_response_time(query_ip(x.url), x.port, timeout)
                       for x in origin_list]
     temp_list = list(zip(origin_list, response_times))

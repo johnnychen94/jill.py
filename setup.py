@@ -1,13 +1,22 @@
 from setuptools import find_packages
 
 import setuptools
+import os
+from io import open as io_open
+
+src_dir = os.path.abspath(os.path.dirname(__file__))
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+requirements = os.path.join(src_dir, 'requirements.txt')
+with io_open(requirements, mode='r') as fd:
+    install_requires = [i.strip().split('#', 1)[0].strip()
+                        for i in fd.read().strip().split('\n')]
+
 setuptools.setup(
     name='jill',
-    version='0.0.1',
+    version='0.1.0-pre',
     author="Johnny Chen",
     author_email="johnnychen94@hotmail.com",
     description="Julia Installer 4 Linux(and MacOS) - Light",
@@ -16,7 +25,8 @@ setuptools.setup(
     url="https://github.com/johnnychen94/jill.py",
     packages=['jill'] + ['jill.' + i for i in find_packages('jill')],
     provides=['jill'],
-    python_requires=">=3.5",
+    install_requires=install_requires,
+    python_requires=">=3.6",
     entry_points={'console_scripts': ['jill=jill.__main__:main'], },
     classifiers=[
         "Programming Language :: Python :: 3",

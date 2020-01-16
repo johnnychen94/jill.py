@@ -5,7 +5,7 @@ import re
 from typing import Mapping, Optional, Callable
 
 VERSION_REGEX = re.compile(
-    r'v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(-(?P<status>\w+))?')
+    r'v?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(-(?P<status>\w+))?')
 SPECIAL_VERSION_NAMES = ["latest", "nightly", "stable"]
 
 
@@ -108,19 +108,19 @@ class NameFilter:
 
 f_major_version = NameFilter(lambda x: x.lstrip('v').split('.')[0],
                              validate=is_version)
-f_vmajor_version = NameFilter(lambda x: x.split('.')[0])
+f_vmajor_version = NameFilter(lambda x: 'v'+f_major_version(x))
 f_Vmajor_version = NameFilter(lambda x: f_vmajor_version(x).capitalize())
 f_minor_version = NameFilter(lambda x: '.'.join(x.lstrip('v').
                                                 split('.')[0:2]),
                              validate=is_version)
-f_vminor_version = NameFilter(lambda x: '.'.join(x.split('.')[0:2]))
+f_vminor_version = NameFilter(lambda x: 'v'+f_minor_version(x))
 f_Vminor_version = NameFilter(lambda x: f_vminor_version(x).capitalize())
 f_patch_version = NameFilter(lambda x: x.lstrip('v').split('-')[0],
                              validate=is_version)
-f_vpatch_version = NameFilter(lambda x: x.split('-')[0])
+f_vpatch_version = NameFilter(lambda x: 'v'+f_patch_version(x))
 f_Vpatch_version = NameFilter(lambda x: f_vpatch_version(x).capitalize())
 
-f_version = NameFilter(validate=is_version)
+f_version = NameFilter(lambda x: 'v'+x.lstrip('v'), validate=is_version)
 
 f_system = NameFilter(validate=is_system)
 f_System = NameFilter(f=lambda x: f_system(x).capitalize())
@@ -142,8 +142,24 @@ f_osarch = NameFilter(f=lambda os, arch: f"{os}-{arch}",
                       rules=rules_osarch,
                       validate=lambda os, arch:
                       is_os(os)and is_architecture(arch))
-f_Osarch = NameFilter(f=lambda os, arch: f_osarch(os, arch).capitalize())
-f_OSarch = NameFilter(f=lambda os, arch: f_osarch(os, arch).upper())
+
+
+def Osarch(os, arch):
+    if os in ["win", "macos"]:
+        return f_osarch(os, arch).capitalize()
+    os, arch = f_osarch(os, arch).split('-')
+    return os.capitalize() + '-' + arch
+
+
+def OSarch(os, arch):
+    if os in ["win", "macos"]:
+        return f_osarch(os, arch).upper()
+    os, arch = f_osarch(os, arch).split('-')
+    return os.upper() + '-' + arch
+
+
+f_Osarch = NameFilter(f=Osarch)
+f_OSarch = NameFilter(f=OSarch)
 
 f_bit = NameFilter(rules=rules_bit, validate=is_architecture)
 

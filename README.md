@@ -2,22 +2,29 @@
 
 The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installer 4 Linux (and MacOS) - Light
 
+## Features
+
+* download Julia release from nearest mirror server. Check [sources](jill/config/sources.json) for the list of all registered mirrors.
+* install julia for Linux and MacOS (including nightly build: `latest`)
+* easily set up a new release mirror 🚧
+
 ## Usage examples
 
 * download:
-    - download Julia for current system: `jill download v1.3.0`
-    - download Julia for 32-bit linux: `jill download v1.3.0 linux i686`
+    - download Julia for current system: `jill download 1.3.0`
+    - download Julia for 32-bit linux: `jill download 1.3.0 linux i686`
+    - download Julia to specific dir: `jill download 1.3.0 --outdir OUTDIR`
 * install Julia for current system:
-    - system-wide: `sudo jill install v1.3.0`
-    - only for current user: `jill install v1.3.0`
+    - system-wide: `sudo jill install 1.3.0`
+    - only for current user: `jill install 1.3.0`
 
 ## Register new mirror
 
-add an entry to `jill/sources.json`:
+add an entry to `jill/config/sources.json`:
 
 * `name`: a distinguishable mirror name
 * `url`: URL template to retrive Julia release
-* `filename`: filename template, by default it's `julia-$patch_version-$osarch.$extension`
+* `filename` (optional): filename template. The default value is `julia-$patch_version-$osarch.$extension`
 
 There're several predefined placeholders for various systems and architectures:
 

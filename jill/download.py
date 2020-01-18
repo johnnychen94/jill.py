@@ -41,7 +41,7 @@ def _download_package(url: str, out: str):
 
 
 def download_package(version, system=None, architecture=None,
-                     out=None, overwrite=False, max_try=3):
+                     outdir=None, overwrite=False, max_try=3):
     """
     download julia release from nearest servers.
     """
@@ -53,10 +53,10 @@ def download_package(version, system=None, architecture=None,
 
     url_list = chain.from_iterable(repeat(url_list, max_try))
     for url in url_list:
-        # make sure out is always a filepath
-        outpath = out if out else os.path.split(urlparse(url).path)[1]
-        outpath = os.path.abspath(outpath)
-        outdir, outname = os.path.split(outpath)
+        outdir = outdir if outdir else '.'
+        outdir = os.path.abspath(outdir)
+        outname = os.path.split(urlparse(url).path)[1]
+        outpath = os.path.join(outdir, outname)
 
         if os.path.isfile(outpath) and not overwrite:
             logging.info(f"{outname} already exists, skip downloading")

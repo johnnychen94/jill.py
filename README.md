@@ -1,5 +1,9 @@
 # JILL.py
 
+[![py version](https://img.shields.io/pypi/pyversions/jill.svg?logo=python&logoColor=white)](https://pypi.org/project/jill) [![version](https://img.shields.io/pypi/v/jill.svg)](https://github.com/johnnychen94/jill.py/releases)
+[![Actions Status](https://github.com/johnnychen94/jill.py/workflows/Unit%20test/badge.svg
+)](https://github.com/johnnychen94/jill.py/actions)
+
 The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installer 4 Linux (and MacOS) - Light
 
 ## Features

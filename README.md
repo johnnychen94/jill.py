@@ -11,11 +11,35 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
     - system-wide: `sudo jill install v1.3.0`
     - only for current user: `jill install v1.3.0`
 
-## Mirror
+## Register new mirror
 
-1. modify `mirror.json`
-2. `python mirror_daemon.py`
+add an entry to `jill/sources.json`:
 
-## Installation
+* `name`: a distinguishable mirror name
+* `url`: URL template to retrive Julia release
+* `filename`: filename template, by default it's `julia-$patch_version-$osarch.$extension`
 
-Comming soon
+There're several predefined placeholders for various systems and architectures:
+
+* `system`: `windows`, `macos`, `linux`, `freebsd`
+* `sys`: `winnt`, `mac`, `linux`, `freebsd`
+* `os`: `win`, `mac`, `linux`, `freebsd`
+* `architecture`: `x86_64`, `i686`, `ARMv7`, `ARMv8`
+* `arch`: `x86`, `x64`, `armv7l`, `aarch64`
+* `osarch`: `win32`, `win64`, `mac64`, `linux-armv7l`, `linux-aarch64`
+* `bit`: `32`, `64`
+* `extension`: `exe`, `tar.gz`, `dmg` (no leading `.`)
+
+There're also placeholders for versions:
+
+* `patch_version`: `1.2.3`, `latest`
+* `minor_version`: `1.2`, `latest`
+* `major_version`: `1`
+* `version`: `v1.2.3-pre`, `latest`
+* `vpatch_version`: `v1.2.3`, `latest`
+* `vminor_version`: `v1.2`, `latest`
+* `vmajor_version`: `v1`, `latest`
+
+## Mirror 🚧
+
+`python mirror_daemon.py` downloads all Julia releases into `./julia_pkg`

@@ -104,38 +104,38 @@ class TestFilters(unittest.TestCase):
         self.assertEqual(f_sys("windows"), "winnt")
         self.assertEqual(f_sys("linux"), "linux")
         self.assertEqual(f_sys("freebsd"), "freebsd")
-        self.assertEqual(f_sys("macos"), "macos")
+        self.assertEqual(f_sys("macos"), "mac")
 
         self.assertEqual(f_Sys("windows"), "Winnt")
         self.assertEqual(f_Sys("linux"), "Linux")
         self.assertEqual(f_Sys("freebsd"), "Freebsd")
-        self.assertEqual(f_Sys("macos"), "Macos")
+        self.assertEqual(f_Sys("macos"), "Mac")
 
         self.assertEqual(f_SYS("windows"), "WINNT")
         self.assertEqual(f_SYS("linux"), "LINUX")
         self.assertEqual(f_SYS("freebsd"), "FREEBSD")
-        self.assertEqual(f_SYS("macos"), "MACOS")
+        self.assertEqual(f_SYS("macos"), "MAC")
 
     def test_os(self):
         self.assertEqual(f_os("windows"), "win")
         self.assertEqual(f_os("linux"), "linux")
         self.assertEqual(f_os("freebsd"), "freebsd")
-        self.assertEqual(f_os("macos"), "macos")
+        self.assertEqual(f_os("macos"), "mac")
 
         self.assertEqual(f_Os("windows"), "Win")
         self.assertEqual(f_Os("linux"), "Linux")
         self.assertEqual(f_Os("freebsd"), "Freebsd")
-        self.assertEqual(f_Os("macos"), "Macos")
+        self.assertEqual(f_Os("macos"), "Mac")
 
         self.assertEqual(f_OS("windows"), "WIN")
         self.assertEqual(f_OS("linux"), "LINUX")
         self.assertEqual(f_OS("freebsd"), "FREEBSD")
-        self.assertEqual(f_OS("macos"), "MACOS")
+        self.assertEqual(f_OS("macos"), "MAC")
 
     def test_osarch(self):
         self.assertEqual(f_osarch("win", "i686"), "win32")
         self.assertEqual(f_osarch("win", "x86_64"), "win64")
-        self.assertEqual(f_osarch("macos", "x86_64"), "mac64")
+        self.assertEqual(f_osarch("mac", "x86_64"), "mac64")
         self.assertEqual(f_osarch("linux", "ARMv7"), "linux-armv7l")
         self.assertEqual(f_osarch("linux", "ARMv8"), "linux-aarch64")
         self.assertEqual(f_osarch("linux", "i686"), "linux-i686")
@@ -144,7 +144,7 @@ class TestFilters(unittest.TestCase):
 
         self.assertEqual(f_Osarch("win", "i686"), "Win32")
         self.assertEqual(f_Osarch("win", "x86_64"), "Win64")
-        self.assertEqual(f_Osarch("macos", "x86_64"), "Mac64")
+        self.assertEqual(f_Osarch("mac", "x86_64"), "Mac64")
         self.assertEqual(f_Osarch("linux", "ARMv7"), "Linux-armv7l")
         self.assertEqual(f_Osarch("linux", "ARMv8"), "Linux-aarch64")
         self.assertEqual(f_Osarch("linux", "i686"), "Linux-i686")
@@ -153,7 +153,7 @@ class TestFilters(unittest.TestCase):
 
         self.assertEqual(f_OSarch("win", "i686"), "WIN32")
         self.assertEqual(f_OSarch("win", "x86_64"), "WIN64")
-        self.assertEqual(f_OSarch("macos", "x86_64"), "MAC64")
+        self.assertEqual(f_OSarch("mac", "x86_64"), "MAC64")
         self.assertEqual(f_OSarch("linux", "ARMv7"), "LINUX-armv7l")
         self.assertEqual(f_OSarch("linux", "ARMv8"), "LINUX-aarch64")
         self.assertEqual(f_OSarch("linux", "i686"), "LINUX-i686")

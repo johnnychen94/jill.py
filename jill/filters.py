@@ -9,8 +9,8 @@ VERSION_REGEX = re.compile(
 SPECIAL_VERSION_NAMES = ["latest", "nightly", "stable"]
 
 
-rule_sys = {"windows": "winnt"}
-rules_os = {"windows": "win"}
+rule_sys = {"windows": "winnt", "macos": "mac"}
+rules_os = {"windows": "win", "macos": "mac"}
 rules_arch = {
     "i686": "x86",
     "x86_64": "x64",
@@ -20,7 +20,7 @@ rules_arch = {
 rules_osarch = {
     "win-i686": "win32",
     "win-x86_64": "win64",
-    "macos-x86_64": "mac64",
+    "mac-x86_64": "mac64",
     "linux-ARMv7": "linux-armv7l",
     "linux-ARMv8": "linux-aarch64"
 }
@@ -38,7 +38,7 @@ rules_bit = {
 }
 
 VALID_SYSTEM = ["windows", "linux", "freebsd", "macos"]
-VALID_OS = ["win", "linux", "freebsd", "macos"]
+VALID_OS = ["win", "linux", "freebsd", "mac"]
 VALID_ARCHITECTURE = list(rules_arch.keys())
 VALID_ARCH = list(rules_arch.values())
 
@@ -141,18 +141,18 @@ f_ARCH = NameFilter(f=lambda x: f_arch(x).upper())
 f_osarch = NameFilter(f=lambda os, arch: f"{os}-{arch}",
                       rules=rules_osarch,
                       validate=lambda os, arch:
-                      is_os(os)and is_architecture(arch))
+                      is_os(os) and is_architecture(arch))
 
 
 def Osarch(os, arch):
-    if os in ["win", "macos"]:
+    if os in ["win", "mac"]:
         return f_osarch(os, arch).capitalize()
     os, arch = f_osarch(os, arch).split('-')
     return os.capitalize() + '-' + arch
 
 
 def OSarch(os, arch):
-    if os in ["win", "macos"]:
+    if os in ["win", "mac"]:
         return f_osarch(os, arch).upper()
     os, arch = f_osarch(os, arch).split('-')
     return os.upper() + '-' + arch

@@ -9,7 +9,9 @@ fb_md5_template = fb_prefix + 'checksums/julia-$patch_version.md5'
 fb_sha256_template = fb_prefix + 'julia-$patch_version.sha256'
 
 default_filename_template = "julia-$patch_version-$osarch.$extension"
-default_latest_filename_template = "julia-$patch_version-$os$bit.$extension"
+default_latest_filename_template = "julia-latest-$os$bit.$extension"
+
+# for mirror usage: where releases are downloaded to
 default_path_template = "releases/$sys/$arch/$minor_version/$filename"
 
 # ports

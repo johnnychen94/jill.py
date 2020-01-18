@@ -31,15 +31,17 @@ def default_install_dir():
         raise ValueError(f"Unsupported system {system}")
 
 
-def make_symlinks(src_bin, install_dir, version):
-    assert install_dir in os.environ["PATH"].split(":")
+def make_symlinks(src_bin, symlink_dir, version):
+    assert symlink_dir in os.environ["PATH"].split(":")
+    os.makedirs(symlink_dir, exist_ok=True)
+
     link_list = [f"julia-{f(version)}" for f in (f_major_version,
                                                  f_minor_version,
                                                  f_patch_version)]
     link_list.append("julia")
 
     for linkname in link_list:
-        linkpath = os.path.join(install_dir, linkname)
+        linkpath = os.path.join(symlink_dir, linkname)
         if os.path.exists(linkpath) or os.path.islink(linkpath):
             print(f"removing previous symlink {linkname}")
             os.remove(linkpath)

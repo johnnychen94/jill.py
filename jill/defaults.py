@@ -1,7 +1,7 @@
 import os
 
 PKG_ROOT = os.path.abspath(os.path.dirname(__file__))
-SOURCE_CONFIGFILE = os.path.join(PKG_ROOT, "sources.json")
+SOURCE_CONFIGFILE = os.path.join(PKG_ROOT, "config", "sources.json")
 
 # upstream url
 fb_prefix = 'https://julialang-s3.julialang.org/bin/'

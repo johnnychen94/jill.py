@@ -25,6 +25,7 @@ def _download_package(url: str, out: str):
     with tempfile.TemporaryDirectory() as temp_outdir:
         temp_outpath = os.path.join(temp_outdir, outname)
         try:
+            print(f"downloading source: {url}")
             wget.download(url, temp_outpath)
             print()  # for format usage
             logging.info(f"finished downloading {outname}")

@@ -1,6 +1,8 @@
 from .download import download_package
-from .installer import install_julia
+from .install import install_julia
 import fire
+
+import logging
 
 
 def main():

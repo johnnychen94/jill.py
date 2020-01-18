@@ -32,7 +32,13 @@ def default_install_dir():
 
 
 def make_symlinks(src_bin, symlink_dir, version):
-    assert symlink_dir in os.environ["PATH"].split(":")
+    if symlink_dir not in os.environ["PATH"].split(":"):
+        print(f"add {symlink_dir} to PATH")
+        with open(os.path.expanduser("~/.bashrc"), "a") as file:
+            file.writelines("\n# added by jill\n")
+            file.writelines(f"export PATH={symlink_dir}:$PATH\n")
+        print(f"you need to do `. ~/.bashrc` to refresh your PATH")
+
     os.makedirs(symlink_dir, exist_ok=True)
 
     link_list = [f"julia-{f(version)}" for f in (f_major_version,
@@ -91,7 +97,8 @@ def install_julia(version, install_dir=None, symlink_dir=None):
     question += f"    1) download Julia-{version}-{system}-{arch}\n"
     question += f"    2) install it into {install_dir}\n"
     question += f"    3) make symlinks in {symlink_dir}\n"
-    question += "Continue?"
+    question += f"    4) add {symlink_dir} to PATH if necessary"
+    question += "Continue installation?"
     to_continue = query_yes_no(question)
     if not to_continue:
         return False

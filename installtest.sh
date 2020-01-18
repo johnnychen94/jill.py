@@ -8,5 +8,7 @@ julia-${JULIA_VERSION} -v
 julia-${major} -v
 julia-${minor} -v
 
-echo "Testing if the version is correct"
-[[ $(julia-${JULIA_VERSION} -v) == "julia version ${JULIA_VERSION}" ]]
+if [[ ! ${JULIA_VERSION} == "latest" ]]; then
+    echo "Testing if the version is correct"
+    [[ $(julia-${JULIA_VERSION} -v) == "julia version ${JULIA_VERSION}" ]]
+fi

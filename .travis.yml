@@ -27,5 +27,20 @@ os:
 
 install:
   - pip install -r requirements.txt
+
+# https://github.com/travis-ci/travis-ci/issues/9929
+- stage: test
+  os: osx
+  language: sh
+  env: TOXENV=py3
+  addons:
+    homebrew:
+      update: true
+      packages: python3
+  before_install:
+    - pip3 install virtualenv
+    - virtualenv -p python3 ~/venv
+    - source ~/venv/bin/activate
+
 script:
   - make test

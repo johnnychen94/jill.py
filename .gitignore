@@ -1,6 +1,7 @@
 .mypy_cache
 /build
 /dist
+.pytest_cache
 /*.egg-info
 julia_pkg
 __pycache__

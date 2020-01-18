@@ -1,4 +1,5 @@
 from .source import query_download_url_list
+from .sys_utils import current_system, current_architecture
 
 import requests
 import wget
@@ -35,11 +36,15 @@ def _download_package(url: str, out: str):
             os.makedirs(outdir, exist_ok=True)
         shutil.move(temp_outpath, outpath)
 
-    return True
+    return outpath
 
 
-def download_package(version, system, architecture,
+def download_package(version, system=None, architecture=None,
                      out=None, overwrite=False, max_try=3):
+    system = system if system else current_system()
+    architecture = architecture if architecture else current_architecture()
+    print(f"download Julia release: {version}-{system}-{architecture}")
+
     url_list = query_download_url_list(version, system, architecture)
 
     url_list = chain.from_iterable(repeat(url_list, max_try))
@@ -51,7 +56,7 @@ def download_package(version, system, architecture,
 
         if os.path.isfile(outpath) and not overwrite:
             logging.info(f"{outname} already exists, skip downloading")
-            return True
+            return outpath
 
         try:
             logging.debug(f"try {url}")

@@ -10,7 +10,7 @@ log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 def main(root: str = "julia_pkg",
          config="mirror.json",
          logfile: str = "mirror.log",
-         period: int = 86400,
+         period: int = 0,
          overwrite: bool = False):
     logging.basicConfig(filename=logfile,
                         level=logging.DEBUG,
@@ -27,7 +27,10 @@ def main(root: str = "julia_pkg",
         m.pull_releases()
         logging.info("END: pulling Julia releases")
 
-        time.sleep(period)
+        if period == 0:
+            return True
+        else:
+            time.sleep(period)
 
         # refresh configuration at each re-pull
         logging.info("reload configure file")

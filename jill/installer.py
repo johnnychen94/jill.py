@@ -97,13 +97,15 @@ def install_julia(version, install_dir=None, symlink_dir=None):
     question += f"    1) download Julia-{version}-{system}-{arch}\n"
     question += f"    2) install it into {install_dir}\n"
     question += f"    3) make symlinks in {symlink_dir}\n"
-    question += f"    4) add {symlink_dir} to PATH if necessary"
+    question += f"    4) add {symlink_dir} to PATH if necessary\n"
     question += "Continue installation?"
     to_continue = query_yes_no(question)
     if not to_continue:
         return False
 
     package_path = download_package(version, system, arch)
+    if not package_path:
+        return False
 
     if system == "macos":
         installer = install_julia_mac

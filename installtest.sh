@@ -1,6 +1,5 @@
 echo "Installing specific Julia version"
 echo "y" | python -m jill install ${JULIA_VERSION}
-. ~/.bashrc
 
 julia -v
 major=$(echo ${JULIA_VERSION} | cut -d. -f1)

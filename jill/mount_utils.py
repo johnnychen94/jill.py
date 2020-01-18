@@ -16,10 +16,8 @@ class Mounter:
 class TarMounter(Mounter):
     def __enter__(self):
         self.tempdir = mkdtemp()
-
-        ext = os.path.splitext(self.src_path)[1]
-        arg1 = "-zxf" if ext in [".tgz", ".tar.gz"] else "-xf"
-        args = ["tar", arg1, self.src_path, "-C", self.tempdir]
+        # TODO: support .tar
+        args = ["tar", "-zxf", self.src_path, "-C", self.tempdir]
         extra_args = ["--strip-components", "1"]
 
         args.extend(extra_args)

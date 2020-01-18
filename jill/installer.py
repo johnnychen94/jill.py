@@ -48,7 +48,6 @@ def make_symlinks(src_bin, install_dir, version):
 
 
 def install_julia_linux(package_path, install_dir, symlink_dir, version):
-    assert os.path.splitext(package_path)[1].endswith(".tar.gz")
     mver = f_minor_version(version)
     with TarMounter(package_path) as root:
         src_path = root

@@ -114,7 +114,6 @@ def get_download_sources(max_sources=10, timeout=2, sources=[]):
 
 def query_download_url_list(version: str,
                             system: str,
-                            architecture: str,
-                            sources=[]):
+                            architecture: str):
     sources = get_download_sources()
     return [s.get_url(version, system, architecture) for s in sources]

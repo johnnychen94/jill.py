@@ -52,7 +52,11 @@ def no_validate(*args):
 
 
 def is_system(system):
-    return system in VALID_SYSTEM
+    if system not in VALID_SYSTEM:
+        err_msg = f"{system} isn't a valid system, "
+        err_msg += f"possible choices are: {', '.join(VALID_SYSTEM)}"
+        raise ValueError(err_msg)
+    return True
 
 
 def is_os(os):
@@ -60,7 +64,11 @@ def is_os(os):
 
 
 def is_architecture(arch):
-    return arch in VALID_ARCHITECTURE
+    if arch not in VALID_ARCHITECTURE:
+        err_msg = f"{arch} isn't a valid architecture, "
+        err_msg += f"possible choices are: {', '.join(VALID_ARCHITECTURE)}"
+        raise ValueError(err_msg)
+    return True
 
 
 def is_arch(arch):

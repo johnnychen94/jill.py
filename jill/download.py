@@ -42,6 +42,9 @@ def _download_package(url: str, out: str):
 
 def download_package(version, system=None, architecture=None,
                      out=None, overwrite=False, max_try=3):
+    """
+    download julia release from nearest servers.
+    """
     system = system if system else current_system()
     architecture = architecture if architecture else current_architecture()
     print(f"download Julia release: {version}-{system}-{architecture}")

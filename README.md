@@ -8,6 +8,10 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 * install julia for Linux and MacOS (including nightly build: `latest`)
 * easily set up a new release mirror 🚧
 
+## Installation
+
+`pip install jill --user`
+
 ## Usage examples
 
 * download:

@@ -21,10 +21,6 @@ env:
   - JULIA_VERSION=1.3.1
   - JULIA_VERSION=latest
 
-os:
-  - linux
-  - osx
-
 install:
   - pip install -r requirements.txt
 
@@ -41,6 +37,11 @@ install:
     - pip3 install virtualenv
     - virtualenv -p python3 ~/venv
     - source ~/venv/bin/activate
+  script:
+    - make test
 
-script:
-  - make test
+- stage: test
+  os: linux
+  language: python
+  script:
+    - make test

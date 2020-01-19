@@ -2,6 +2,7 @@ from .filters import f_major_version, f_minor_version, f_patch_version
 from .download import download_package
 from .interactive_utils import query_yes_no
 from .sys_utils import current_architecture, current_system
+from .version_utils import latest_version
 from .mount_utils import DmgMounter, TarMounter
 import os
 import getpass
@@ -89,14 +90,20 @@ def install_julia_mac(package_path, install_dir, symlink_dir, version):
     return True
 
 
-def install_julia(version, install_dir=None, symlink_dir=None):
+def install_julia(version=None, install_dir=None, symlink_dir=None):
     """
     Install julia for Linux and MacOS. It will download Julia release when
-    necessary.
+    necessary
+
+    Arguments:
+      version: Option examples: 1, 1.2, 1.2.3, latest.
+      By default it's the latest stable release. See also `jill update`
     """
     install_dir = install_dir if install_dir else default_install_dir()
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     system, arch = current_system(), current_architecture()
+    version = str(version) if version else ''
+    version = latest_version(version, system, arch)
 
     question = "jill will:\n"
     question += f"    1) download Julia-{version}-{system}-{arch}"

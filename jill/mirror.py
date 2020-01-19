@@ -5,6 +5,7 @@ from .defaults import MIRROR_CONFIGFILE
 from .download import download_package
 from .filters import generate_info, is_valid_release
 from .filters import VALID_SYSTEM, VALID_ARCHITECTURE
+from .version_utils import update_releases
 
 from string import Template
 from itertools import product
@@ -151,3 +152,5 @@ def mirror(period=0,
         logging.info("reload configure file")
         m.config = MirrorConfig(config, outdir=outdir)
         m.config.logging()
+        logging.info("check if there're new releases")
+        update_releases(system="all", architecture="all")

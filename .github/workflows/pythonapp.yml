@@ -49,3 +49,6 @@ jobs:
           python -m jill mirror --config test_mirror.json
           find julia_pkg -name "julia-*"
           [[ `find julia_pkg -name "julia-*" | wc -l` == 2 ]]
+      - name: Test jill update
+        run: |
+          python -m jill update

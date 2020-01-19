@@ -19,12 +19,17 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 ## Usage examples
 
 * download:
-    - download Julia for current system: `jill download 1.3.0`
-    - download Julia for 32-bit linux: `jill download 1.3.0 linux i686`
-    - download Julia to specific dir: `jill download 1.3.0 --outdir OUTDIR`
+    - latest stable release for current system: `jill download`
+    - latest `1.y` version: `jill download 1`
+    - latest `1.3.z` version: `jill download 1.3`
+    - specific release version: `jill download --version 1.3.0`
+    - specific system: `jill download --sys freebsd`
+    - specific architecture: `jill download --arch i686`
+    - download Julia to specific dir: `jill download --outdir another/dir`
 * install Julia for current system:
-    - system-wide: `sudo jill install 1.3.0`
-    - only for current user: `jill install 1.3.0`
+    - system-wide: `sudo jill install` (make symlink in `/usr/bin`)
+    - only for current user: `jill install` (make symlink in `~/.local/bin`)
+* check if there're new Julia versions: `jill update`
 
 ## Mirror
 

@@ -3,6 +3,7 @@ import os
 PKG_ROOT = os.path.abspath(os.path.dirname(__file__))
 SOURCE_CONFIGFILE = os.path.join(PKG_ROOT, "config", "sources.json")
 MIRROR_CONFIGFILE = os.path.join(PKG_ROOT, "config", "mirror.json")
+RELEASE_CONFIGFILE = os.path.join(PKG_ROOT, "config", "releases.csv")
 
 # upstream url
 fb_prefix = 'https://julialang-s3.julialang.org/bin/'

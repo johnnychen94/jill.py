@@ -121,7 +121,7 @@ def query_download_url_list(version: str,
     return [s.get_url(version, system, architecture) for s in sources]
 
 
-def query_download_url(version, system, arch, max_try=3):
+def query_download_url(version, system, arch, max_try=3, timeout=10):
     """
     return a valid download url to nearest mirror server. If there isn't
     such version then return None.
@@ -132,7 +132,7 @@ def query_download_url(version, system, arch, max_try=3):
     for url in url_list:
         try:
             logging.debug(f"try {url}")
-            r = requests.head(url, timeout=10)
+            r = requests.head(url, timeout=timeout)
         except RequestException as e:
             logging.debug(f"failed: {str(e)}")
             continue

@@ -19,54 +19,64 @@ class TestFilters(unittest.TestCase):
         self.assertEqual(f_major_version("1.2.3-pre"), "1")
         self.assertEqual(f_major_version("v1.2.3"), "1")
         self.assertEqual(f_major_version("v1.2.3-pre"), "1")
+        self.assertEqual(f_major_version("latest"), "latest")
 
         self.assertEqual(f_vmajor_version("1.2.3"), "v1")
         self.assertEqual(f_vmajor_version("1.2.3-pre"), "v1")
         self.assertEqual(f_vmajor_version("v1.2.3"), "v1")
         self.assertEqual(f_vmajor_version("v1.2.3-pre"), "v1")
+        self.assertEqual(f_vmajor_version("latest"), "latest")
 
         self.assertEqual(f_Vmajor_version("1.2.3"), "V1")
         self.assertEqual(f_Vmajor_version("1.2.3-pre"), "V1")
         self.assertEqual(f_Vmajor_version("v1.2.3"), "V1")
         self.assertEqual(f_Vmajor_version("v1.2.3-pre"), "V1")
+        self.assertEqual(f_Vmajor_version("latest"), "Latest")
 
     def test_minor_version(self):
         self.assertEqual(f_minor_version("1.2.3"), "1.2")
         self.assertEqual(f_minor_version("1.2.3-pre"), "1.2")
         self.assertEqual(f_minor_version("v1.2.3"), "1.2")
         self.assertEqual(f_minor_version("v1.2.3-pre"), "1.2")
+        self.assertEqual(f_minor_version("latest"), "latest")
 
         self.assertEqual(f_vminor_version("1.2.3"), "v1.2")
         self.assertEqual(f_vminor_version("1.2.3-pre"), "v1.2")
         self.assertEqual(f_vminor_version("v1.2.3"), "v1.2")
         self.assertEqual(f_vminor_version("v1.2.3-pre"), "v1.2")
+        self.assertEqual(f_vminor_version("latest"), "latest")
 
         self.assertEqual(f_Vminor_version("1.2.3"), "V1.2")
         self.assertEqual(f_Vminor_version("1.2.3-pre"), "V1.2")
         self.assertEqual(f_Vminor_version("v1.2.3"), "V1.2")
         self.assertEqual(f_Vminor_version("v1.2.3-pre"), "V1.2")
+        self.assertEqual(f_Vminor_version("latest"), "Latest")
 
     def test_patch_version(self):
         self.assertEqual(f_patch_version("1.2.3"), "1.2.3")
         self.assertEqual(f_patch_version("1.2.3-pre"), "1.2.3")
         self.assertEqual(f_patch_version("v1.2.3"), "1.2.3")
         self.assertEqual(f_patch_version("v1.2.3-pre"), "1.2.3")
+        self.assertEqual(f_patch_version("latest"), "latest")
 
         self.assertEqual(f_vpatch_version("1.2.3"), "v1.2.3")
         self.assertEqual(f_vpatch_version("1.2.3-pre"), "v1.2.3")
         self.assertEqual(f_vpatch_version("v1.2.3"), "v1.2.3")
         self.assertEqual(f_vpatch_version("v1.2.3-pre"), "v1.2.3")
+        self.assertEqual(f_vpatch_version("latest"), "latest")
 
         self.assertEqual(f_Vpatch_version("1.2.3"), "V1.2.3")
         self.assertEqual(f_Vpatch_version("1.2.3-pre"), "V1.2.3")
         self.assertEqual(f_Vpatch_version("v1.2.3"), "V1.2.3")
         self.assertEqual(f_Vpatch_version("v1.2.3-pre"), "V1.2.3")
+        self.assertEqual(f_Vpatch_version("latest"), "Latest")
 
     def test_version(self):
         self.assertEqual(f_version("1.2.3"), "v1.2.3")
         self.assertEqual(f_version("1.2.3-pre"), "v1.2.3-pre")
         self.assertEqual(f_version("v1.2.3"), "v1.2.3")
         self.assertEqual(f_version("v1.2.3-pre"), "v1.2.3-pre")
+        self.assertEqual(f_version("latest"), "latest")
 
     def test_arch(self):
         self.assertEqual(f_arch("x86_64"), "x64")

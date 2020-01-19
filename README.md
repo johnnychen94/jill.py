@@ -26,6 +26,14 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
     - system-wide: `sudo jill install 1.3.0`
     - only for current user: `jill install 1.3.0`
 
+## Mirror
+
+`jill mirror` downloads all Julia releases into `./julia_pkg`
+
+You can create a `mirror.json` in current folder to override the default mirror
+behaviors. The [mirror configuration example](mirror.example.json) shows all possible
+configurable items, where only `version` is required.
+
 ## Register new mirror
 
 add an entry to `jill/config/sources.json`:
@@ -54,7 +62,3 @@ There're also placeholders for versions:
 * `vpatch_version`: `v1.2.3`, `latest`
 * `vminor_version`: `v1.2`, `latest`
 * `vmajor_version`: `v1`, `latest`
-
-## Mirror 🚧
-
-`python mirror_daemon.py` downloads all Julia releases into `./julia_pkg`

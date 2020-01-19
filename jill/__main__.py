@@ -1,16 +1,26 @@
 from .download import download_package
 from .install import install_julia
+from .mirror import mirror
 import fire
 import logging
+import os
 
 
 def main():
-    logging.basicConfig(level=logging.INFO,
-                        format='%(message)s')
+    logging.basicConfig(filename=os.devnull,
+                        level=logging.DEBUG)
+
+    logging.basicConfig(level=logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    format = logging.Formatter('%(message)s')
+    ch.setFormatter(format)
+    logging.getLogger('').addHandler(ch)
 
     fire.Fire({
         'download': download_package,
         'install': install_julia,
+        'mirror': mirror,
     }, name="jill")
 
 

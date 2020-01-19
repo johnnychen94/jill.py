@@ -1,0 +1,33 @@
+{
+    "filename": "julia-$patch_version-$osarch.$extension",
+    "path": "releases/$sys/$arch/$minor_version/$filename",
+    "overwrite": "False",
+    "releases": {
+        "version": [
+            "latest",
+            "v1.0.0",
+            "v1.0.1",
+            "v1.0.2",
+            "v1.0.3",
+            "v1.0.4",
+            "v1.0.5",
+            "v1.1.0",
+            "v1.1.1",
+            "v1.2.0",
+            "v1.3.0",
+            "v1.3.1"
+        ],
+        "system": [
+            "windows",
+            "linux",
+            "freebsd",
+            "macos"
+        ],
+        "architecture": [
+            "i686",
+            "x86_64",
+            "ARMv7",
+            "ARMv8"
+        ]
+    }
+}

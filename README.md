@@ -29,6 +29,7 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 * install Julia for current system:
     - system-wide: `sudo jill install` (make symlink in `/usr/bin`)
     - only for current user: `jill install` (make symlink in `~/.local/bin`)
+    - don't need interactive promopt: `jill install --confirm`
 * check if there're new Julia versions: `jill update`
 
 ## Mirror

@@ -42,22 +42,21 @@ def is_version_released(version, system, architecture,
     if item in cache:
         return cache[item]
 
+    rst = False
     if update:
         # query process is time-consuming
         # TODO: only query JuliaComputing release server
-        rst = query_download_url(*item, max_try=1, timeout=timeout)
+        rst = bool(query_download_url(*item, max_try=1, timeout=timeout))
         if rst:
+            logging.info(f"get new release {item}")
             with open(RELEASE_CONFIGFILE, 'a') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(item)
-        # only update cache in update mode
-        cache[item] = bool(rst)
-        if rst:
-            logging.info(f"get new release {item}")
         else:
             logging.debug(f"queried {item} = {cache[item]}")
-        return rst
-    return False
+        # only update cache in update mode
+        cache[item] = rst
+    return rst
 
 
 def get_version(version: str):

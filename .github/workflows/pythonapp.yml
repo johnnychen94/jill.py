@@ -3,7 +3,7 @@ name: Unit test
 on: [push, pull_request]
 
 jobs:
-  build:
+  julia_version:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,7 +29,7 @@ jobs:
       env:
         JULIA_VERSION: ${{ matrix.julia }}
 
-  mirror:
+  non_julia_version:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -44,6 +44,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Test jill download
+        run: |
+          python -m jill download
+          python -m jill download 1
+          python -m jill download 1.0
+
+      - name: Test jill install
+        run: |
+          python -m jill install --confirm
+          python -m jill install 1 --confirm
+          python -m jill install 1.0 --confirm
+
       - name: Test jill mirror
         run: |
           python -m jill mirror --config test_mirror.json

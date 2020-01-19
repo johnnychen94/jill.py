@@ -90,7 +90,8 @@ def install_julia_mac(package_path, install_dir, symlink_dir, version):
     return True
 
 
-def install_julia(version=None, install_dir=None, symlink_dir=None):
+def install_julia(version=None, install_dir=None, symlink_dir=None,
+                  confirm=False):
     """
     Install julia for Linux and MacOS. It will download Julia release when
     necessary
@@ -98,6 +99,7 @@ def install_julia(version=None, install_dir=None, symlink_dir=None):
     Arguments:
       version: Option examples: 1, 1.2, 1.2.3, latest.
       By default it's the latest stable release. See also `jill update`
+      confirm: add `--confirm` to skip interactive prompt.
     """
     install_dir = install_dir if install_dir else default_install_dir()
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
@@ -105,16 +107,17 @@ def install_julia(version=None, install_dir=None, symlink_dir=None):
     version = str(version) if version else ''
     version = latest_version(version, system, arch)
 
-    question = "jill will:\n"
-    question += f"    1) download Julia-{version}-{system}-{arch}"
-    question += " into current folder\n"
-    question += f"    2) install it into {install_dir}\n"
-    question += f"    3) make symlinks in {symlink_dir}\n"
-    question += f"    4) add {symlink_dir} to PATH if necessary\n"
-    question += "Continue installation?"
-    to_continue = query_yes_no(question)
-    if not to_continue:
-        return False
+    if not confirm:
+        question = "jill will:\n"
+        question += f"    1) download Julia-{version}-{system}-{arch}"
+        question += " into current folder\n"
+        question += f"    2) install it into {install_dir}\n"
+        question += f"    3) make symlinks in {symlink_dir}\n"
+        question += f"    4) add {symlink_dir} to PATH if necessary\n"
+        question += "Continue installation?"
+        to_continue = query_yes_no(question)
+        if not to_continue:
+            return False
 
     package_path = download_package(version, system, arch)
     if not package_path:

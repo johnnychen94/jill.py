@@ -93,8 +93,7 @@ def install_julia_mac(package_path, install_dir, symlink_dir, version):
 def install_julia(version=None, install_dir=None, symlink_dir=None,
                   confirm=False):
     """
-    Install julia for Linux and MacOS. It will download Julia release when
-    necessary
+    Install julia for Linux and MacOS
 
     Arguments:
       version: Option examples: 1, 1.2, 1.2.3, latest.

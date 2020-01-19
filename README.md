@@ -8,15 +8,15 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 
 ## Features
 
-* download Julia release from nearest mirror server. Check [sources](jill/config/sources.json) for the list of all registered mirrors.
+* download *latest* Julia release from *nearest* mirror server. Check [sources](jill/config/sources.json) for the list of all registered mirrors.
 * install julia for Linux and MacOS (including nightly build: `latest`)
 * easily set up a new release mirror 🚧
 
 ## Installation
 
-`pip install jill --user`
+`pip install jill --user -U`
 
-## Usage examples
+## Basic usage examples
 
 * download:
     - latest stable release for current system: `jill download`

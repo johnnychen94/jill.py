@@ -8,14 +8,18 @@ from .defaults import SOURCE_CONFIGFILE
 from .net_utils import query_ip, port_response_time
 from .filters import generate_info
 
+from itertools import chain, repeat
 from urllib.parse import urlparse
 from string import Template
 
+import requests
 import json
 import os
 import logging
 
 from typing import Optional
+
+from requests.exceptions import RequestException
 
 
 class ReleaseSource:
@@ -64,13 +68,7 @@ class ReleaseSource:
         return self.url_template.substitute(**configs)
 
 
-def read_upstream():
-    """
-    read configure file from:
-    1. `./sources.json`
-    2. `~/.config/jill/sources.json`
-    """
-    cfg_file = os.path.abspath(os.path.expanduser(SOURCE_CONFIGFILE))
+def read_upstream(cfg_file=SOURCE_CONFIGFILE):
     temp_file_list = [os.path.split(cfg_file)[1], cfg_file]
     file_list = list(filter(os.path.isfile, temp_file_list))
     if not len(file_list):
@@ -115,5 +113,32 @@ def get_download_sources(max_sources=10, timeout=2, sources=[]):
 def query_download_url_list(version: str,
                             system: str,
                             architecture: str):
+    """
+    return a list of potential download urls. There's no guarantee that
+    all urls are valid.
+    """
     sources = get_download_sources()
     return [s.get_url(version, system, architecture) for s in sources]
+
+
+def query_download_url(version, system, arch, max_try=3):
+    """
+    return a valid download url to nearest mirror server. If there isn't
+    such version then return None.
+    """
+    url_list = query_download_url_list(version, system, arch)
+
+    url_list = chain.from_iterable(repeat(url_list, max_try))
+    for url in url_list:
+        try:
+            logging.debug(f"try {url}")
+            r = requests.head(url, timeout=10)
+        except RequestException as e:
+            logging.debug(f"failed: {str(e)}")
+            continue
+        if r.status_code//100 == 4:
+            logging.debug(f"failed: {r.status_code} error")
+            continue
+        else:
+            return url
+    return None

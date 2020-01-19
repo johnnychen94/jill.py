@@ -29,7 +29,10 @@ def query_ip(url: Optional[str] = None):
     if url:
         hostname = urlparse(url).netloc
         assert len(hostname)
-        ip = socket.gethostbyname(hostname)
+        try:
+            ip = socket.gethostbyname(hostname)
+        except socket.gaierror:
+            return "0.0.0.0"
     else:
         ip = query_external_ip()
 

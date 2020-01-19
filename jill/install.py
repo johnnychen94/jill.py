@@ -7,6 +7,7 @@ import os
 import getpass
 import shutil
 import subprocess
+import logging
 
 
 def default_symlink_dir():
@@ -33,11 +34,11 @@ def default_install_dir():
 
 def make_symlinks(src_bin, symlink_dir, version):
     if symlink_dir not in os.environ["PATH"].split(":"):
-        print(f"add {symlink_dir} to PATH")
+        logging.info(f"add {symlink_dir} to PATH")
         with open(os.path.expanduser("~/.bashrc"), "a") as file:
             file.writelines("\n# added by jill\n")
             file.writelines(f"export PATH={symlink_dir}:$PATH\n")
-        print(f"you need to do `. ~/.bashrc` to refresh your PATH")
+        logging.info(f"you need to do `. ~/.bashrc` to refresh your PATH")
 
     os.makedirs(symlink_dir, exist_ok=True)
 
@@ -49,9 +50,9 @@ def make_symlinks(src_bin, symlink_dir, version):
     for linkname in link_list:
         linkpath = os.path.join(symlink_dir, linkname)
         if os.path.exists(linkpath) or os.path.islink(linkpath):
-            print(f"removing previous symlink {linkname}")
+            logging.info(f"removing previous symlink {linkname}")
             os.remove(linkpath)
-        print(f"make symlink {linkpath}")
+        logging.info(f"make symlink {linkpath}")
         os.symlink(src_bin, linkpath)
 
 
@@ -61,7 +62,7 @@ def install_julia_linux(package_path, install_dir, symlink_dir, version):
         src_path = root
         dest_path = os.path.join(install_dir, f"julia-{mver}")
         if os.path.exists(dest_path):
-            print(f"remove previous {dest_path}")
+            logging.info(f"remove previous {dest_path}")
             shutil.rmtree(dest_path)
         shutil.copytree(src_path, dest_path)
     bin_path = os.path.join(dest_path, "bin", "julia")
@@ -79,7 +80,7 @@ def install_julia_mac(package_path, install_dir, symlink_dir, version):
         src_path = os.path.join(root, appname)
         dest_path = os.path.join(install_dir, appname)
         if os.path.exists(dest_path):
-            print(f"remove previous {dest_path}")
+            logging.info(f"remove previous {dest_path}")
             shutil.rmtree(dest_path)
         shutil.copytree(src_path, dest_path)
     bin_path = os.path.join(dest_path,

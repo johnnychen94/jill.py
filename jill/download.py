@@ -25,7 +25,7 @@ def _download_package(url: str, out: str):
     with tempfile.TemporaryDirectory() as temp_outdir:
         temp_outpath = os.path.join(temp_outdir, outname)
         try:
-            print(f"downloading source: {url}")
+            logging.info(f"downloading source: {url}")
             wget.download(url, temp_outpath)
             print()  # for format usage
             logging.info(f"finished downloading {outname}")
@@ -47,7 +47,7 @@ def download_package(version, system=None, architecture=None,
     """
     system = system if system else current_system()
     architecture = architecture if architecture else current_architecture()
-    print(f"download Julia release: {version}-{system}-{architecture}")
+    logging.info(f"download Julia release: {version}-{system}-{architecture}")
 
     url_list = query_download_url_list(version, system, architecture)
 

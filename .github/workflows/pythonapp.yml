@@ -13,7 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-
+      - name: add symlink dir to PATH
+        run: echo "::add-path::$HOME/.local/bin"
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
@@ -36,7 +37,8 @@ jobs:
       - name: Test jill mirror
         run: |
           coverage run -a -m jill mirror --config test_mirror.json
-          find . -type f -size +10M \( -name "julia-*.tar.gz" -o -name "julia-*.dmg" \)
+          find . -type f -size +20M -name "julia-*"
+          [[ `find . -type f -size +20M -name "julia-*" | wc -l` == 2 ]]
 
       - name: generate covrage report
         run: |

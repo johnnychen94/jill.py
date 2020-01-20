@@ -10,5 +10,6 @@
         "architecture": [
             "x86_64"
         ]
-    }
+    },
+    "path": "$filename"
 }

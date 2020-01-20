@@ -119,6 +119,25 @@ def query_download_url_list(version: str,
     return [s.get_url(version, system, architecture) for s in sources]
 
 
+def is_url_available(url, timeout):
+    try:
+        logging.debug(f"try {url}")
+        r = requests.head(url, timeout=timeout)
+    except RequestException as e:
+        logging.debug(f"failed: {str(e)}")
+        return False
+
+    if r.status_code//100 == 4:
+        logging.debug(f"failed: {r.status_code} error")
+        return False
+    elif r.status_code == 301 or r.status_code == 302:
+        # redirect
+        new_url = r.headers['Location']
+        return is_url_available(new_url, timeout)
+    else:
+        return True
+
+
 def query_download_url(version, system, arch, max_try=3, timeout=10):
     """
     return a valid download url to nearest mirror server. If there isn't
@@ -128,15 +147,6 @@ def query_download_url(version, system, arch, max_try=3, timeout=10):
 
     url_list = chain.from_iterable(repeat(url_list, max_try))
     for url in url_list:
-        try:
-            logging.debug(f"try {url}")
-            r = requests.head(url, timeout=timeout)
-        except RequestException as e:
-            logging.debug(f"failed: {str(e)}")
-            continue
-        if r.status_code//100 == 4:
-            logging.debug(f"failed: {r.status_code} error")
-            continue
-        else:
+        if is_url_available(url, timeout):
             return url
     return None

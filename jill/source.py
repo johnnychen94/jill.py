@@ -73,33 +73,35 @@ def read_upstream(cfg_file=SOURCE_CONFIGFILE):
         return json.load(f).get("upstream", {})
 
 
-def get_download_sources(max_sources=10, timeout=2, sources=[]):
-    assert max_sources >= 1
-
+def initialize_upstream_sources(timeout=2, sources=[]):
     # TODO: save initialized sources into a config file as "permanent" cache
     if len(sources):
         return sources
 
     logging.info(f"initialize upstream sources")
-    origin_list = [ReleaseSource(**item) for item in read_upstream()]
+    fallback_server_list = [
+        ReleaseSource("Julia Computing -- stable releases",
+                      url=fb_release_url_template),
+        ReleaseSource("Julia Computing -- nightly releases",
+                      url=fb_nightly_url_template)
+    ]
+    config_server_list = [ReleaseSource(**item) for item in read_upstream()]
+    origin_list = []
+    origin_list.extend(fallback_server_list)
+    origin_list.extend(config_server_list)
 
     # sort upstreams according to responsing time
     # TODO: stop checking new servers if there're already max_sources
     response_times = [port_response_time(query_ip(x.url), x.port, timeout)
                       for x in origin_list]
-    temp_list = list(zip(origin_list, response_times))
-    temp_list.sort(key=lambda x: x[1])
-    temp_list = list(filter(lambda src: src[1] < timeout, temp_list))
-    src_list = [x[0] for x in temp_list[0:max_sources]]
-
-    # don't filter out fallback, just push them to the end
-    # TODO: don't simply push them to the end, instead, sort but don't
-    # filter out them
-    sources.extend(src_list)
-    sources.append(ReleaseSource("Julia Computing -- stable releases",
-                                 url=fb_release_url_template))
-    sources.append(ReleaseSource("Julia Computing -- nightly releases",
-                                 url=fb_nightly_url_template))
+    for idx in range(len(fallback_server_list)):
+        # don't filter out JuliaComputing servers even if there're unavailable
+        if response_times[idx] > timeout:
+            response_times[idx] = timeout
+    src_list = list(filter(lambda src: src[1] <= timeout,
+                           zip(origin_list, response_times)))
+    src_list.sort(key=lambda x: x[1])
+    sources.extend([x[0] for x in src_list])
 
     logging.info(f"found {len(sources)} available resources:")
     for src in sources:
@@ -115,7 +117,7 @@ def query_download_url_list(version: str,
     return a list of potential download urls. There's no guarantee that
     all urls are valid.
     """
-    sources = get_download_sources()
+    sources = initialize_upstream_sources()
     return [s.get_url(version, system, architecture) for s in sources]
 
 

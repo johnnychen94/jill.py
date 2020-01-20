@@ -118,8 +118,6 @@ def query_download_url_list(version: str,
     sources = get_download_sources()
     return [s.get_url(version, system, architecture) for s in sources]
 
-# def is_available(url:str, )
-
 
 def query_download_url(version, system, arch, max_try=3, timeout=10):
     """
@@ -142,5 +140,3 @@ def query_download_url(version, system, arch, max_try=3, timeout=10):
         else:
             return url
     return None
-
-# rst.headers['Location']

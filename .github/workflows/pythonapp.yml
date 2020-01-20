@@ -62,9 +62,9 @@ jobs:
           coverage run -m jill mirror --config test_mirror.json
           find julia_pkg -name "julia-*"
           [[ `find julia_pkg -name "julia-*" | wc -l` == 2 ]]
-    #   - name: Test jill update
-    #     run: |
-    #       python -m jill update
+      - name: Test jill update
+        run: |
+          coverage run -m jill update
       - name: generate covrage report
         run: |
           coverage report

@@ -53,7 +53,7 @@ def is_version_released(version, system, architecture,
                 writer = csv.writer(csvfile)
                 writer.writerow(item)
         else:
-            logging.debug(f"queried {item} = {cache[item]}")
+            logging.debug(f"queried {item} = {rst}")
         # only update cache in update mode
         cache[item] = rst
     return rst

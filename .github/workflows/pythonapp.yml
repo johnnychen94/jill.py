@@ -47,24 +47,24 @@ jobs:
           pip install coverage
       - name: Test jill download
         run: |
-          coverage run -m jill download
-          coverage run -m jill download 1
-          coverage run -m jill download 1.0
+          coverage run -a -m jill download
+          coverage run -a -m jill download 1
+          coverage run -a -m jill download 1.0
 
       - name: Test jill install
         run: |
-          coverage run -m jill install --confirm
-          coverage run -m jill install 1 --confirm
-          coverage run -m jill install 1.0 --confirm
+          coverage run -a -m jill install --confirm
+          coverage run -a -m jill install 1 --confirm
+          coverage run -a -m jill install 1.0 --confirm
 
       - name: Test jill mirror
         run: |
-          coverage run -m jill mirror --config test_mirror.json
+          coverage run -a -m jill mirror --config test_mirror.json
           find julia_pkg -name "julia-*"
           [[ `find julia_pkg -name "julia-*" | wc -l` == 2 ]]
       - name: Test jill update
         run: |
-          coverage run -m jill update
+          coverage run -a -m jill update
       - name: generate covrage report
         run: |
           coverage report

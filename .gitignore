@@ -1,4 +1,5 @@
 .mypy_cache
+.coverage
 /build
 /dist
 .pytest_cache

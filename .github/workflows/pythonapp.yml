@@ -44,23 +44,37 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install coverage
       - name: Test jill download
         run: |
-          python -m jill download
-          python -m jill download 1
-          python -m jill download 1.0
+          coverage run -m jill download
+          coverage run -m jill download 1
+          coverage run -m jill download 1.0
 
       - name: Test jill install
         run: |
-          python -m jill install --confirm
-          python -m jill install 1 --confirm
-          python -m jill install 1.0 --confirm
+          coverage run -m jill install --confirm
+          coverage run -m jill install 1 --confirm
+          coverage run -m jill install 1.0 --confirm
 
       - name: Test jill mirror
         run: |
-          python -m jill mirror --config test_mirror.json
+          coverage run -m jill mirror --config test_mirror.json
           find julia_pkg -name "julia-*"
           [[ `find julia_pkg -name "julia-*" | wc -l` == 2 ]]
     #   - name: Test jill update
     #     run: |
     #       python -m jill update
+      - name: generate covrage report
+        run: |
+          coverage report
+          coverage xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          yml: ./codecov.yml
+          fail_ci_if_error: true

@@ -51,10 +51,6 @@ class ReleaseSource:
     def port(self):
         return default_scheme_ports[urlparse(self.url).scheme]
 
-    @property
-    def is_available(self):
-        return is_port_open(self.netloc, self.port)
-
     def __repr__(self):
         return f"ReleaseSource({self.name})"
 
@@ -97,6 +93,8 @@ def get_download_sources(max_sources=10, timeout=2, sources=[]):
     src_list = [x[0] for x in temp_list[0:max_sources]]
 
     # don't filter out fallback, just push them to the end
+    # TODO: don't simply push them to the end, instead, sort but don't
+    # filter out them
     sources.extend(src_list)
     sources.append(ReleaseSource("Julia Computing -- stable releases",
                                  url=fb_release_url_template))
@@ -120,6 +118,8 @@ def query_download_url_list(version: str,
     sources = get_download_sources()
     return [s.get_url(version, system, architecture) for s in sources]
 
+# def is_available(url:str, )
+
 
 def query_download_url(version, system, arch, max_try=3, timeout=10):
     """
@@ -142,3 +142,5 @@ def query_download_url(version, system, arch, max_try=3, timeout=10):
         else:
             return url
     return None
+
+# rst.headers['Location']

@@ -1,4 +1,5 @@
-echo "Installing specific Julia version"
+JULIA_VERSION=$1
+echo "Installing specific Julia version ${JULIA_VERSION}"
 python -m jill install ${JULIA_VERSION} --confirm
 
 julia -v
@@ -8,7 +9,5 @@ julia-${JULIA_VERSION} -v
 julia-${major} -v
 julia-${minor} -v
 
-if [[ ! ${JULIA_VERSION} == "latest" ]]; then
-    echo "Testing if the version is correct"
-    [[ $(julia-${JULIA_VERSION} -v) == "julia version ${JULIA_VERSION}" ]]
-fi
+echo "Testing if the version is correct"
+[[ $(julia-${JULIA_VERSION} -v) == "julia version ${JULIA_VERSION}" ]]

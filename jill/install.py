@@ -90,7 +90,10 @@ def install_julia_mac(package_path, install_dir, symlink_dir, version):
     return True
 
 
-def install_julia(version=None, install_dir=None, symlink_dir=None,
+def install_julia(version=None, *,
+                  install_dir=None,
+                  symlink_dir=None,
+                  upstream=None,
                   confirm=False):
     """
     Install julia for Linux and MacOS
@@ -98,6 +101,9 @@ def install_julia(version=None, install_dir=None, symlink_dir=None,
     Arguments:
       version: Option examples: 1, 1.2, 1.2.3, latest.
       By default it's the latest stable release. See also `jill update`
+      upstream:
+        manually choose a download upstream. For example, set it to "Official"
+        if you want to download from JuliaComputing's s3 buckets.
       confirm: add `--confirm` to skip interactive prompt.
     """
     install_dir = install_dir if install_dir else default_install_dir()
@@ -118,7 +124,10 @@ def install_julia(version=None, install_dir=None, symlink_dir=None,
         if not to_continue:
             return False
 
-    package_path = download_package(version, system, arch)
+    overwrite = True if version == "latest" else False
+    package_path = download_package(version, system, arch,
+                                    upstream=upstream,
+                                    overwrite=overwrite)
     if not package_path:
         return False
 

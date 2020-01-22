@@ -27,8 +27,10 @@ def query_external_ip(cache=[], timeout=5):
 
 def query_ip(url: Optional[str] = None):
     if url:
-        hostname = urlparse(url).netloc
-        assert len(hostname)
+        rst = urlparse(url)
+        hostname = rst.netloc if rst.netloc else url
+        if len(hostname) == 0:
+            raise ValueError(f"invalid url {url}")
         try:
             ip = socket.gethostbyname(hostname)
         except socket.gaierror:
@@ -44,9 +46,18 @@ def query_ip(url: Optional[str] = None):
 
 
 def port_response_time(host, port, timeout=2):
+    """
+    return the network latency to host:port, if the latency exceeds
+    timeout then return timeout.
+
+    If host is '0.0.0.0' then directly return a number larger than timeout.
+    """
+    if host == '0.0.0.0':
+        return 10*timeout
+
     start = time.time()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)
     result = sock.connect_ex((host, port))
     roundtrip = time.time() - start
-    return roundtrip
+    return min(roundtrip, timeout)

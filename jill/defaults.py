@@ -5,14 +5,6 @@ SOURCE_CONFIGFILE = os.path.join(PKG_ROOT, "config", "sources.json")
 MIRROR_CONFIGFILE = os.path.join(PKG_ROOT, "config", "mirror.json")
 RELEASE_CONFIGFILE = os.path.join(PKG_ROOT, "config", "releases.csv")
 
-# upstream url
-fb_prefix = 'https://julialang-s3.julialang.org/bin/'
-fb_nightly_prefix = 'https://julialangnightlies-s3.julialang.org/bin/'
-fb_nightly_url_template = fb_nightly_prefix + '$sys/$arch/$filename'
-fb_release_url_template = fb_prefix + '$sys/$arch/$minor_version/$filename'
-fb_md5_template = fb_prefix + 'checksums/julia-$patch_version.md5'
-fb_sha256_template = fb_prefix + 'julia-$patch_version.sha256'
-
 default_filename_template = "julia-$patch_version-$osarch.$extension"
 default_latest_filename_template = "julia-latest-$os$bit.$extension"
 

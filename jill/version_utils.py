@@ -1,4 +1,4 @@
-from .source import query_download_url
+from .source import SourceRegistry
 from .filters import is_valid_release
 from .filters import SPECIAL_VERSION_NAMES
 from .filters import is_system, is_architecture
@@ -30,6 +30,7 @@ def read_releases() -> List[Tuple]:
 
 def is_version_released(version, system, architecture,
                         update=False,
+                        upstream=None,
                         timeout=5,
                         cache=dict()):
     if not is_valid_release(version, system, architecture):
@@ -45,8 +46,10 @@ def is_version_released(version, system, architecture,
     rst = False
     if update:
         # query process is time-consuming
-        # TODO: only query JuliaComputing release server
-        rst = bool(query_download_url(*item, max_try=1, timeout=timeout))
+        registry = SourceRegistry(upstream=upstream)
+        rst = bool(registry.query_download_url(*item,
+                                               timeout=timeout,
+                                               max_try=1))
         if rst:
             logging.info(f"get new release {item}")
             with open(RELEASE_CONFIGFILE, 'a') as csvfile:
@@ -157,7 +160,9 @@ def sort_releases():
             writer.writerow(item)
 
 
-def update_releases(system=None, architecture=None, timeout=5):
+def update_releases(system=None, architecture=None, *,
+                    upstream="Official",
+                    timeout=5):
     """
     check if there're new Julia releases
 
@@ -166,6 +171,9 @@ def update_releases(system=None, architecture=None, timeout=5):
         current system(default), SYSTEM, "all"
       architecture: Options are:
         current architecture(default), ARCHITECTURE, "all"
+      upstream:
+        manually choose a update upstream. By default it only checks
+        from JuliaComputing's servers, i.e., "Official" upstream.
       timeout:
         how long each query waits before returning False
     """
@@ -185,13 +193,19 @@ def update_releases(system=None, architecture=None, timeout=5):
 
     # the first run gets all x.y.0 versions
     # the second run gets all x.y.z versions
+    logging.info("check new Julia release info, it will take a while")
     for _ in range(2):
         versions = set(map(lambda x: x[0], read_releases()))
         versions = versions if len(versions) != 0 else {"1.0.0"}
 
+        kwargs = {
+            "update": True,
+            "upstream": upstream,
+            "timeout": timeout
+        }
         for item in product(versions, systems, architectures):
             # get all x.y.0 versions
-            latest_major_version(*item, update=True, timeout=timeout)
-            latest_minor_version(*item, update=True, timeout=timeout)
-            latest_patch_version(*item, update=True, timeout=timeout)
+            latest_major_version(*item, **kwargs)
+            latest_minor_version(*item, **kwargs)
+            latest_patch_version(*item, **kwargs)
     sort_releases()

@@ -2,6 +2,7 @@ from .defaults import default_scheme_ports
 from .defaults import SOURCE_CONFIGFILE
 
 from .net_utils import query_ip, port_response_time
+from .net_utils import is_url_available
 from .filters import generate_info
 
 from itertools import chain, repeat
@@ -77,7 +78,7 @@ class ReleaseSource:
         return self._latencies
 
     def __repr__(self):
-        return f"ReleaseSource({self.name})"
+        return f"ReleaseSource('{self.name}')"
 
     def get_url(self, plain_version, system, architecture):
         """
@@ -96,16 +97,52 @@ class ReleaseSource:
         return url_list[0]
 
 
-class SourceRegistry:
-    def __init__(self, configfile=SOURCE_CONFIGFILE, timeout=2):
-        self.configfile = configfile
-        self.timeout = timeout
-
-        with open(self.configfile, 'r') as f:
+def read_registry():
+    registry = dict()
+    for cfg_file in reversed(SOURCE_CONFIGFILE):
+        if not os.path.isfile(cfg_file):
+            continue
+        with open(cfg_file, 'r') as f:
             upstream_records = json.load(f).get("upstream", {})
-            registry = {k: ReleaseSource(**v)
-                        for k, v in upstream_records.items()}
-        self.registry = registry
+            temp_registry = {k: ReleaseSource(**v)
+                             for k, v in upstream_records.items()}
+        registry.update(temp_registry)
+    return registry
+
+
+class SourceRegistry:
+    # share the same "full" registry across all instances
+    class __SourceRegistry:
+        def __init__(self, timeout):
+            self.timeout = timeout
+            self.registry = read_registry()
+
+    __inner_registry = None
+
+    def __init__(self, *, upstream=None, timeout=2):
+        self.upstream = upstream
+        if not self.__inner_registry:
+            self.__inner_registry = self.__SourceRegistry(timeout)
+
+    @property
+    def registry(self):
+        if self.upstream:
+            # users limit themselves to only one download source
+            if self.upstream in self.__inner_registry.registry:
+                return {self.upstream:
+                        self.__inner_registry.registry[self.upstream]}
+            else:
+                msg = "valid sources are:" + \
+                    ', '.join(self.__inner_registry.registry.keys())
+                raise ValueError(msg)
+        return self.__inner_registry.registry
+
+    @property
+    def latencies(self):
+        records = dict()
+        for src in self.registry.values():
+            records.update(src.latencies)
+        return records
 
     def __len__(self):
         return len(self.registry)
@@ -116,14 +153,7 @@ class SourceRegistry:
             msg += "    - " + str(src)
         logging.info(msg)
 
-    @property
-    def latencies(self):
-        records = dict()
-        for src in self.registry.values():
-            records.update(src.latencies)
-        return records
-
-    def get_urls(self, plain_version, system, architecture):
+    def _get_urls(self, plain_version, system, architecture):
         """
         return a list of potential downloading urls for specific version,
         system and architecture. Special version name such as 'latest' are
@@ -135,38 +165,17 @@ class SourceRegistry:
                       self.latencies[urlparse(url).netloc])
         return url_list
 
+    def query_download_url(self,
+                           version, system, arch, *,
+                           max_try=3, timeout=10):
+        """
+        return a valid download url to nearest mirror server. If there isn't
+        such version then return None.
+        """
+        url_list = self._get_urls(version, system, arch)
 
-default_registry = SourceRegistry()
-
-
-def is_url_available(url, timeout):
-    try:
-        logging.debug(f"try {url}")
-        r = requests.head(url, timeout=timeout)
-    except RequestException as e:
-        logging.debug(f"failed: {str(e)}")
-        return False
-
-    if r.status_code//100 == 4:
-        logging.debug(f"failed: {r.status_code} error")
-        return False
-    elif r.status_code == 301 or r.status_code == 302:
-        # redirect
-        new_url = r.headers['Location']
-        return is_url_available(new_url, timeout)
-    else:
-        return True
-
-
-def query_download_url(version, system, arch, max_try=3, timeout=10):
-    """
-    return a valid download url to nearest mirror server. If there isn't
-    such version then return None.
-    """
-    url_list = default_registry.get_urls(version, system, arch)
-
-    url_list = chain.from_iterable(repeat(url_list, max_try))
-    for url in url_list:
-        if is_url_available(url, timeout):
-            return url
-    return None
+        url_list = chain.from_iterable(repeat(url_list, max_try))
+        for url in url_list:
+            if is_url_available(url, timeout):
+                return url
+        return None

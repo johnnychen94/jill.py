@@ -4,6 +4,8 @@ import requests
 import time
 from ipaddress import ip_address
 
+import logging
+
 from requests.exceptions import RequestException
 
 from typing import Optional
@@ -61,3 +63,22 @@ def port_response_time(host, port, timeout=2):
     result = sock.connect_ex((host, port))
     roundtrip = time.time() - start
     return min(roundtrip, timeout)
+
+
+def is_url_available(url, timeout) -> bool:
+    try:
+        logging.debug(f"try {url}")
+        r = requests.head(url, timeout=timeout)
+    except RequestException as e:
+        logging.debug(f"failed: {str(e)}")
+        return False
+
+    if r.status_code//100 == 4:
+        logging.debug(f"failed: {r.status_code} error")
+        return False
+    elif r.status_code == 301 or r.status_code == 302:
+        # redirect
+        new_url = r.headers['Location']
+        return is_url_available(new_url, timeout)
+    else:
+        return True

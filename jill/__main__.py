@@ -2,6 +2,7 @@ from .download import download_package
 from .install import install_julia
 from .mirror import mirror
 from .version_utils import update_releases
+from .source import show_upstream
 import fire
 import logging
 import os
@@ -22,7 +23,8 @@ def main():
         'download': download_package,
         'install': install_julia,
         'mirror': mirror,
-        'update': update_releases
+        'update': update_releases,
+        'upstream': show_upstream
     }, name="jill")
 
 

@@ -150,8 +150,8 @@ class SourceRegistry:
     def info(self):
         msg = f"found {len(self)} release sources:\n"
         for src in self.registry.keys():
-            msg += "    - " + str(src)
-        logging.info(msg)
+            msg += "  - " + str(src) + "\n"
+        return msg
 
     def _get_urls(self, plain_version, system, architecture):
         """
@@ -179,3 +179,9 @@ class SourceRegistry:
             if is_url_available(url, timeout):
                 return url
         return None
+
+
+def show_upstream():
+    """print all registered upstream servers"""
+    registry = SourceRegistry()
+    print(registry.info())

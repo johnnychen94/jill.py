@@ -7,8 +7,10 @@ from jill.filters import f_sys, f_Sys, f_SYS
 from jill.filters import f_os, f_Os, f_OS
 from jill.filters import f_arch, f_Arch, f_ARCH
 from jill.filters import f_osarch, f_Osarch, f_OSarch
+from jill.filters import f_osbit
 from jill.filters import f_bit
 from jill.filters import f_extension
+from jill.filters import generate_info
 import unittest
 
 
@@ -170,6 +172,17 @@ class TestFilters(unittest.TestCase):
         self.assertEqual(f_OSarch("linux", "x86_64"), "LINUX-x86_64")
         self.assertEqual(f_OSarch("freebsd", "x86_64"), "FREEBSD-x86_64")
 
+    def test_osbit(self):
+        self.assertEqual(f_osbit("win", "i686"), "win32")
+        self.assertEqual(f_osbit("win", "x86_64"), "win64")
+        self.assertEqual(f_osbit("mac", "x86_64"), "mac64")
+        self.assertEqual(f_osbit("linux", "ARMv7"), "linuxarmv7l")
+        self.assertEqual(f_osbit("linux", "ARMv8"), "linuxaarch64")
+        self.assertEqual(f_osbit("linux", "i686"), "linux32")
+        self.assertEqual(f_osbit("linux", "x86_64"), "linux64")
+        self.assertEqual(f_osbit("freebsd", "x86_64"), "freebsd64")
+        self.assertEqual(f_osbit("freebsd", "i686"), "freebsd32")
+
     def test_bit(self):
         self.assertEqual(f_bit("i686"), 32)
         self.assertEqual(f_bit("x86_64"), 64)
@@ -181,3 +194,55 @@ class TestFilters(unittest.TestCase):
         self.assertEqual(f_extension("macos"), "dmg")
         self.assertEqual(f_extension("freebsd"), "tar.gz")
         self.assertEqual(f_extension("windows"), "exe")
+
+    def test_latest_filename(self):
+        info = generate_info("latest", "linux", "i686")
+        self.assertEqual(info["latest_filename"],
+                         "julia-latest-linux32.tar.gz")
+        info = generate_info("latest", "linux", "x86_64")
+        self.assertEqual(info["latest_filename"],
+                         "julia-latest-linux64.tar.gz")
+
+        info = generate_info("latest", "linux", "ARMv8")
+        self.assertEqual(info["latest_filename"],
+                         "julia-latest-linuxaarch64.tar.gz")
+
+        info = generate_info("latest", "windows", "i686")
+        self.assertEqual(info["latest_filename"],
+                         "julia-latest-win32.exe")
+        info = generate_info("latest", "windows", "x86_64")
+        self.assertEqual(info["latest_filename"],
+                         "julia-latest-win64.exe")
+
+        info = generate_info("latest", "macos", "x86_64")
+        self.assertEqual(info["latest_filename"],
+                         "julia-latest-mac64.dmg")
+
+    def test_filename(self):
+        info = generate_info("1.3.0", "linux", "i686")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-linux-i686.tar.gz")
+        info = generate_info("1.3.0", "linux", "x86_64")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-linux-x86_64.tar.gz")
+        info = generate_info("1.3.0", "linux", "ARMv7")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-linux-armv7l.tar.gz")
+        info = generate_info("1.3.0", "linux", "ARMv8")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-linux-aarch64.tar.gz")
+
+        info = generate_info("1.3.0", "windows", "i686")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-win32.exe")
+        info = generate_info("1.3.0", "windows", "x86_64")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-win64.exe")
+
+        info = generate_info("1.3.0", "macos", "x86_64")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-mac64.dmg")
+
+        info = generate_info("1.3.0", "freebsd", "x86_64")
+        self.assertEqual(info["filename"],
+                         "julia-1.3.0-freebsd-x86_64.tar.gz")

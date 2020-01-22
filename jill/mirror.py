@@ -101,7 +101,8 @@ class Mirror:
         self.config = config
         self.failed_releases = self.config.releases
 
-    def pull_releases(self):
+    def pull_releases(self, *,
+                      upstream=None):
         failed_releases = self.failed_releases.copy()
         for item in self.failed_releases:
             filepath = self.config.get_outpath(*item)
@@ -110,16 +111,20 @@ class Mirror:
 
             logging.info(f"start to pull {filepath}")
             overwrite = True if item[0] == "latest" else self.config.overwrite
-            rst = download_package(*item, outdir, overwrite)
-            assert os.path.exists(outpath)
+            rst = download_package(*item,
+                                   outdir=outdir,
+                                   upstream=upstream,
+                                   overwrite=overwrite)
             if rst:
+                assert os.path.exists(outpath)
                 assert item in self.failed_releases
                 failed_releases.remove(item)
         self.failed_releases = failed_releases
 
 
-def mirror(period=0,
-           outdir="julia_pkg",
+def mirror(outdir="julia_pkg", *,
+           period=0,
+           upstream=None,
            logfile="mirror.log",
            config="mirror.json"):
     """
@@ -140,7 +145,7 @@ def mirror(period=0,
     m.config.logging()
     while True:
         logging.info("START: pull Julia releases")
-        m.pull_releases()
+        m.pull_releases(upstream=upstream)
         logging.info("END: pulling Julia releases")
 
         if period == 0:

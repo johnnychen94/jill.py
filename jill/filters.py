@@ -1,8 +1,12 @@
-__all__ = ["generate_info"]
+from .defaults import default_filename_template
+from .defaults import default_latest_filename_template
 
 import re
+from string import Template
 
 from typing import Mapping, Optional, Callable
+
+__all__ = ["generate_info"]
 
 VERSION_REGEX = re.compile(
     r'v?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(-(?P<status>\w+))?')
@@ -23,6 +27,17 @@ rules_osarch = {
     "mac-x86_64": "mac64",
     "linux-ARMv7": "linux-armv7l",
     "linux-ARMv8": "linux-aarch64"
+}
+rules_osbit = {
+    "wini686": "win32",
+    "winx86_64": "win64",
+    "macx86_64": "mac64",
+    "linuxARMv7": "linuxarmv7l",
+    "linuxARMv8": "linuxaarch64",
+    "linuxx86_64": "linux64",
+    "linuxi686": "linux32",
+    "freebsdx86_64": "freebsd64",
+    "freebsdi686": "freebsd32"
 }
 rules_extension = {
     "windows": "exe",
@@ -47,7 +62,7 @@ def identity(*args):
     return args[0] if len(args) == 1 else args
 
 
-def no_validate(*args):
+def no_validate(*args, **kwargs):
     return True
 
 
@@ -108,10 +123,11 @@ class NameFilter:
         self.rules = rules if rules else {}
         self.validate = validate
 
-    def __call__(self, *args):
-        assert self.validate(*args)
-        # a no-op if there's no rules
-        return self.rules.get(self.f(*args), self.f(*args))
+    def __call__(self, *args, **kwargs):
+        assert self.validate(*args, **kwargs)
+        # directly return rst if there're no special filter rules
+        rst = self.f(*args, **kwargs)
+        return self.rules.get(rst, rst)
 
 
 f_major_version = NameFilter(lambda x: x.lstrip('v').split('.')[0],
@@ -199,9 +215,32 @@ def _OSarch(os, arch):
 f_Osarch = NameFilter(_Osarch)
 f_OSarch = NameFilter(_OSarch)
 
+f_osbit = NameFilter(f=lambda os, arch: f"{os}{arch}",
+                     rules=rules_osbit,
+                     validate=lambda os, arch:
+                     is_os(os) and is_architecture(arch))
+
 f_bit = NameFilter(rules=rules_bit, validate=is_architecture)
 
 f_extension = NameFilter(rules=rules_extension, validate=is_system)
+
+
+def _meta_filename(t, *args, **kwargs):
+    if not isinstance(t, Template):
+        t = Template(t)
+    return t.substitute(*args, **kwargs)
+
+
+def _filename(*args, **kwargs):
+    return _meta_filename(default_filename_template, *args, **kwargs)
+
+
+def _latest_filename(**kwargs):
+    return _meta_filename(default_latest_filename_template, **kwargs)
+
+
+f_filename = NameFilter(_filename)
+f_latest_filename = NameFilter(_latest_filename)
 
 
 def generate_info(plain_version: str,
@@ -211,7 +250,10 @@ def generate_info(plain_version: str,
     os = f_os(system)
     arch = f_arch(architecture)
 
-    configs = {
+    configs = {}
+    configs.update(kwargs)
+
+    configs.update({
         "system": system,
         "System": f_System(system),
         "SYSTEM": f_SYSTEM(system),
@@ -234,6 +276,8 @@ def generate_info(plain_version: str,
         "Osarch": f_Osarch(os, architecture),
         "OSarch": f_OSarch(os, architecture),
 
+        "osbit": f_osbit(os, architecture),
+
         "bit": f_bit(architecture),
         "extension": f_extension(system),
 
@@ -244,8 +288,11 @@ def generate_info(plain_version: str,
         "vminor_version": f_vminor_version(plain_version),
         "patch_version": f_patch_version(plain_version),
         "vpatch_version": f_vpatch_version(plain_version)
-    }
+    })
 
-    kwargs.update(configs)
+    configs.update({
+        "filename": f_filename(**configs),
+        "latest_filename": f_latest_filename(**configs)
+    })
 
-    return kwargs
+    return configs

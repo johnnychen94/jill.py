@@ -4,6 +4,8 @@ import requests
 import time
 from ipaddress import ip_address
 
+import logging
+
 from requests.exceptions import RequestException
 
 from typing import Optional
@@ -27,8 +29,10 @@ def query_external_ip(cache=[], timeout=5):
 
 def query_ip(url: Optional[str] = None):
     if url:
-        hostname = urlparse(url).netloc
-        assert len(hostname)
+        rst = urlparse(url)
+        hostname = rst.netloc if rst.netloc else url
+        if len(hostname) == 0:
+            raise ValueError(f"invalid url {url}")
         try:
             ip = socket.gethostbyname(hostname)
         except socket.gaierror:
@@ -44,9 +48,37 @@ def query_ip(url: Optional[str] = None):
 
 
 def port_response_time(host, port, timeout=2):
+    """
+    return the network latency to host:port, if the latency exceeds
+    timeout then return timeout.
+
+    If host is '0.0.0.0' then directly return a number larger than timeout.
+    """
+    if host == '0.0.0.0':
+        return 10*timeout
+
     start = time.time()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)
     result = sock.connect_ex((host, port))
     roundtrip = time.time() - start
-    return roundtrip
+    return min(roundtrip, timeout)
+
+
+def is_url_available(url, timeout) -> bool:
+    try:
+        logging.debug(f"try {url}")
+        r = requests.head(url, timeout=timeout)
+    except RequestException as e:
+        logging.debug(f"failed: {str(e)}")
+        return False
+
+    if r.status_code//100 == 4:
+        logging.debug(f"failed: {r.status_code} error")
+        return False
+    elif r.status_code == 301 or r.status_code == 302:
+        # redirect
+        new_url = r.headers['Location']
+        return is_url_available(new_url, timeout)
+    else:
+        return True

@@ -28,6 +28,17 @@ rules_osarch = {
     "linux-ARMv7": "linux-armv7l",
     "linux-ARMv8": "linux-aarch64"
 }
+rules_osbit = {
+    "wini686": "win32",
+    "winx86_64": "win64",
+    "macx86_64": "mac64",
+    "linuxARMv7": "linuxarmv7l",
+    "linuxARMv8": "linuxaarch64",
+    "linuxx86_64": "linux64",
+    "linuxi686": "linux32",
+    "freebsdx86_64": "freebsd64",
+    "freebsdi686": "freebsd32"
+}
 rules_extension = {
     "windows": "exe",
     "linux": "tar.gz",
@@ -204,6 +215,11 @@ def _OSarch(os, arch):
 f_Osarch = NameFilter(_Osarch)
 f_OSarch = NameFilter(_OSarch)
 
+f_osbit = NameFilter(f=lambda os, arch: f"{os}{arch}",
+                     rules=rules_osbit,
+                     validate=lambda os, arch:
+                     is_os(os) and is_architecture(arch))
+
 f_bit = NameFilter(rules=rules_bit, validate=is_architecture)
 
 f_extension = NameFilter(rules=rules_extension, validate=is_system)
@@ -259,6 +275,8 @@ def generate_info(plain_version: str,
         "osarch": f_osarch(os, architecture),
         "Osarch": f_Osarch(os, architecture),
         "OSarch": f_OSarch(os, architecture),
+
+        "osbit": f_osbit(os, architecture),
 
         "bit": f_bit(architecture),
         "extension": f_extension(system),

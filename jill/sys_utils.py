@@ -1,14 +1,18 @@
-import sys
 import platform
 
 
 def current_system():
-    if sys.platform == "linux" or sys.platform == "linux2":
+    rst = platform.system()
+    if rst == "Linux":
         return "linux"
-    elif sys.platform == "darwin":
+    elif rst == "Darwin":
         return "macos"
-    elif sys.platform == "win32" or sys.platform == "win64":
+    elif rst == "FreeBSD":
+        return "freebsd"
+    elif rst == "Windows":
         return "windows"
+    else:
+        raise ValueError(f"Unsupported system {rst}")
 
 
 def current_architecture():

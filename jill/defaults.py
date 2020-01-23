@@ -23,7 +23,6 @@ def get_configfiles(filename):
 
 
 SOURCE_CONFIGFILE = get_configfiles("sources.json")
-MIRROR_CONFIGFILE = os.path.join(PKG_ROOT, "config", "mirror.json")
 RELEASE_CONFIGFILE = os.path.join(PKG_ROOT, "config", "releases.csv")
 
 

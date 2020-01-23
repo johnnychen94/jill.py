@@ -108,8 +108,7 @@ def is_valid_release(version, system, architecture):
             and architecture not in ["x86_64"]):
         return False
     if (version == "latest" and (
-            architecture not in ["i686", "x86_64"]
-            or system not in ["windows", "macos", "linux"])):
+            architecture not in ["i686", "x86_64"])):
         return False
     return True
 

@@ -15,7 +15,7 @@ import logging
 from typing import Tuple, List
 
 
-def read_releases() -> List[Tuple]:
+def read_releases(stable_only=False) -> List[Tuple]:
     cfg_file = RELEASE_CONFIGFILE
     if not os.path.isfile(cfg_file):
         return []
@@ -23,6 +23,9 @@ def read_releases() -> List[Tuple]:
         releases = []
         for row in csv.reader(csvfile):
             releases.append(tuple(row))
+    if stable_only:
+        releases = list(filter(lambda x: x[0] not in SPECIAL_VERSION_NAMES,
+                               releases))
     return releases
 
 
@@ -150,9 +153,15 @@ def latest_version(version, system, architecture, **kwargs) -> str:
         return f_list[idx](version, system, architecture, **kwargs)
 
 
+def _make_version(ver: str) -> Version:
+    if ver == "latest":
+        ver = "999.999.999"
+    return Version(ver)
+
+
 def sort_releases():
     releases = read_releases()
-    releases.sort(key=lambda x: (x[1], x[2], Version(x[0])))
+    releases.sort(key=lambda x: (x[1], x[2], _make_version(x[0])))
     with open(RELEASE_CONFIGFILE, 'w') as csvfile:
         for item in releases:
             writer = csv.writer(csvfile)
@@ -193,18 +202,23 @@ def update_releases(system=None, architecture=None, *,
     # the first run gets all x.y.0 versions
     # the second run gets all x.y.z versions
     logging.info("check new Julia release info, it will take a while")
+    kwargs = {
+        "update": True,
+        "upstream": upstream,
+        "timeout": timeout
+    }
     for _ in range(2):
-        versions = set(map(lambda x: x[0], read_releases()))
+        versions = set(map(lambda x: x[0], read_releases(stable_only=True)))
         versions = versions if len(versions) != 0 else {"1.0.0"}
 
-        kwargs = {
-            "update": True,
-            "upstream": upstream,
-            "timeout": timeout
-        }
         for item in product(versions, systems, architectures):
             # get all x.y.0 versions
             latest_major_version(*item, **kwargs)
             latest_minor_version(*item, **kwargs)
             latest_patch_version(*item, **kwargs)
+
+    special_versions = ["latest"]
+    for item in product(special_versions, systems, architectures):
+        is_version_released(*item, **kwargs)
+
     sort_releases()

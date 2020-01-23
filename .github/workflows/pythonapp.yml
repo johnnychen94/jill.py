@@ -43,13 +43,6 @@ jobs:
           coverage run -a -m jill update
           coverage run -a -m jill update --upstream Official
 
-    #   - name: Test jill mirror
-    #     run: |
-    #       coverage run -a -m jill mirror --config test_mirror.json
-    #       coverage run -a -m jill mirror --config test_mirror.json --upstream Official
-    #       find . -type f -size +20M -name "julia-*"
-    #       [[ `find . -type f -size +20M -name "julia-*" | wc -l` == 2 ]]
-
       - name: generate covrage report
         run: |
           coverage report

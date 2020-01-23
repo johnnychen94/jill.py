@@ -1,5 +1,6 @@
 from .source import SourceRegistry
 from .version_utils import latest_version
+from .version_utils import is_version_released
 from .sys_utils import current_system, current_architecture
 
 import wget
@@ -42,6 +43,7 @@ def download_package(version=None, sys=None, arch=None, *,
                      upstream=None,
                      outdir=None,
                      overwrite=False,
+                     update=False,
                      max_try=3):
     """
     download julia release from nearest servers
@@ -56,6 +58,7 @@ def download_package(version=None, sys=None, arch=None, *,
         if you want to download from JuliaComputing's s3 buckets.
       outdir: where release is downloaded to. By default it's current folder.
       overwrite: True to overwrite existing releases. By default it's False.
+      update: add `--update` to update release info before downloading.
       max_try: try `max_try` times before returning a False.
     """
     version = str(version) if version else ''
@@ -63,14 +66,28 @@ def download_package(version=None, sys=None, arch=None, *,
     architecture = arch if arch else current_architecture()
 
     version = latest_version(version, system, architecture)
-    logging.info(f"download Julia release: {version}-{system}-{architecture}")
+    release_str = f"{version}-{system}-{architecture}"
+    if not is_version_released(version, system, architecture):
+        if not update:
+            msg = f"{release_str} seems not to be released yet."
+            msg += " you can run 'jill update' first " + \
+                   " or add an '--update' flag to current command."
+            logging.info(msg)
+            return False
+        else:
+            rst = is_version_released(version, system, architecture,
+                                      update=True)
+            if not rst:
+                msg = f"failed to find Julia release for {release_str}."
+                logging.info(msg)
+                return False
 
+    logging.info(f"download Julia release for {release_str}")
     registry = SourceRegistry(upstream=upstream)
     url = registry.query_download_url(version, system, architecture,
                                       max_try=max_try)
     if not url:
-        msg = "failed to find available upstream for"
-        msg += f" {version}-{system}-{architecture}"
+        msg = f"failed to find available upstream for {release_str}"
         logging.warning(msg)
         return None
 

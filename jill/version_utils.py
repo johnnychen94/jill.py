@@ -14,8 +14,6 @@ import logging
 
 from typing import Tuple, List
 
-__all__ = ["latest_version", "update"]
-
 
 def read_releases() -> List[Tuple]:
     cfg_file = RELEASE_CONFIGFILE
@@ -36,10 +34,11 @@ def is_version_released(version, system, architecture,
     if not is_valid_release(version, system, architecture):
         return False
 
-    item = str(version), system, architecture
     if not cache:
         for item in read_releases():
             cache[item] = True
+
+    item = str(version), system, architecture
     if item in cache:
         return cache[item]
 

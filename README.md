@@ -41,13 +41,17 @@ Note that `Python >= 3.6` is required.
 * find out all registered upstreams: `jill upstream`
 * check the not-so-elaborative documentation: `jill [COMMAND] -h` (e.g., `jill download -h`)
 
-## Mirror 🚧
+## Mirror
 
-`jill mirror [outdir]` downloads all Julia releases into `outdir`(default `./julia_pkg`)
+`jill mirror [outdir]`:
+
+1. checks if there're new julia releases
+2. downloads all releases Julia releases into `outdir` (default `./julia_pkg`)
+3. (Optional): with flag `--period PERIOD`, it will repeat step 1 and 2 every `PERIOD` seconds
 
 You can create a `mirror.json` in current folder to override the default mirror
-behaviors. The [mirror configuration example](mirror.example.json) shows all possible
-configurable items, where only `version` is required.
+behaviors. The [mirror configuration example](mirror.example.json) shows the default
+values for all possible configurable items.
 
 ## Register new mirror
 

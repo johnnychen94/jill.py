@@ -35,7 +35,9 @@ Note that `Python >= 3.6` is required.
     - system-wide: `sudo jill install` (make symlink in `/usr/bin`)
     - only for current user: `jill install` (make symlink in `~/.local/bin`)
     - don't need interactive promopt: `jill install --confirm`
-* check if there're new Julia versions: `jill update`
+* check if there're new Julia versions:
+    - `jill update`
+    - add `--update` flag to `download` or `install` commands
 * find out all registered upstreams: `jill upstream`
 * check the not-so-elaborative documentation: `jill [COMMAND] -h` (e.g., `jill download -h`)
 

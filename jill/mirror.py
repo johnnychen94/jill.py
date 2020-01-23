@@ -140,6 +140,8 @@ def mirror(outdir="julia_pkg", *,
         if you want to download from JuliaComputing's s3 buckets.
     """
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    period = int(period)
+    upstream = None if upstream == "None" else upstream
 
     logger = logging.getLogger('')
     fh = logging.FileHandler(logfile)

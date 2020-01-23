@@ -17,6 +17,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
+        pip install -r requirements.txt
     - name: Update releases
       run: |
         python -m jill update --system "all" --architecture "all" --timeout 3

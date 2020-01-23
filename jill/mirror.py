@@ -151,8 +151,7 @@ def mirror(outdir="julia_pkg", *,
     logger.addHandler(fh)
     # TODO: filter out urllib3 debug logs
 
-    config = MirrorConfig(config, outdir=outdir)
-    m = Mirror(config)
+    m = Mirror(MirrorConfig(config, outdir=outdir))
     m.config.logging()
     while True:
         update_releases(system="all", architecture="all")

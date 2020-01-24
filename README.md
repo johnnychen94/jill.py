@@ -12,7 +12,7 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 
 * download *latest* Julia release from *nearest* mirror server. Check [sources](jill/config/sources.json) for the list of all registered mirrors.
 * install julia for Linux and MacOS (including nightly build: `latest`)
-* easily set up a new release mirror 🚧
+* easily set up a new release mirror
 
 ## Installation
 
@@ -52,6 +52,10 @@ Note that `Python >= 3.6` is required.
 You can create a `mirror.json` in current folder to override the default mirror
 behaviors. The [mirror configuration example](mirror.example.json) shows the default
 values for all possible configurable items.
+
+Repository [jill-mirror](https://github.com/johnnychen94/julia-mirror) provides an easy to
+start `docker-compose.yml` for you to start with, which is just a simple docker image built
+upon `jill mirror`.
 
 ## Register new mirror
 

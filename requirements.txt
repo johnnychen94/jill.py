@@ -2,3 +2,4 @@ wget
 requests
 fire
 semantic_version
+python-gnupg

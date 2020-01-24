@@ -1,1 +1,2 @@
 include jill/config/*
+include jill/.gnupg/*

@@ -24,7 +24,7 @@ def get_configfiles(filename):
 
 SOURCE_CONFIGFILE = get_configfiles("sources.json")
 RELEASE_CONFIGFILE = os.path.join(PKG_ROOT, "config", "releases.csv")
-
+GPG_PUBLIC_KEY_PATH = os.path.join(PKG_ROOT, ".gnupg", "juliareleases.asc")
 
 default_filename_template = "julia-$patch_version-$osarch.$extension"
 default_latest_filename_template = "julia-latest-$osbit.$extension"

@@ -2,6 +2,7 @@ from .source import SourceRegistry
 from .version_utils import latest_version
 from .version_utils import is_version_released
 from .sys_utils import current_system, current_architecture
+from .gpg_utils import verify_gpg
 
 import wget
 import os
@@ -16,7 +17,7 @@ from typing import Optional
 from urllib.error import URLError
 
 
-def _download_package(url: str, out: str):
+def _download(url: str, out: str):
     # always do overwrite
     outpath = os.path.abspath(out)
     outdir, outname = os.path.split(outpath)
@@ -96,7 +97,41 @@ def download_package(version=None, sys=None, arch=None, *,
     outname = os.path.split(urlparse(url).path)[1]
     outpath = os.path.join(outdir, outname)
 
-    if os.path.isfile(outpath) and not overwrite:
+    if (os.path.isfile(outpath) and os.path.isfile(outpath+".asc")
+            and not overwrite):
         logging.info(f"{outname} already exists, skip downloading")
         return outpath
-    return _download_package(url, outpath)
+
+    package_path = _download(url, outpath)
+
+    if system in ["windows", "macos"]:
+        # macOS and Windows releases are codesigned with certificates
+        # that are verified by the operating system during installation
+        return package_path
+    elif system in ["linux", "freebsd"]:
+        # additional verification using GPG
+        if not package_path:
+            return package_path
+
+        # a mirror should provides both *.tar.gz and *.tar.gz.asc
+        gpg_signature_path = _download(url+".asc", outpath+".asc")
+        if not gpg_signature_path:
+            msg = f"failed to download GPG signature for {release_str}"
+            logging.warning(msg)
+            logging.info(f"remove untrusted/broken file")
+            os.remove(package_path)
+            return False
+
+        if not verify_gpg(package_path, gpg_signature_path):
+            logging.warning(f"failed to verify {release_str} downloads")
+            msg = f"remove untrusted/broken files"
+            logging.info(msg)
+            os.remove(package_path)
+            os.remove(gpg_signature_path)
+            return False
+
+        # GPG-verified julia release path
+        logging.info(f"success to verify {release_str} downloads")
+        return package_path
+    else:
+        raise ValueError(f"unsupported system {sys}")

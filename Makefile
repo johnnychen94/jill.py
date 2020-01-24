@@ -4,12 +4,12 @@ unittest:
 
 download_install_test:
 	coverage run -a -m jill download --upstream Official
-	coverage run -a -m jill install --upstream Official --confirm
+	coverage run -a -m jill install --upstream Official --confirm --keep_downloads
 
 	for julia_version in $(JULIA_VERSIONS) ; do \
 		echo "Test Julia version:" $$julia_version ; \
 		coverage run -a -m jill download $$julia_version ; \
-		coverage run -a -m jill install $$julia_version --confirm ; \
+		coverage run -a -m jill install $$julia_version --confirm --keep_downloads ; \
 	done
 
 	# check if symlinks are created successfully

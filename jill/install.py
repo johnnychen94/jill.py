@@ -95,6 +95,7 @@ def install_julia(version=None, *,
                   symlink_dir=None,
                   update=False,
                   upstream=None,
+                  keep_downloads=False,
                   confirm=False):
     """
     Install julia for Linux and MacOS
@@ -106,6 +107,7 @@ def install_julia(version=None, *,
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
       update: add `--update` to update release info before downloading.
+      keep_downloads: True to not remove downloaded releases.
       confirm: add `--confirm` to skip interactive prompt.
     """
     install_dir = install_dir if install_dir else default_install_dir()
@@ -116,11 +118,10 @@ def install_julia(version=None, *,
 
     if not confirm:
         question = "jill will:\n"
-        question += f"    1) download Julia-{version}-{system}-{arch}"
-        question += " into current folder\n"
-        question += f"    2) install it into {install_dir}\n"
-        question += f"    3) make symlinks in {symlink_dir}\n"
-        question += f"    4) add {symlink_dir} to PATH if necessary\n"
+        question += f"    1) install Julia-{version}-{system}-{arch}"
+        question += f" into {install_dir}\n"
+        question += f"    2) make symlinks in {symlink_dir}\n"
+        question += f"    3) add {symlink_dir} to PATH if necessary\n"
         question += "Continue installation?"
         to_continue = query_yes_no(question)
         if not to_continue:
@@ -142,4 +143,13 @@ def install_julia(version=None, *,
         raise ValueError(f"Unsupported system {system}")
 
     installer(package_path, install_dir, symlink_dir, version)
+
+    if not keep_downloads:
+        logging.info("remove downloaded files")
+        logging.info(f"remove {package_path}")
+        os.remove(package_path)
+        gpg_signature_file = package_path + ".asc"
+        if os.path.exists(gpg_signature_file):
+            logging.info(f"remove {gpg_signature_file}")
+            os.remove(gpg_signature_file)
     return True

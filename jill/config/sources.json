@@ -3,10 +3,10 @@
         "Official": {
             "name": "Julia Computing, Inc.",
             "urls": [
-                "https://julialang2.s3.amazonaws.com/bin/$sys/$arch/$minor_version/$filename"
+                "https://julialang-s3.julialang.org/bin/$sys/$arch/$minor_version/$filename"
             ],
             "latest_urls": [
-                "https://julialangnightlies.s3.amazonaws.com/bin/$sys/$arch/$latest_filename"
+                "https://julialangnightlies-s3.julialang.org/bin/$sys/$arch/$latest_filename"
             ]
         },
         "USTC": {

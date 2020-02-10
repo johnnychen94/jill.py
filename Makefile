@@ -3,6 +3,7 @@ unittest:
 	python -m unittest jill/tests/tests_filters.py
 
 download_install_test:
+	# check if upstream works
 	coverage run -a -m jill download --upstream Official
 	coverage run -a -m jill install --upstream Official --confirm --keep_downloads
 

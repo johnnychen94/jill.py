@@ -1,4 +1,5 @@
 from .filters import f_major_version, f_minor_version, f_patch_version
+from .filters import SPECIAL_VERSION_NAMES
 from .download import download_package
 from .interactive_utils import query_yes_no
 from .sys_utils import current_architecture, current_system
@@ -43,10 +44,14 @@ def make_symlinks(src_bin, symlink_dir, version):
 
     os.makedirs(symlink_dir, exist_ok=True)
 
-    link_list = [f"julia-{f(version)}" for f in (f_major_version,
-                                                 f_minor_version,
-                                                 f_patch_version)]
-    link_list.append("julia")
+    if version in SPECIAL_VERSION_NAMES:
+        # issue 11: don't symlink to julia
+        link_list = [f"julia-{f_major_version(version)}"]
+    else:
+        link_list = [f"julia-{f(version)}" for f in (f_major_version,
+                                                     f_minor_version,
+                                                     f_patch_version)]
+        link_list.append("julia")
 
     for linkname in link_list:
         linkpath = os.path.join(symlink_dir, linkname)

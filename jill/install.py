@@ -66,6 +66,7 @@ def install_julia_linux(package_path, install_dir, symlink_dir, version):
             logging.info(f"remove previous {dest_path}")
             shutil.rmtree(dest_path)
         shutil.copytree(src_path, dest_path)
+    os.chmod(dest_path, 0o755)  # issue 12
     bin_path = os.path.join(dest_path, "bin", "julia")
     make_symlinks(bin_path, symlink_dir, version)
     return True

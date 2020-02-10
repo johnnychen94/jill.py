@@ -26,6 +26,7 @@ Note that `Python >= 3.6` is required.
     - latest stable release for current system: `jill download`
     - latest `1.y` version: `jill download 1`
     - latest `1.3.z` version: `jill download 1.3`
+    - test releases: `jill download 1.4.0-rc1`
     - from specific upstream: `jill download --upstream Official`
     - specific release version: `jill download --version 1.3.0`
     - specific system: `jill download --sys freebsd`
@@ -34,6 +35,7 @@ Note that `Python >= 3.6` is required.
 * install Julia for current system:
     - system-wide: `sudo jill install` (make symlink in `/usr/bin`)
     - only for current user: `jill install` (make symlink in `~/.local/bin`)
+    - specific version: `jill install 1.3`
     - don't need interactive promopt: `jill install --confirm`
 * check if there're new Julia versions:
     - `jill update`
@@ -95,12 +97,12 @@ There're also placeholders for versions:
 * `patch_version`: `1.2.3`, `latest`
 * `minor_version`: `1.2`, `latest`
 * `major_version`: `1`
-* `version`: `v1.2.3-pre`, `latest`
+* `version`: `1.2.3-pre`, `latest` (no leading `v`)
 * `vpatch_version`: `v1.2.3`, `latest`
 * `vminor_version`: `v1.2`, `latest`
 * `vmajor_version`: `v1`, `latest`
 
 To keep consistent names with official releases, you can use predefined name placeholders:
 
-* stable release `filename`: `julia-$patch_version-$osarch.$extension`
+* stable release `filename`: `julia-$version-$osarch.$extension`
 * nightly release `latest_filename`: `"julia-latest-$osbit.$extension"`

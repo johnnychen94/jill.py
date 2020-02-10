@@ -74,10 +74,10 @@ class TestFilters(unittest.TestCase):
         self.assertEqual(f_Vpatch_version("latest"), "Latest")
 
     def test_version(self):
-        self.assertEqual(f_version("1.2.3"), "v1.2.3")
-        self.assertEqual(f_version("1.2.3-pre"), "v1.2.3-pre")
-        self.assertEqual(f_version("v1.2.3"), "v1.2.3")
-        self.assertEqual(f_version("v1.2.3-pre"), "v1.2.3-pre")
+        self.assertEqual(f_version("1.2.3"), "1.2.3")
+        self.assertEqual(f_version("1.2.3-pre"), "1.2.3-pre")
+        self.assertEqual(f_version("v1.2.3"), "1.2.3")
+        self.assertEqual(f_version("v1.2.3-pre"), "1.2.3-pre")
         self.assertEqual(f_version("latest"), "latest")
 
     def test_arch(self):

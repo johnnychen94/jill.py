@@ -29,6 +29,10 @@ def read_releases(stable_only=False) -> List[Tuple]:
     return releases
 
 
+def is_full_version(version):
+    return len(str(version).split("-")[0].split(".")) >= 3
+
+
 def is_version_released(version, system, architecture,
                         update=False,
                         upstream=None,
@@ -140,6 +144,8 @@ def latest_version(version, system, architecture, **kwargs) -> str:
     return `version` if it's already a complete version string.
     """
     if version in SPECIAL_VERSION_NAMES:
+        return version
+    if is_full_version(version):
         return version
 
     f_list = [latest_minor_version,

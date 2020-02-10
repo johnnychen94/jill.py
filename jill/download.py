@@ -1,6 +1,7 @@
 from .source import SourceRegistry
 from .version_utils import latest_version
 from .version_utils import is_version_released
+from .version_utils import is_full_version
 from .sys_utils import current_system, current_architecture
 from .gpg_utils import verify_gpg
 
@@ -66,9 +67,13 @@ def download_package(version=None, sys=None, arch=None, *,
     system = sys if sys else current_system()
     architecture = arch if arch else current_architecture()
 
+    # allow downloading unregistered releases, e.g., 1.4.0-rc1
+    do_release_check = not is_full_version(version)
     version = latest_version(version, system, architecture)
+
     release_str = f"{version}-{system}-{architecture}"
-    if not is_version_released(version, system, architecture):
+    if (do_release_check and
+            not is_version_released(version, system, architecture)):
         if not update:
             msg = f"{release_str} seems not to be released yet."
             msg += " you can run 'jill update' first " + \

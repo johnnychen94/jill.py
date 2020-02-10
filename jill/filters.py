@@ -163,7 +163,7 @@ def _version(ver):
     if ver in SPECIAL_VERSION_NAMES:
         return ver
     else:
-        return 'v'+ver.lstrip('v')
+        return ver.lstrip('v')
 
 
 f_vmajor_version = NameFilter(_vmajor_version)

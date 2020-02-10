@@ -1,4 +1,4 @@
-JULIA_VERSIONS = "1" "1.0" "1.1" "1.2" "1.3" "latest"
+JULIA_VERSIONS = "1" "1.0" "1.1" "1.2" "1.3" "1.4.0-rc1" "latest"
 unittest:
 	python -m unittest jill/tests/tests_filters.py
 

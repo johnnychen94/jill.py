@@ -18,7 +18,7 @@ import time
 from typing import List
 
 
-class MirrorConfig:
+class ReleaseMirrorConfig:
     def __init__(self, configfile, outdir):
         self.configfile = os.path.abspath(os.path.expanduser(configfile))
         self.outdir = outdir
@@ -28,7 +28,7 @@ class MirrorConfig:
         if not os.path.isfile(self.configfile):
             return {}
         with open(self.configfile, 'r') as f:
-            return json.load(f)
+            return json.load(f)["release"]
 
     @property
     def require_latest(self):
@@ -82,8 +82,11 @@ class MirrorConfig:
         return read_releases(stable_only)
 
     def logging(self):
+        configfile = self.configfile
+        if not os.path.isfile(self.configfile):
+            configfile += " (unavailable)"
         logging.info(f"mirror configuration:")
-        logging.info(f"    - configfile: {self.configfile}")
+        logging.info(f"    - configfile: {configfile}")
         logging.info(f"    - outdir: {self.outdir}")
         logging.info(f"    - path: {self.path_template.template}")
         logging.info(f"    - filename: {self.filename_template.template}")
@@ -103,10 +106,10 @@ class MirrorConfig:
         return self.path_template.substitute(**configs)
 
 
-class Mirror:
+class ReleaseMirror:
     def __init__(self,  config):
-        if not isinstance(config, MirrorConfig):
-            config = MirrorConfig(config)
+        if not isinstance(config, ReleaseMirrorConfig):
+            config = ReleaseMirrorConfig(config)
         self.config = config
 
     def pull_releases(self, *,
@@ -151,7 +154,7 @@ def mirror(outdir="julia_pkg", *,
     logger.addHandler(fh)
     # TODO: filter out urllib3 debug logs
 
-    m = Mirror(MirrorConfig(config, outdir=outdir))
+    m = ReleaseMirror(ReleaseMirrorConfig(config, outdir=outdir))
     m.config.logging()
     while True:
         update_releases(system="all", architecture="all")
@@ -167,5 +170,5 @@ def mirror(outdir="julia_pkg", *,
 
         # refresh configuration at each re-pull
         logging.info("reload configure file")
-        m.config = MirrorConfig(config, outdir=outdir)
+        m.config = ReleaseMirrorConfig(config, outdir=outdir)
         m.config.logging()

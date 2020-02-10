@@ -1,7 +1,9 @@
 {
-    "filename": "julia-$patch_version-$osarch.$extension",
-    "latest_filename": "julia-latest-$osbit.$extension",
-    "path": "releases/$vminor_version/$filename",
-    "overwrite": "False",
-    "require_latest": "True"
+    "release": {
+        "filename": "julia-$patch_version-$osarch.$extension",
+        "latest_filename": "julia-latest-$osbit.$extension",
+        "path": "releases/$vminor_version/$filename",
+        "overwrite": "False",
+        "require_latest": "True"
+    }
 }

@@ -112,7 +112,9 @@ def install_julia(version=None, *,
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
-      update: add `--update` to update release info before downloading.
+      update:
+        add `--update` to update release info for incomplete version string
+        (e.g., `1.0`) before downloading.
       keep_downloads: True to not remove downloaded releases.
       confirm: add `--confirm` to skip interactive prompt.
     """
@@ -120,7 +122,7 @@ def install_julia(version=None, *,
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     system, arch = current_system(), current_architecture()
     version = str(version) if version else ''
-    version = latest_version(version, system, arch)
+    version = latest_version(version, system, arch, update=update)
 
     if not confirm:
         question = "jill will:\n"

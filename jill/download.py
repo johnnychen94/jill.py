@@ -60,7 +60,9 @@ def download_package(version=None, sys=None, arch=None, *,
         if you want to download from JuliaComputing's s3 buckets.
       outdir: where release is downloaded to. By default it's current folder.
       overwrite: True to overwrite existing releases. By default it's False.
-      update: add `--update` to update release info before downloading.
+      update:
+        add `--update` to update release info for incomplete version string
+        (e.g., `1.0`) before downloading.
       max_try: try `max_try` times before returning a False.
     """
     version = str(version) if version else ''

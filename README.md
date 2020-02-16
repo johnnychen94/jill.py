@@ -27,10 +27,18 @@ TL;DR `jill install [version]` covers most of your need.
 
 `jill install` does the following things:
 
-1. query latest julia release version, it's `1.3.1` at the time of writing.
+1. query latest stable release, it's `1.3.1` at the time of writing.
 2. download, verify and install julia `1.3.1`
 3. make symlinks: `julia`, `julia-1`, `julia-1.3` and `julia-1.3.1`
 4. remove downloaded files
+
+Valid `version` syntax:
+
+- `stable`: latest stable release
+- `1`: latest stable `1.y.z` release
+- `1.2`: latest stable `1.2.z` release
+- `1.2.3`/`1.2.3-rc1`: as it is
+- `nightly`/`latest`: nightly builds
 
 Here's a list of slightly advanced usages that you may be interested in:
 

@@ -12,6 +12,7 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 
 * download *latest* Julia release from *nearest* mirror server. Check [sources](jill/config/sources.json) for the list of all registered mirrors.
 * install julia for Linux and MacOS (including nightly build: `latest`)
+* manage multiple julia releases
 * easily set up a new release mirror
 
 ## Installation
@@ -20,22 +21,25 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 
 Note that `Python >= 3.6` is required.
 
-## Basic usage examples
+## Usage examples for most users
+
+TL;DR `jill install [version]` covers most of your need.
 
 * download:
     - latest stable release for current system: `jill download`
     - latest `1.y` version: `jill download 1`
     - latest `1.3.z` version: `jill download 1.3`
-    - test releases: `jill download 1.4.0-rc1`
+    - temporary releases: `jill download 1.4.0-rc1`
     - from specific upstream: `jill download --upstream Official`
     - specific release version: `jill download --version 1.3.0`
     - specific system: `jill download --sys freebsd`
     - specific architecture: `jill download --arch i686`
     - download Julia to specific dir: `jill download --outdir another/dir`
 * install Julia for current system:
-    - system-wide: `sudo jill install` (make symlink in `/usr/bin`)
-    - only for current user: `jill install` (make symlink in `~/.local/bin`)
+    - system-wide for root: `sudo jill install` (make symlink in `/usr/bin`)
+    - only for current non-root user: `jill install` (make symlink in `~/.local/bin`)
     - specific version: `jill install 1.3`
+    - also copy root project from older julia environment: `jill install --upgrade`
     - don't need interactive promopt: `jill install --confirm`
 * check if there're new Julia versions:
     - `jill update`
@@ -43,7 +47,9 @@ Note that `Python >= 3.6` is required.
 * find out all registered upstreams: `jill upstream`
 * check the not-so-elaborative documentation: `jill [COMMAND] -h` (e.g., `jill download -h`)
 
-## Mirror
+## For who are interested in setting up a new release mirror
+
+### Mirror
 
 `jill mirror [outdir]`:
 
@@ -59,7 +65,7 @@ Repository [jill-mirror](https://github.com/johnnychen94/julia-mirror) provides 
 start `docker-compose.yml` for you to start with, which is just a simple docker image built
 upon `jill mirror`.
 
-## Register new mirror
+### Register new mirror
 
 If it's an public mirror and you want to share it worldwide. You can add an entry to the
 [public registry](jill/config/sources.json), make a PR, then I will tag a new release for that.
@@ -74,7 +80,7 @@ In the registry config file, a new mirror is a dictionary in the `upstream` fiel
 * `urls`: URL template to retrive Julia release
 * `latest_urls`: URL template to retrive the nightly build of Julia release
 
-## Placeholders
+### Placeholders
 
 Placeholders are used to register new mirrors. For example, the stable release url of
 the "Official" release server owned by [JuliaComputing](https://juliacomputing.com) is

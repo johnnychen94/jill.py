@@ -12,6 +12,10 @@ import subprocess
 import logging
 
 
+def default_depot_path():
+    return os.path.expanduser("~/.julia")
+
+
 def default_symlink_dir():
     if getpass.getuser() == "root":
         # available to all users
@@ -32,6 +36,23 @@ def default_install_dir():
             return os.path.expanduser("~/packages/julias")
     else:
         raise ValueError(f"Unsupported system {system}")
+
+
+def last_julia_version(version=None):
+    # version should follow semantic version syntax
+    def sort_key(ver):
+        return float(ver.lstrip("v"))
+
+    version = float(f_minor_version(version)) if version else 999.999
+    proj_versions = os.listdir(os.path.join(default_depot_path(),
+                                            "environments"))
+    proj_versions = sorted(filter(lambda ver: sort_key(ver) < version,
+                                  proj_versions),
+                           key=sort_key)
+    if proj_versions:
+        return proj_versions[-1]
+    else:
+        return None
 
 
 def make_symlinks(src_bin, symlink_dir, version):
@@ -62,7 +83,30 @@ def make_symlinks(src_bin, symlink_dir, version):
         os.symlink(src_bin, linkpath)
 
 
-def install_julia_linux(package_path, install_dir, symlink_dir, version):
+def copy_root_project(version):
+    mver = f_minor_version(version)
+    old_ver = last_julia_version(version)
+    if old_ver is None:
+        logging.info(
+            f"Can't find available old root project for version f{version}")
+        return None
+
+    env_path = os.path.join(default_depot_path(), "environments")
+    src_path = os.path.join(env_path, old_ver)
+    dest_path = os.path.join(env_path, f"v{mver}")
+
+    if os.path.exists(dest_path):
+        bak_path = os.path.join(env_path, f"v{mver}.bak")
+        logging.info(f"move {dest_path} to {bak_path}")
+        shutil.move(dest_path, bak_path)
+    shutil.copytree(src_path, dest_path, dirs_exist_ok=False)
+
+
+def install_julia_linux(package_path,
+                        install_dir,
+                        symlink_dir,
+                        version,
+                        upgrade):
     mver = f_minor_version(version)
     with TarMounter(package_path) as root:
         src_path = root
@@ -74,10 +118,16 @@ def install_julia_linux(package_path, install_dir, symlink_dir, version):
     os.chmod(dest_path, 0o755)  # issue 12
     bin_path = os.path.join(dest_path, "bin", "julia")
     make_symlinks(bin_path, symlink_dir, version)
+    if upgrade:
+        copy_root_project(version)
     return True
 
 
-def install_julia_mac(package_path, install_dir, symlink_dir, version):
+def install_julia_mac(package_path,
+                      install_dir,
+                      symlink_dir,
+                      version,
+                      upgrade):
     assert os.path.splitext(package_path)[1] == ".dmg"
     with DmgMounter(package_path) as root:
         # mounted image contents:
@@ -93,6 +143,8 @@ def install_julia_mac(package_path, install_dir, symlink_dir, version):
     bin_path = os.path.join(dest_path,
                             "Contents", "Resources", "julia", "bin", "julia")
     make_symlinks(bin_path, symlink_dir, version)
+    if upgrade:
+        copy_root_project(version)
     return True
 
 
@@ -100,6 +152,7 @@ def install_julia(version=None, *,
                   install_dir=None,
                   symlink_dir=None,
                   update=False,
+                  upgrade=False,
                   upstream=None,
                   keep_downloads=False,
                   confirm=False):
@@ -108,13 +161,14 @@ def install_julia(version=None, *,
 
     Arguments:
       version: Option examples: 1, 1.2, 1.2.3, latest.
-      By default it's the latest stable release. See also `jill update`
+      By default it's the latest stable release. See also `jill update`.
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
       update:
         add `--update` to update release info for incomplete version string
         (e.g., `1.0`) before downloading.
+      upgrade: True to also copy the root environment from older julia version.
       keep_downloads: True to not remove downloaded releases.
       confirm: add `--confirm` to skip interactive prompt.
     """
@@ -150,7 +204,7 @@ def install_julia(version=None, *,
     else:
         raise ValueError(f"Unsupported system {system}")
 
-    installer(package_path, install_dir, symlink_dir, version)
+    installer(package_path, install_dir, symlink_dir, version, upgrade)
 
     if not keep_downloads:
         logging.info("remove downloaded files")

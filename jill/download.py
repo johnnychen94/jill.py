@@ -74,9 +74,8 @@ def download_package(version=None, sys=None, arch=None, *,
     version = latest_version(version, system, architecture)
 
     release_str = f"{version}-{system}-{architecture}"
-    if (do_release_check and
-            not is_version_released(version, system, architecture)):
-        if not update:
+    if do_release_check:
+        if not (update or is_version_released(version, system, architecture)):
             msg = f"{release_str} seems not to be released yet."
             msg += " you can run 'jill update' first " + \
                    " or add an '--update' flag to current command."

@@ -66,6 +66,9 @@ def download_package(version=None, sys=None, arch=None, *,
       max_try: try `max_try` times before returning a False.
     """
     version = str(version) if version else ''
+    version = "latest" if version == "nightly" else version
+    version = "" if version == "stable" else version
+
     system = sys if sys else current_system()
     architecture = arch if arch else current_architecture()
 

@@ -176,10 +176,13 @@ def install_julia(version=None, *,
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     system, arch = current_system(), current_architecture()
     version = str(version) if version else ''
+    version = "latest" if version == "nightly" else version
+    version = "" if version == "stable" else version
 
     if not confirm:
+        version_str = version if version else "latest release"
         question = "jill will:\n"
-        question += f"    1) install Julia {version} for {system}-{arch}"
+        question += f"    1) install Julia {version_str} for {system}-{arch}"
         question += f" into {install_dir}\n"
         question += f"    2) make symlinks in {symlink_dir}\n"
         question += f"    3) add {symlink_dir} to PATH if necessary\n"

@@ -104,8 +104,15 @@ def download_package(version=None, sys=None, arch=None, *,
     outname = os.path.split(urlparse(url).path)[1]
     outpath = os.path.join(outdir, outname)
 
-    if (os.path.isfile(outpath) and os.path.isfile(outpath+".asc")
-            and not overwrite):
+    skip_download = False
+    if system in ["linux", "freebsd"]:
+        if (os.path.isfile(outpath) and os.path.isfile(outpath+".asc")
+                and not overwrite):
+            skip_download = True
+    else:
+        if os.path.isfile(outpath) and not overwrite:
+            skip_download = True
+    if skip_download:
         logging.info(f"{outname} already exists, skip downloading")
         return outpath
 

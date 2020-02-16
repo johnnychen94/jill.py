@@ -17,13 +17,20 @@ The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installe
 
 ## Installation
 
-`pip install jill --user -U`
+First you'll need to install `jill` using pip: `pip install jill --user -U`
 
 Note that `Python >= 3.6` is required.
 
 ## Usage examples for most users
 
-TL;DR `jill install [version]` covers most of your need.
+TL;DR `jill install [version]` covers most of your need. `jill install` does the following things:
+
+1. query latest julia release version, currently, it's `1.3.1`
+2. download, verify and install julia `1.3.1`
+3. make symlinks: `julia`, `julia-1`, `julia-1.3` and `julia-1.3.1`
+4. remove downloaded files
+
+Here's a list of slightly advanced usages that you may be interested in:
 
 * download:
     - latest stable release for current system: `jill download`

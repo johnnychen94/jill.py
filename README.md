@@ -23,9 +23,11 @@ Note that `Python >= 3.6` is required.
 
 ## Usage examples for most users
 
-TL;DR `jill install [version]` covers most of your need. `jill install` does the following things:
+TL;DR `jill install [version]` covers most of your need. 
 
-1. query latest julia release version, currently, it's `1.3.1`
+`jill install` does the following things:
+
+1. query latest julia release version, it's `1.3.1` at the time of writing.
 2. download, verify and install julia `1.3.1`
 3. make symlinks: `julia`, `julia-1`, `julia-1.3` and `julia-1.3.1`
 4. remove downloaded files

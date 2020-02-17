@@ -19,5 +19,7 @@ def current_architecture():
     arch = platform.machine()
     if arch == "aarch64":
         return "ARMv8"
+    elif arch == "armv7l":
+        return "ARMv7"
     else:
         return arch

@@ -71,6 +71,11 @@ def download_package(version=None, sys=None, arch=None, *,
 
     system = sys if sys else current_system()
     architecture = arch if arch else current_architecture()
+    if architecture in ["ARMv7", "ARMv8"] and update:
+        # TODO: fix update functionality for it in version_utils
+        msg = f"update is disabled for tier-2 support {architecture}"
+        logging.warning(msg)
+        update = False
 
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)

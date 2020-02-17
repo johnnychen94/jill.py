@@ -11,6 +11,7 @@ on:
 jobs:
   unit_test:
     runs-on: ubuntu-latest
+    name: Unit Test
 
     strategy:
       matrix:
@@ -55,3 +56,28 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
+
+  arm_job:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        architecture: [aarch64, armv7]
+
+    name: Unit Test
+    steps:
+    - uses: actions/checkout@v1.0.0
+
+    # it's running in docker container, so we need to squash all codes into one step
+    - name: Test jill install
+      uses: uraimo/run-on-arch-action@v1.0.5
+      with:
+        architecture: ${{ matrix.architecture }}
+        distribution: ubuntu18.04
+        # no --update because not arm is tier 2 support in Julia
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools gnupg wget --no-install-recommends
+          pip3 install --upgrade pip
+          pip3 install -r requirements.txt
+          python3 -m jill install --confirm --upstream Official
+          julia -e 'using InteractiveUtils; versioninfo()'

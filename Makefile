@@ -11,6 +11,7 @@ download_install_test:
 		echo "Test Julia version:" $$julia_version ; \
 		coverage run -a -m jill download $$julia_version ; \
 		coverage run -a -m jill install $$julia_version --confirm --keep_downloads ; \
+		julia -e 'using InteractiveUtils; versioninfo()' ; \
 	done
 
 	# check if symlinks are created successfully

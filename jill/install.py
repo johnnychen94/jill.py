@@ -99,7 +99,7 @@ def copy_root_project(version):
         bak_path = os.path.join(env_path, f"v{mver}.bak")
         logging.info(f"move {dest_path} to {bak_path}")
         shutil.move(dest_path, bak_path)
-    shutil.copytree(src_path, dest_path, dirs_exist_ok=False)
+    shutil.copytree(src_path, dest_path)
 
 
 def install_julia_linux(package_path,

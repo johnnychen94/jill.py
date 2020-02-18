@@ -22,7 +22,9 @@ class TarMounter(Mounter):
 
         args.extend(extra_args)
         is_success = subprocess.run(args).returncode == 0
-        return self.tempdir
+        if is_success:
+            return self.tempdir
+        raise IOError(f"could not untar {self.src_path}")
 
     def __exit__(self, type, value, tb):
         shutil.rmtree(self.tempdir)

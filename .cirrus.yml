@@ -1,0 +1,17 @@
+freebsd_instance:
+  image_family: freebsd-12-1
+
+build_package_test_task:
+  install_script:
+    - pkg install -y gnupg
+    - python3 -m ensurepip
+  pip_cache:
+    folder: ~/.cache/pip
+    fingerprint_script: echo $PYTHON_VERSION
+    populate_script:
+      - python3 -m pip install -r requirements.txt
+      - export PATH=$PATH:$HOME/.local/bin/
+      - echo $PATH
+  build_package_test_script:
+    - python3 -m jill install --confirm --upstream Official
+    - julia -e 'using InteractiveUtils; versioninfo()'

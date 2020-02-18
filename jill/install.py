@@ -33,7 +33,7 @@ def default_install_dir():
     system = current_system()
     if system == "macos":
         return "/Applications"
-    elif system == "linux":
+    elif system in ["linux", "freebsd"]:
         if getpass.getuser() == "root":
             return "/opt/julias"
         else:
@@ -269,7 +269,7 @@ def install_julia(version=None, *,
 
     if system == "macos":
         installer = install_julia_mac
-    elif system == "linux":
+    elif system in ["linux", "freebsd"]:
         installer = install_julia_linux
     elif system == "windows":
         installer = install_julia_windows

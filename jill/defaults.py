@@ -14,8 +14,10 @@ def get_configfiles(filename):
                          ".config", "jill", filename)
         )
     elif sys == "windows":
-        # TODO: add user config file for windows
-        pass
+        configfile_list.append(
+            os.path.join(os.path.expanduser(r"~\AppData\Local\julias"),
+                         filename)
+        )
 
     # fallback config
     configfile_list.append(os.path.join(PKG_ROOT, "config", filename))

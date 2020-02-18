@@ -108,6 +108,9 @@ def download_package(version=None, sys=None, arch=None, *,
 
     outdir = outdir if outdir else '.'
     outdir = os.path.abspath(outdir)
+    if current_system() == "windows":
+        outdir = outdir.replace("\\\\", "\\")
+
     outname = os.path.split(urlparse(url).path)[1]
     outpath = os.path.join(outdir, outname)
 

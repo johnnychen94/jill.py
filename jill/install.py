@@ -5,6 +5,7 @@ from .interactive_utils import query_yes_no
 from .sys_utils import current_architecture, current_system
 from .version_utils import latest_version
 from .mount_utils import DmgMounter, TarMounter
+from semantic_version import Version
 import os
 import getpass
 import shutil
@@ -17,6 +18,9 @@ def default_depot_path():
 
 
 def default_symlink_dir():
+    system = current_system()
+    if system == "windows":
+        return os.path.expanduser(r"~\AppData\Local\julias\bin")
     if getpass.getuser() == "root":
         # available to all users
         return "/usr/local/bin"
@@ -34,8 +38,10 @@ def default_install_dir():
             return "/opt/julias"
         else:
             return os.path.expanduser("~/packages/julias")
+    elif system == "windows":
+        return os.path.expanduser(r"~\AppData\Local\julias")
     else:
-        raise ValueError(f"Unsupported system {system}")
+        raise ValueError(f"Unsupported system: {system}")
 
 
 def last_julia_version(version=None):
@@ -56,12 +62,21 @@ def last_julia_version(version=None):
 
 
 def make_symlinks(src_bin, symlink_dir, version):
-    if symlink_dir not in os.environ["PATH"].split(":"):
+    if not os.path.isfile(src_bin):
+        raise(ValueError(f"{src_bin} doesn't exist."))
+
+    system = current_system()
+    if symlink_dir not in os.environ["PATH"].split(os.pathsep):
         logging.info(f"add {symlink_dir} to PATH")
-        with open(os.path.expanduser("~/.bashrc"), "a") as file:
-            file.writelines("\n# added by jill\n")
-            file.writelines(f"export PATH={symlink_dir}:$PATH\n")
-        logging.info(f"you need to do `. ~/.bashrc` to refresh your PATH")
+        if system == "windows":
+            # FIXME: this alse copies system PATH to user PATH
+            subprocess.run(["powershell.exe",
+                            "setx", "PATH", f'"$env:PATH;{symlink_dir}"'])
+        else:
+            with open(os.path.expanduser("~/.bashrc"), "a") as file:
+                file.writelines("\n# added by jill\n")
+                file.writelines(f"export PATH={symlink_dir}:$PATH\n")
+        logging.info(f"you need to restart your current shell to update PATH")
 
     os.makedirs(symlink_dir, exist_ok=True)
 
@@ -80,7 +95,12 @@ def make_symlinks(src_bin, symlink_dir, version):
             logging.info(f"removing previous symlink {linkname}")
             os.remove(linkpath)
         logging.info(f"make symlink {linkpath}")
-        os.symlink(src_bin, linkpath)
+        if current_system() == "windows":
+            with open(linkpath + ".cmd", 'w') as f:
+                # create a cmd file to mimic how we do symlinks in linux
+                f.writelines(["@echo off\n", f"{src_bin} %*"])
+        else:
+            os.symlink(src_bin, linkpath)
 
 
 def copy_root_project(version):
@@ -112,7 +132,7 @@ def install_julia_linux(package_path,
         src_path = root
         dest_path = os.path.join(install_dir, f"julia-{mver}")
         if os.path.exists(dest_path):
-            logging.info(f"remove previous {dest_path}")
+            logging.info(f"remove previous julia installation: {dest_path}")
             shutil.rmtree(dest_path)
         shutil.copytree(src_path, dest_path)
     os.chmod(dest_path, 0o755)  # issue 12
@@ -137,11 +157,38 @@ def install_julia_mac(package_path,
         src_path = os.path.join(root, appname)
         dest_path = os.path.join(install_dir, appname)
         if os.path.exists(dest_path):
-            logging.info(f"remove previous {dest_path}")
+            logging.info(f"remove previous julia installation: {dest_path}")
             shutil.rmtree(dest_path)
         shutil.copytree(src_path, dest_path)
     bin_path = os.path.join(dest_path,
                             "Contents", "Resources", "julia", "bin", "julia")
+    make_symlinks(bin_path, symlink_dir, version)
+    if upgrade:
+        copy_root_project(version)
+    return True
+
+
+def install_julia_windows(package_path,
+                          install_dir,
+                          symlink_dir,
+                          version,
+                          upgrade):
+    assert os.path.splitext(package_path)[1] == ".exe"
+
+    dest_path = os.path.join(install_dir,
+                             f"julia-{f_minor_version(version)}")
+    if os.path.exists(dest_path):
+        logging.info(f"remove previous julia installation: {dest_path}")
+        shutil.rmtree(dest_path)
+
+    if Version(version).next_patch() < Version("1.4.0"):
+        subprocess.check_output([f'{package_path}',
+                                 '/S', f'/D={dest_path}'])
+    else:
+        subprocess.check_output([f'{package_path}',
+                                 '/VERYSILENT',
+                                 f'/DIR={dest_path}'])
+    bin_path = os.path.join(dest_path, "bin", "julia.exe")
     make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
         copy_root_project(version)
@@ -179,6 +226,8 @@ def install_julia(version=None, *,
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 
+    if system == "windows":
+        install_dir = install_dir.replace("\\\\", "\\")
     if not confirm:
         version_str = version if version else "latest release"
         question = "jill will:\n"
@@ -204,8 +253,10 @@ def install_julia(version=None, *,
         installer = install_julia_mac
     elif system == "linux":
         installer = install_julia_linux
+    elif system == "windows":
+        installer = install_julia_windows
     else:
-        raise ValueError(f"Unsupported system {system}")
+        raise ValueError(f"Unsupported system: {system}")
 
     installer(package_path, install_dir, symlink_dir, version, upgrade)
 

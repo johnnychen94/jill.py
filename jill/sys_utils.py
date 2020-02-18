@@ -21,5 +21,9 @@ def current_architecture():
         return "ARMv8"
     elif arch == "armv7l":
         return "ARMv7"
+    elif arch == "i386":
+        return "i686"
+    elif arch == "AMD64":
+        return "x86_64"
     else:
         return arch

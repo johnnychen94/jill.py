@@ -57,6 +57,38 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
 
+
+  windows_job:
+    name: Unit Test
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: add symlink dir to PATH
+        run: echo "::add-path::$HOME/AppData/Local/julias/bin"
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install coverage
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: test install
+        run: |
+          python -m jill install --confirm --upstream Official
+          & julia -e 'using InteractiveUtils; versioninfo()'
+          & julia --project=. -e 'using Pkg; Pkg.add(\"ImageCore\")'
+
   arm_job:
     runs-on: ubuntu-18.04
     strategy:

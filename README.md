@@ -7,12 +7,12 @@
 [![codecov](https://codecov.io/gh/johnnychen94/jill.py/branch/master/graph/badge.svg)](https://codecov.io/gh/johnnychen94/jill.py)
 [![release-date](https://img.shields.io/github/release-date/johnnychen94/jill.py)](https://github.com/johnnychen94/jill.py/releases)
 
-The Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installer 4 Linux (and MacOS) - Light
+The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installer 4 Linux (and MacOS) - Light
 
 ## Features
 
 * download *latest* Julia release from *nearest* mirror server. Check [sources](jill/config/sources.json) for the list of all registered mirrors.
-* install julia for Linux and MacOS (including nightly build: `latest`)
+* install julia for Linux, MacOS and Windows (including nightly build: `latest`)
 * manage multiple julia releases
 * easily set up a new release mirror
 
@@ -24,7 +24,7 @@ Note that `Python >= 3.6` is required.
 
 ## Usage examples for most users
 
-TL;DR `jill install [version]` covers most of your need. 
+TL;DR `jill install [version]` covers most of your need.
 
 `jill install` does the following things:
 

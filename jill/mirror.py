@@ -5,6 +5,7 @@ from .download import download_package
 from .filters import generate_info, is_valid_release
 from .version_utils import update_releases
 from .version_utils import read_releases
+from .sys_utils import current_system
 
 from string import Template
 from itertools import product
@@ -20,6 +21,8 @@ from typing import List
 
 class MirrorConfig:
     def __init__(self, configfile, outdir):
+        if current_system() == "windows":
+            outdir = outdir.replace("\\\\", "\\")
         self.configfile = os.path.abspath(os.path.expanduser(configfile))
         self.outdir = outdir
 

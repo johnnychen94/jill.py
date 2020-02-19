@@ -4,6 +4,7 @@ from .utils import current_architecture, current_system
 from .utils import latest_version
 from .utils import DmgMounter, TarMounter
 from .utils import Version
+from .utils import color
 from .download import download_package
 
 import os
@@ -87,7 +88,7 @@ def make_symlinks(src_bin, symlink_dir, version):
 
     system = current_system()
     if symlink_dir not in os.environ["PATH"].split(os.pathsep):
-        logging.info(f"add {symlink_dir} to PATH")
+        print(f"add {symlink_dir} to PATH")
         if system == "windows":
             # FIXME: this alse copies system PATH to user PATH
             subprocess.run(["powershell.exe",
@@ -96,13 +97,13 @@ def make_symlinks(src_bin, symlink_dir, version):
             msg = "~/.bashrc will be modified"
             msg += "\nif you're not using BASH, then you'll need manually"
             msg += f" add {symlink_dir} to your PATH"
-            logging.info(msg)
+            print(msg)
 
             rc_file = os.path.expanduser("~/.bashrc")
             with open(rc_file, "a") as file:
                 file.writelines("\n# added by jill\n")
                 file.writelines(f"export PATH={symlink_dir}:$PATH\n")
-        logging.info(f"you need to restart your current shell to update PATH")
+        print(f"you need to restart your current shell to update PATH")
 
     os.makedirs(symlink_dir, exist_ok=True)
 
@@ -127,9 +128,11 @@ def make_symlinks(src_bin, symlink_dir, version):
             if Version(old_ver) > Version(version):
                 # it's always false if version == "latest"
                 continue
-            logging.info(f"removing previous symlink {linkname}")
+            msg = f"{color.YELLOW}removing previous symlink"
+            msg += f" {linkname}{color.END}"
+            print(msg)
             os.remove(linkpath)
-        logging.info(f"make symlink {linkpath}")
+        print(f"{color.GREEN}make symlink {linkpath}{color.END}")
         if current_system() == "windows":
             with open(linkpath, 'w') as f:
                 # create a cmd file to mimic how we do symlinks in linux
@@ -142,8 +145,8 @@ def copy_root_project(version):
     mver = f_minor_version(version)
     old_ver = last_julia_version(version)
     if old_ver is None:
-        logging.info(
-            f"Can't find available old root project for version f{version}")
+        print(
+            f"Can't find available old root project for version {version}")
         return None
 
     env_path = os.path.join(default_depot_path(), "environments")
@@ -152,8 +155,8 @@ def copy_root_project(version):
 
     if os.path.exists(dest_path):
         bak_path = os.path.join(env_path, f"v{mver}.bak")
-        logging.info(f"move {dest_path} to {bak_path}")
         shutil.move(dest_path, bak_path)
+        print(f"{color.YELLOW}move {dest_path} to {bak_path}{color.END}")
     shutil.copytree(src_path, dest_path)
 
 
@@ -169,9 +172,12 @@ def install_julia_linux(package_path,
         src_path = root
         dest_path = os.path.join(install_dir, f"julia-{mver}")
         if os.path.exists(dest_path):
-            logging.info(f"remove previous julia installation: {dest_path}")
             shutil.rmtree(dest_path)
+            msg = f"{color.YELLOW}remove previous Julia installation:"
+            msg += f" {dest_path}{color.END}"
+            print(msg)
         shutil.copytree(src_path, dest_path)
+        print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     os.chmod(dest_path, 0o755)  # issue 12
     bin_path = os.path.join(dest_path, "bin", "julia")
     make_symlinks(bin_path, symlink_dir, version)
@@ -195,9 +201,12 @@ def install_julia_mac(package_path,
         src_path = os.path.join(root, appname)
         dest_path = os.path.join(install_dir, appname)
         if os.path.exists(dest_path):
-            logging.info(f"remove previous julia installation: {dest_path}")
+            msg = f"{color.YELLOW}remove previous Julia installation:"
+            msg += f" {dest_path}{color.END}"
+            print(msg)
             shutil.rmtree(dest_path)
         shutil.copytree(src_path, dest_path)
+        print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     bin_path = os.path.join(dest_path,
                             "Contents", "Resources", "julia", "bin", "julia")
     make_symlinks(bin_path, symlink_dir, version)
@@ -216,8 +225,10 @@ def install_julia_windows(package_path,
     dest_path = os.path.join(install_dir,
                              f"julia-{f_minor_version(version)}")
     if os.path.exists(dest_path):
-        logging.info(f"remove previous julia installation: {dest_path}")
         shutil.rmtree(dest_path)
+        msg = f"{color.YELLOW}remove previous Julia installation:"
+        msg += f" {dest_path}{color.END}"
+        print(msg)
 
     # build system changes for windows after 1.4
     # https://github.com/JuliaLang/julia/blob/release-1.4/NEWS.md#build-system-changes
@@ -229,11 +240,18 @@ def install_julia_windows(package_path,
         subprocess.check_output([f'{package_path}',
                                  '/VERYSILENT',
                                  f'/DIR={dest_path}'])
+    print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     bin_path = os.path.join(dest_path, "bin", "julia.exe")
     make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
         copy_root_project(version)
     return True
+
+
+def hello_msg():
+    msg = f"{color.BOLD}JILL - Julia Installer 4 Linux"
+    msg += f" (MacOS, Windows and FreeBSD) -- Light{color.END}\n"
+    print(msg)
 
 
 def install_julia(version=None, *,
@@ -285,21 +303,24 @@ def install_julia(version=None, *,
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 
+    hello_msg()
     if system == "windows":
         install_dir = install_dir.replace("\\\\", "\\")
     if not confirm:
-        version_str = version if version else "latest release"
+        version_str = version if version else "latest stable release"
         question = "jill will:\n"
-        question += f"    1) install Julia {version_str} for {system}-{arch}"
-        question += f" into {install_dir}\n"
-        question += f"    2) make symlinks in {symlink_dir}\n"
-        question += f"    3) add {symlink_dir} to PATH if necessary\n"
+        question += f"  1) install Julia {version_str} for {system}-{arch}"
+        question += f" into {color.UNDERLINE}{install_dir}{color.END}\n"
+        question += f"  2) make symlinks in {color.UNDERLINE}{symlink_dir}{color.END}\n"
+        question += f"  3) add {color.UNDERLINE}{symlink_dir}{color.END}"
+        question += " to PATH if necessary\n"
         question += "Continue installation?"
         to_continue = query_yes_no(question)
         if not to_continue:
             return False
 
     overwrite = True if version == "latest" else False
+    print(f"{color.BOLD}----- Download Package -----{color.END}")
     package_path = download_package(version, system, arch,
                                     upstream=upstream,
                                     overwrite=overwrite)
@@ -317,15 +338,16 @@ def install_julia(version=None, *,
     else:
         raise ValueError(f"Unsupported system: {system}")
 
+    print(f"{color.BOLD}----- Install Julia -----{color.END}")
     installer(package_path, install_dir, symlink_dir, version, upgrade)
 
     if not keep_downloads:
-        logging.info("----- After Installation ----- ")
-        logging.info("remove downloaded files")
-        logging.info(f"remove {package_path}")
+        print(f"{color.BOLD}----- Post Installation -----{color.END}")
+        print("remove downloaded files...")
+        print(f"remove {package_path}")
         os.remove(package_path)
         gpg_signature_file = package_path + ".asc"
         if os.path.exists(gpg_signature_file):
-            logging.info(f"remove {gpg_signature_file}")
+            print(f"remove {gpg_signature_file}")
             os.remove(gpg_signature_file)
-    return True
+    print(f"{color.GREEN}Done!{color.END}")

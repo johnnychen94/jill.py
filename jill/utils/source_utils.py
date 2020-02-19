@@ -8,6 +8,7 @@ from .net_utils import query_ip
 from .net_utils import port_response_time
 from .net_utils import is_url_available
 from .filters import generate_info
+from .interactive_utils import color
 
 from itertools import chain, repeat
 from urllib.parse import urlparse
@@ -113,6 +114,17 @@ def read_registry():
     return registry
 
 
+def latency_string(latency):
+    latency *= 1000
+    if latency <= 100:
+        latency = f"{color.GREEN}{latency:.0f}{color.END}"
+    elif latency <= 200:
+        latency = f"{color.YELLOW}{latency:.0f}{color.END}"
+    else:
+        latency = f"{color.RED}{latency:.0f}{color.END}"
+    return latency
+
+
 class SourceRegistry:
     # share the same "full" registry across all instances
     class __SourceRegistry:
@@ -151,9 +163,16 @@ class SourceRegistry:
         return len(self.registry)
 
     def info(self):
-        msg = f"found {len(self)} release sources:\n"
-        for src in self.registry.keys():
-            msg += "  - " + str(src) + "\n"
+        msg = f"Found {len(self)} release sources:\n\n"
+        for name, resource in self.registry.items():
+            msg += f"- {color.BOLD}{name}{color.END}: {resource.name}\n"
+
+            hosts = set(resource.hosts)
+            latest_hosts = set(resource.latest_hosts)
+            diff = latest_hosts - hosts
+            for host in resource.hosts + list(diff):
+                latency = latency_string(resource.latencies[host])
+                msg += f"  * {host} ({latency} ms)\n"
         return msg
 
     def _get_urls(self, plain_version, system, architecture):

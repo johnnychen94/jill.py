@@ -59,9 +59,6 @@ Here's a list of slightly advanced usages that you may be interested in:
     - specific version: `jill install 1.3`
     - also copy root project from older julia environment: `jill install --upgrade`
     - don't need interactive promopt: `jill install --confirm`
-* check if there're new Julia versions:
-    - `jill update`
-    - add `--update` flag to `download` or `install` commands
 * find out all registered upstreams: `jill upstream`
 * check the not-so-elaborative documentation: `jill [COMMAND] -h` (e.g., `jill download -h`)
 

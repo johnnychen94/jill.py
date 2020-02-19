@@ -104,7 +104,7 @@ In the registry config file, a new mirror is a dictionary in the `upstream` fiel
 ### Placeholders
 
 Placeholders are used to register new mirrors. For example, the stable release url of
-the "Official" release server owned by [JuliaComputing](https://juliacomputing.com) is
+the "Official" release server provided by [Julialang.org](https://julialang.org/) is
 `"https://julialang-s3.julialang.org/bin/$sys/$arch/$minor_version/$filename"`
 
 There're several predefined placeholders for various systems and architectures:

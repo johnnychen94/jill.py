@@ -1,7 +1,7 @@
 {
     "upstream": {
         "Official": {
-            "name": "Julia Computing, Inc.",
+            "name": "Julialang.org",
             "urls": [
                 "https://julialang-s3.julialang.org/bin/$sys/$arch/$minor_version/$filename"
             ],

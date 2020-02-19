@@ -19,7 +19,7 @@ setuptools.setup(
     version='0.6.2',
     author="Johnny Chen",
     author_email="johnnychen94@hotmail.com",
-    description="Julia Installer 4 Linux(and MacOS) - Light",
+    description="JILL -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light"
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/johnnychen94/jill.py",

@@ -1,6 +1,7 @@
 JULIA_VERSIONS = "1" "1.0" "1.1" "1.2" "1.3" "1.4.0-rc1" "latest"
 unittest:
 	python -m unittest jill/tests/tests_filters.py
+	python -m unittest jill/tests/tests_versions.py
 
 download_install_test:
 	# check if upstream works

@@ -1,7 +1,11 @@
+"""
+This module provides tools to read information about upstream mirror, e.g.,
+if it has a specific julia download.
+"""
 from .defaults import default_scheme_ports
 from .defaults import SOURCE_CONFIGFILE
-
-from .net_utils import query_ip, port_response_time
+from .net_utils import query_ip
+from .net_utils import port_response_time
 from .net_utils import is_url_available
 from .filters import generate_info
 
@@ -12,9 +16,8 @@ from string import Template
 import requests
 import json
 import os
-import logging
 
-from typing import Optional, List
+from typing import List
 
 from requests.exceptions import RequestException
 

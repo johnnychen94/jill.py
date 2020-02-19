@@ -60,7 +60,8 @@ Here's a list of slightly advanced usages that you may be interested in:
     - add a private upstream: make a modifed copy of [public registry](jill/config/sources.json) at:
         * Linux, MacOS and FreeBSD: `~/.config/jill/sources.json`
         * Windows: `~/AppData/Local/julias/sources.json`
-* check the not-so-elaborative documentation: `jill [COMMAND] -h` (e.g., `jill download -h`)
+
+You can find a more verbose documentation using `jill [COMMAND] -h` (e.g., `jill download -h`)
 
 ## For who are interested in setting up a new release mirror
 

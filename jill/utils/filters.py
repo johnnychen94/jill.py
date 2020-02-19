@@ -1,3 +1,6 @@
+"""
+Module `filters` defines placeholders and how names are filtered.
+"""
 from .defaults import default_filename_template
 from .defaults import default_latest_filename_template
 
@@ -5,8 +8,6 @@ import re
 from string import Template
 
 from typing import Mapping, Optional, Callable
-
-__all__ = ["generate_info"]
 
 VERSION_REGEX = re.compile(
     r'v?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(-(?P<status>\w+))?')
@@ -123,7 +124,11 @@ class NameFilter:
         self.validate = validate
 
     def __call__(self, *args, **kwargs):
-        assert self.validate(*args, **kwargs)
+        if not self.validate(*args, **kwargs):
+            # TODO: add error handler
+            msg = f"validation fails:\n"
+            msg += f"  - args: {args}\n  - kwargs: {kwargs}"
+            raise ValueError(msg)
         # directly return rst if there're no special filter rules
         rst = self.f(*args, **kwargs)
         return self.rules.get(rst, rst)

@@ -1,3 +1,7 @@
+"""
+tools to detect current system and architecture so that things work with tools
+in the `filters` module
+"""
 import platform
 
 

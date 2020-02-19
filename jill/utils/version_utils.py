@@ -1,11 +1,13 @@
-from .source import SourceRegistry
 from .filters import is_valid_release
-from .filters import SPECIAL_VERSION_NAMES
 from .filters import is_system, is_architecture
 from .filters import VALID_SYSTEM, VALID_ARCHITECTURE
+from .filters import f_major_version, f_minor_version, f_patch_version
 from .defaults import RELEASE_CONFIGFILE
 from .sys_utils import current_system, current_architecture
-from semantic_version import Version
+
+from .source_utils import SourceRegistry
+
+import semantic_version
 
 from itertools import product
 import csv
@@ -15,7 +17,61 @@ import logging
 from typing import Tuple, List
 
 
+def is_full_version(version: str):
+    if version == "latest":
+        return True
+    try:
+        semantic_version.Version(version)
+    except ValueError:
+        return False
+    return True
+
+
+class Version(semantic_version.Version):
+    """
+    a thin wrapper on semantic_version.Version that
+
+    * accepts "latest"
+    * accepts partial version, e.g., `1`, `1.0`
+    """
+
+    def __init__(self, version_string):
+        if version_string == "latest":
+            version_string = "999.999.999"
+            self.major_version = "latest"
+            self.minor_version = "latest"
+            self.patch_version = "latest"
+        else:
+            version_string = Version.get_version(version_string)
+            self.major_version = f_major_version(version_string)
+            self.minor_version = f_minor_version(version_string)
+            self.patch_version = f_patch_version(version_string)
+        super(Version, self).__init__(version_string)
+
+    # TODO: we can actually wrap latest_version here
+    @staticmethod
+    def get_version(version: str):
+        """
+        add trailing 0s for incomplete version string
+        """
+        splited = str(version).split(".")
+        if len(splited) == 1:
+            major, minor, patch = splited[0], "0", "0"
+        elif len(splited) == 2:
+            major, minor = splited[0:2]
+            patch = "0"
+        elif len(splited) == 3:
+            major, minor, patch = splited[0:3]
+        else:
+            raise ValueError(f"Unrecognized version string {version}")
+        return ".".join([major, minor, patch])
+
+
 def read_releases(stable_only=False) -> List[Tuple]:
+    """
+    read release info from local storage
+    """
+    # TODO: read from versions.json (#16)
     cfg_file = RELEASE_CONFIGFILE
     if not os.path.isfile(cfg_file):
         return []
@@ -24,13 +80,9 @@ def read_releases(stable_only=False) -> List[Tuple]:
         for row in csv.reader(csvfile):
             releases.append(tuple(row))
     if stable_only:
-        releases = list(filter(lambda x: x[0] not in SPECIAL_VERSION_NAMES,
+        releases = list(filter(lambda x: x[0] != "latest",
                                releases))
     return releases
-
-
-def is_full_version(version):
-    return len(str(version).split("-")[0].split(".")) >= 3
 
 
 def is_version_released(version, system, architecture,
@@ -52,6 +104,7 @@ def is_version_released(version, system, architecture,
     rst = False
     if update:
         # query process is time-consuming
+        print(upstream)
         registry = SourceRegistry(upstream=upstream)
         rst = bool(registry.query_download_url(*item,
                                                timeout=timeout,
@@ -68,28 +121,9 @@ def is_version_released(version, system, architecture,
     return rst
 
 
-def get_version(version: str):
-    """
-    add tailing 0s for incomplete version string
-    """
-    if version in ["latest"]:
-        return Version("999.999.999")
-    splited = str(version).split(".")
-    if len(splited) == 1:
-        major, minor, patch = splited[0], "0", "0"
-    elif len(splited) == 2:
-        major, minor = splited[0:2]
-        patch = "0"
-    elif len(splited) == 3:
-        major, minor, patch = splited[0:3]
-    else:
-        raise ValueError(f"Unrecognized version string {version}")
-    return Version(".".join([major, minor, patch]))
-
-
 def _latest_version(next_version, version, system, architecture,
                     **kwargs) -> str:
-    last_version = get_version(version)
+    last_version = Version(version)
     if not is_version_released(last_version, system, architecture,
                                **kwargs):
         return str(last_version)
@@ -105,13 +139,17 @@ def _latest_version(next_version, version, system, architecture,
 
 def latest_patch_version(version, system, architecture, **kwargs) -> str:
     """
-    return the latest X.Y.z version starting from input version X.Y.Z
+    return the latest X.Y.z version starting from input version X.Y
     """
-    if not kwargs.get("update", False):
+    if version == "latest":
+        return version
+    # TODO: this is only useful for ARM, remove it (#16)
+    if (architecture in ["ARMv7", "ARMv8"] and
+            not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
                     if (item[2] == architecture and
-                        get_version(version).next_minor() > get_version(item[0]))]  # nopep8
+                        Version(version).next_minor() > Version(item[0]))]  # nopep8
         return versions[-1][0]
 
     return _latest_version(Version.next_patch,
@@ -121,13 +159,20 @@ def latest_patch_version(version, system, architecture, **kwargs) -> str:
 
 def latest_minor_version(version, system, architecture, **kwargs) -> str:
     """
-    return the latest X.y.z version starting from input version X.Y.Z
+    return the latest X.y.z version starting from input version X
     """
-    if not kwargs.get("update", False):
+    # if user passes a complete version here, then we don't need to query
+    # from local storage, just trying to download it would be fine.
+    if is_full_version(version):
+        return version
+
+    # TODO: this is only useful for ARM, remove it (#16)
+    if (architecture in ["ARMv7", "ARMv8"] and
+            not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
                     if (item[2] == architecture and
-                        get_version(version).next_major() > get_version(item[0]))]  # nopep8
+                        Version(version).next_major() > Version(item[0]))]  # nopep8
         return versions[-1][0]
 
     latest_minor = _latest_version(Version.next_minor,
@@ -140,13 +185,20 @@ def latest_minor_version(version, system, architecture, **kwargs) -> str:
 
 def latest_major_version(version, system, architecture, **kwargs) -> str:
     """
-    return the latest x.y.z version starting from input version X.Y.Z
+    return the latest x.y.z version
     """
-    if not kwargs.get("update", False):
+    # if user passes a complete version here, then we don't need to query
+    # from local storage, just trying to download it would be fine.
+    if is_full_version(version):
+        return version
+
+    # TODO: this is only useful for ARM, remove it (#16)
+    if (architecture in ["ARMv7", "ARMv8"] and
+            not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
                     if (item[2] == architecture and
-                        get_version("1.0.0").next_major() > get_version(item[0]))]  # nopep8
+                        Version("1.0.0").next_major() > Version(item[0]))]  # nopep8
         return versions[-1][0]
 
     latest_major = _latest_version(Version.next_major,
@@ -166,31 +218,25 @@ def latest_version(version, system, architecture, **kwargs) -> str:
     find the latest version for partial semantic version string. Directly
     return `version` if it's already a complete version string.
     """
-    if version in SPECIAL_VERSION_NAMES:
-        return version
+    # if user passes a complete version here, then we don't need to query
+    # from local storage, just trying to download it would be fine.
     if is_full_version(version):
         return version
 
-    f_list = [latest_minor_version,
-              latest_patch_version]
-    f_list.append(lambda ver, sys, arch, **kwargs: ver)  # type: ignore
-
-    if len(version) == 0:
+    if len(version.strip()) == 0:
+        # if empty string is provided, query the latest version since 1.0.0
         return latest_major_version('1', system, architecture, **kwargs)
     else:
+        # TODO: we can also support ^ and > semantics here
+        f_list = [latest_minor_version,
+                  latest_patch_version]
         idx = len(version.split('.')) - 1
         return f_list[idx](version, system, architecture, **kwargs)
 
 
-def _make_version(ver: str) -> Version:
-    if ver == "latest":
-        ver = "999.999.999"
-    return Version(ver)
-
-
 def sort_releases():
     releases = read_releases()
-    releases.sort(key=lambda x: (x[1], x[2], _make_version(x[0])))
+    releases.sort(key=lambda x: (x[1], x[2], Version(x[0])))
     with open(RELEASE_CONFIGFILE, 'w') as csvfile:
         for item in releases:
             writer = csv.writer(csvfile)

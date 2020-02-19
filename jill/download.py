@@ -1,9 +1,9 @@
-from .source import SourceRegistry
-from .version_utils import latest_version
-from .version_utils import is_version_released
-from .version_utils import is_full_version
-from .sys_utils import current_system, current_architecture
-from .gpg_utils import verify_gpg
+from .utils import SourceRegistry
+from .utils import latest_version
+from .utils import is_version_released
+from .utils import is_full_version
+from .utils import current_system, current_architecture
+from .utils import verify_gpg
 
 import wget
 import os
@@ -49,18 +49,52 @@ def download_package(version=None, sys=None, arch=None, *,
     """
     download julia release from nearest servers
 
+    `jill download [version] [sys] [arch]` downloads a Julia release
+    in your current folder. If you don't specify any argument, then
+    it will download the latest stable version for your current platform.
+
+    The syntax for `version` is:
+
+    * `stable`: latest stable Julia release. This is the _default_ option.
+    * `1`: latest `1.y.z` Julia release.
+    * `1.0`: latest `1.0.z` Julia release.
+    * `1.4.0-rc1`: as it is. This is the only way to install unstable release.
+    * `latest`/`nightly`: the nightly builds from source code.
+
+    For whatever reason, if you only want to download release from
+    a specific upstream (e.g., from JuliaComputing), then you can use
+    `--upstream` flag (e.g., `jill download --upstream Official`).
+
+    To see a full list of upstream servers, please use `jill upstream`.
+
+    If you're interested in downloading from an unregistered private
+    mirror, you can provide a `sources.json` file to CONFIG_PATH and use
+    `jill upstream` to check if your mirror is added. A config template
+    can be found at [1]. For how to make such mirror, please refer to
+    `jill mirror`.
+
+    CONFIG_PATH:
+      * windows: `~\\AppData\\Local\\julias\\sources.json`
+      * other: `~/.config/jill/sources.json`
+
+    [1]: https://github.com/johnnychen94/jill.py/blob/master/jill/config/sources.json # nopep8
+
     Arguments:
-      version: Option examples: 1, 1.2, 1.2.3, latest.
+      version:
+        The Julia version you want to install. See also `jill install`
       sys: Options are: "linux", "macos", "freebsd", "windows"
       arch: Options are: "i686", "x86_64", "ARMv7", "ARMv8"
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
-      outdir: where release is downloaded to. By default it's current folder.
-      overwrite: True to overwrite existing releases. By default it's False.
-      max_try: try `max_try` times before returning a False.
+      outdir:
+        where release is downloaded to. By default it's the current folder.
+      overwrite:
+        add `--overwrite` flag to overwrite existing releases.
+      max_try:
+        try `max_try` times before returning a False. The default value is 3.
     """
-    version = str(version) if version else ''
+    version = str(version) if version else ""
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 
@@ -124,7 +158,7 @@ def download_package(version=None, sys=None, arch=None, *,
         # that are verified by the operating system during installation
         return package_path
     elif system in ["linux", "freebsd"]:
-        # additional verification using GPG
+        # need additional verification using GPG
         if not package_path:
             return package_path
 
@@ -146,7 +180,7 @@ def download_package(version=None, sys=None, arch=None, *,
             return False
 
         # GPG-verified julia release path
-        logging.info(f"success to verify {release_str} downloads")
+        logging.info(f"success to verify {release_str}")
         return package_path
     else:
         raise ValueError(f"unsupported system {sys}")

@@ -1,27 +1,26 @@
-from .defaults import default_path_template
-from .defaults import default_filename_template
-from .defaults import default_latest_filename_template
+from .utils.defaults import default_path_template
+from .utils.defaults import default_filename_template
+from .utils.defaults import default_latest_filename_template
+from .utils import generate_info, is_valid_release
+from .utils import update_releases
+from .utils import read_releases
+from .utils import current_system
 from .download import download_package
-from .filters import generate_info, is_valid_release
-from .version_utils import update_releases
-from .version_utils import read_releases
-from .sys_utils import current_system
 
 from string import Template
-from itertools import product
-from semantic_version import Version
+
+import semantic_version
 
 import json
 import os
 import logging
 import time
 
-from typing import List
-
 
 class MirrorConfig:
     def __init__(self, configfile, outdir):
         if current_system() == "windows":
+            # Windows users (e.g., me) sometimes confuse the use of \\ and \
             outdir = outdir.replace("\\\\", "\\")
         self.configfile = os.path.abspath(os.path.expanduser(configfile))
         self.outdir = outdir
@@ -66,7 +65,8 @@ class MirrorConfig:
     def version(self):
         versions = list(set(map(lambda x: x[0],
                                 read_releases(stable_only=True))))
-        versions.sort(key=lambda ver: Version(ver))
+        # not using our extended Version
+        versions.sort(key=lambda ver: semantic_version.Version(ver))
         if self.require_latest:
             versions.append("latest")
         return versions
@@ -133,14 +133,24 @@ def mirror(outdir="julia_pkg", *,
            logfile="mirror.log",
            config="mirror.json"):
     """
-    periodly download/sync all Julia releases
+    Download/sync all Julia releases
+
+    If you want to modify the default mirror configuration, then provide
+    a `mirror.json` file and pass the path to `config`. By default it's at
+    the current directory. A template can be found at [1]
+
+    [1]: https://github.com/johnnychen94/jill.py/blob/master/mirror.example.json # nopep8
 
     Arguments:
-    outdir: default 'julia_pkg'.
-    period: the time between two sync operation. 0(default) to sync once.
-    upstream:
+      outdir: default 'julia_pkg'.
+      period: the time between two sync operation. 0(default) to sync once.
+      upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
+      config:
+        path to mirror config file
+      logfile:
+        path to mirror log file
     """
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     period = int(period)

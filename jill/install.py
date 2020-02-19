@@ -59,7 +59,7 @@ def get_exec_version(path):
 
 def check_installer(installer_path, ext):
     filename = os.path.basename(installer_path)
-    if os.path.splitext(filename)[1] != ext:
+    if not filename.endswith(ext):
         msg = f"The installer {filename} should be {ext} file"
         raise ValueError(msg)
 

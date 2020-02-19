@@ -1,16 +1,22 @@
-from jill.filters import f_major_version, f_vmajor_version, f_Vmajor_version
-from jill.filters import f_minor_version, f_vminor_version, f_Vminor_version
-from jill.filters import f_patch_version, f_vpatch_version, f_Vpatch_version
-from jill.filters import f_version
-from jill.filters import f_system, f_System, f_SYSTEM
-from jill.filters import f_sys, f_Sys, f_SYS
-from jill.filters import f_os, f_Os, f_OS
-from jill.filters import f_arch, f_Arch, f_ARCH
-from jill.filters import f_osarch, f_Osarch, f_OSarch
-from jill.filters import f_osbit
-from jill.filters import f_bit
-from jill.filters import f_extension
-from jill.filters import generate_info
+from jill.utils.filters import f_major_version
+from jill.utils.filters import f_minor_version
+from jill.utils.filters import f_patch_version
+from jill.utils.filters import f_vmajor_version
+from jill.utils.filters import f_vminor_version
+from jill.utils.filters import f_vpatch_version
+from jill.utils.filters import f_Vmajor_version
+from jill.utils.filters import f_Vminor_version
+from jill.utils.filters import f_Vpatch_version
+from jill.utils.filters import f_version
+from jill.utils.filters import f_system, f_System, f_SYSTEM
+from jill.utils.filters import f_sys, f_Sys, f_SYS
+from jill.utils.filters import f_os, f_Os, f_OS
+from jill.utils.filters import f_arch, f_Arch, f_ARCH
+from jill.utils.filters import f_osarch, f_Osarch, f_OSarch
+from jill.utils.filters import f_osbit
+from jill.utils.filters import f_bit
+from jill.utils.filters import f_extension
+from jill.utils.filters import generate_info
 import unittest
 
 

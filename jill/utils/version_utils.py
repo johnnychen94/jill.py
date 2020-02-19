@@ -29,7 +29,10 @@ def is_full_version(version: str):
 
 class Version(semantic_version.Version):
     """
-    a thin wrapper on semantic_version.Version that treats `latest` specially.
+    a thin wrapper on semantic_version.Version that
+
+    * accepts "latest"
+    * accepts partial version, e.g., `1`, `1.0`
     """
 
     def __init__(self, version_string):
@@ -45,6 +48,7 @@ class Version(semantic_version.Version):
             self.patch_version = f_patch_version(version_string)
         super(Version, self).__init__(version_string)
 
+    # TODO: we can actually wrap latest_version here
     @staticmethod
     def get_version(version: str):
         """
@@ -100,6 +104,7 @@ def is_version_released(version, system, architecture,
     rst = False
     if update:
         # query process is time-consuming
+        print(upstream)
         registry = SourceRegistry(upstream=upstream)
         rst = bool(registry.query_download_url(*item,
                                                timeout=timeout,
@@ -136,8 +141,11 @@ def latest_patch_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest X.Y.z version starting from input version X.Y
     """
+    if version == "latest":
+        return version
     # TODO: this is only useful for ARM, remove it (#16)
-    if not kwargs.get("update", False):
+    if (architecture in ["armv7l", "aarch64"] and
+            not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
                     if (item[2] == architecture and
@@ -153,8 +161,14 @@ def latest_minor_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest X.y.z version starting from input version X
     """
+    # if user passes a complete version here, then we don't need to query
+    # from local storage, just trying to download it would be fine.
+    if is_full_version(version):
+        return version
+
     # TODO: this is only useful for ARM, remove it (#16)
-    if not kwargs.get("update", False):
+    if (architecture in ["armv7l", "aarch64"] and
+            not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
                     if (item[2] == architecture and
@@ -173,8 +187,14 @@ def latest_major_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest x.y.z version
     """
+    # if user passes a complete version here, then we don't need to query
+    # from local storage, just trying to download it would be fine.
+    if is_full_version(version):
+        return version
+
     # TODO: this is only useful for ARM, remove it (#16)
-    if not kwargs.get("update", False):
+    if (architecture in ["armv7l", "aarch64"] and
+            not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
                     if (item[2] == architecture and

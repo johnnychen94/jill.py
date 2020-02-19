@@ -7,6 +7,7 @@ import os
 
 
 def _verify_gpg(gpg: GPG, datafile, signature_file):
+    # this requires gnupg installed in the system
     with open(signature_file, "rb") as fh:
         return gpg.verify_file(fh, data_filename=datafile)
 

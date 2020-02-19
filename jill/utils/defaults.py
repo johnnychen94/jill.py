@@ -1,7 +1,10 @@
 from .sys_utils import current_system
 import os
 
-PKG_ROOT = os.path.abspath(os.path.dirname(__file__))
+# this file isn't really a python script
+# just some configuration constants
+PKG_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                        ".."))
 
 
 def get_configfiles(filename):

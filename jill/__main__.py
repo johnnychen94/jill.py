@@ -1,8 +1,8 @@
 from .download import download_package
 from .install import install_julia
 from .mirror import mirror
-from .version_utils import update_releases
-from .source import show_upstream
+from .utils import update_releases
+from .utils import show_upstream
 import fire
 import logging
 import os

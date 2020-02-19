@@ -56,7 +56,8 @@
     - 从局域网私有源下载：创建一个类似的[配置文件](jill/config/sources.json)并存放在：
         * Linux, MacOS and FreeBSD: `~/.config/jill/sources.json`
         * Windows: `~/AppData/Local/julias/sources.json`
-* 不那么详尽的说明文档: `jill [COMMAND] -h` (例如`jill install -h`)
+
+更多的参数及其作用请查看帮助文档: `jill [COMMAND] -h` (例如`jill install -h`)
 
 ## 镜像源的搭建
 

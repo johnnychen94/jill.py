@@ -1,8 +1,9 @@
+from tempfile import mkdtemp
 import os
 import sys
 import subprocess
 import shutil
-from tempfile import mkdtemp
+import time
 
 
 class Mounter:
@@ -16,7 +17,7 @@ class Mounter:
 class TarMounter(Mounter):
     def __enter__(self):
         self.tempdir = mkdtemp()
-        # TODO: support .tar
+        # this only supports compressed tarball: *.tar.gz and *.tgz
         args = ["tar", "-zxf", self.src_path, "-C", self.tempdir]
         extra_args = ["--strip-components", "1"]
 

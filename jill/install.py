@@ -1,10 +1,11 @@
-from .filters import f_major_version, f_minor_version, f_patch_version
+from .utils.filters import f_major_version, f_minor_version, f_patch_version
+from .utils import query_yes_no
+from .utils import current_architecture, current_system
+from .utils import latest_version
+from .utils import DmgMounter, TarMounter
+from .utils import Version
 from .download import download_package
-from .interactive_utils import query_yes_no
-from .sys_utils import current_architecture, current_system
-from .version_utils import latest_version
-from .mount_utils import DmgMounter, TarMounter
-from semantic_version import Version
+
 import os
 import getpass
 import shutil
@@ -54,6 +55,13 @@ def get_exec_version(path):
         logging.warn(e)
         version = "0.0.1"
     return version
+
+
+def check_installer(installer_path, ext):
+    filename = os.path.basename(installer_path)
+    if os.path.splitext(filename)[1] != ext:
+        msg = f"The installer {filename} should be {ext} file"
+        raise ValueError(msg)
 
 
 def last_julia_version(version=None):
@@ -114,13 +122,13 @@ def make_symlinks(src_bin, symlink_dir, version):
         # symlink rules:
         # 1. always symlink latest
         # 2. only make new symlink if it's a newer version
-        if version != "latest":
-            if os.path.exists(linkpath) or os.path.islink(linkpath):
-                old_ver = get_exec_version(linkpath)
-                if Version(old_ver) > Version(version):
-                    continue
-                logging.info(f"removing previous symlink {linkname}")
-                os.remove(linkpath)
+        if os.path.exists(linkpath) or os.path.islink(linkpath):
+            old_ver = get_exec_version(linkpath)
+            if Version(old_ver) > Version(version):
+                # it's always false if version == "latest"
+                continue
+            logging.info(f"removing previous symlink {linkname}")
+            os.remove(linkpath)
         logging.info(f"make symlink {linkpath}")
         if current_system() == "windows":
             with open(linkpath, 'w') as f:
@@ -154,6 +162,8 @@ def install_julia_linux(package_path,
                         symlink_dir,
                         version,
                         upgrade):
+    check_installer(package_path, ".tar.gz")
+
     mver = f_minor_version(version)
     with TarMounter(package_path) as root:
         src_path = root
@@ -175,7 +185,8 @@ def install_julia_mac(package_path,
                       symlink_dir,
                       version,
                       upgrade):
-    assert os.path.splitext(package_path)[1] == ".dmg"
+    check_installer(package_path, ".dmg")
+
     with DmgMounter(package_path) as root:
         # mounted image contents:
         #   ['.VolumeIcon.icns', 'Applications', 'Julia-1.3.app']
@@ -200,7 +211,7 @@ def install_julia_windows(package_path,
                           symlink_dir,
                           version,
                           upgrade):
-    assert os.path.splitext(package_path)[1] == ".exe"
+    check_installer(package_path, ".exe")
 
     dest_path = os.path.join(install_dir,
                              f"julia-{f_minor_version(version)}")
@@ -208,11 +219,10 @@ def install_julia_windows(package_path,
         logging.info(f"remove previous julia installation: {dest_path}")
         shutil.rmtree(dest_path)
 
-    if version == "latest":
-        ver = "999.999.999"
-    else:
-        ver = version
-    if Version(ver).next_patch() < Version("1.4.0"):
+    # build system changes for windows after 1.4
+    # https://github.com/JuliaLang/julia/blob/release-1.4/NEWS.md#build-system-changes
+    if Version(version).next_patch() < Version("1.4.0"):
+        # it's always false if version == "latest"
         subprocess.check_output([f'{package_path}',
                                  '/S', f'/D={dest_path}'])
     else:
@@ -234,16 +244,39 @@ def install_julia(version=None, *,
                   keep_downloads=False,
                   confirm=False):
     """
-    Install julia for Linux and MacOS
+    Install the Julia programming language for your current system
+
+    `jill install [version]` would satisfy most of your use cases, try it first
+    and then read description of other arguments. `version` is optional, valid
+    version syntax for it is:
+
+    * `stable`: latest stable Julia release. This is the _default_ option.
+    * `1`: latest `1.y.z` Julia release.
+    * `1.0`: latest `1.0.z` Julia release.
+    * `1.4.0-rc1`: as it is. This is the only way to install unstable release.
+    * `latest`/`nightly`: the nightly builds from source code.
+
+    For Linux/FreeBSD systems, if you run this command with `root` account,
+    then it will install Julia system-widely.
+
+    To download from a private mirror, please check `jill download -h`.
 
     Arguments:
-      version: Option examples: 1, 1.2, 1.2.3, latest.
+      version:
+        The Julia version you want to install.
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
-      upgrade: True to also copy the root environment from older julia version.
-      keep_downloads: True to not remove downloaded releases.
-      confirm: add `--confirm` to skip interactive prompt.
+      upgrade:
+        add `--upgrade` flag also copy the root environment from an older
+        Julia version.
+      keep_downloads:
+        add `--keep_downloads` flag to not remove downloaded releases.
+      confirm: add `--confirm` flag to skip interactive prompt.
+      install_dir:
+        where you want julia packages installed.
+      symlink_dir:
+        where you want symlinks(e.g., `julia`, `julia-1`) placed.
     """
     install_dir = install_dir if install_dir else default_install_dir()
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
@@ -277,6 +310,7 @@ def install_julia(version=None, *,
     if system == "macos":
         installer = install_julia_mac
     elif system in ["linux", "freebsd"]:
+        # technically it's tarball installer
         installer = install_julia_linux
     elif system == "windows":
         installer = install_julia_windows
@@ -286,6 +320,7 @@ def install_julia(version=None, *,
     installer(package_path, install_dir, symlink_dir, version, upgrade)
 
     if not keep_downloads:
+        logging.info("----- After Installation ----- ")
         logging.info("remove downloaded files")
         logging.info(f"remove {package_path}")
         os.remove(package_path)

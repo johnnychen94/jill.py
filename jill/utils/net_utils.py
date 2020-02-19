@@ -1,9 +1,9 @@
 from urllib.parse import urlparse
+from ipaddress import ip_address
+
 import socket
 import requests
 import time
-from ipaddress import ip_address
-
 import logging
 
 from requests.exceptions import RequestException

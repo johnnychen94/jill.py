@@ -89,6 +89,12 @@ jobs:
           python -m jill install 1.0 --confirm --upstream Official
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia-1.0 -e 'using InteractiveUtils; versioninfo()'
+      - name: test nightly
+        run: |
+          python -m jill install latest --confirm --upstream Official
+          & julia -e 'using InteractiveUtils; versioninfo()'
+          & julia-1.0 -e 'using InteractiveUtils; versioninfo()'
+          & julia-latest -e 'using InteractiveUtils; versioninfo()'
 
   arm_job:
     runs-on: ubuntu-18.04
@@ -117,3 +123,7 @@ jobs:
           python3 -m jill install 1.0 --confirm --upstream Official
           julia -e 'using InteractiveUtils; versioninfo()'
           julia-1.0 -e 'using InteractiveUtils; versioninfo()'
+          python3 -m jill install nightly --confirm --upstream Official
+          julia -e 'using InteractiveUtils; versioninfo()'
+          julia-1.0 -e 'using InteractiveUtils; versioninfo()'
+          julia-latest -e 'using InteractiveUtils; versioninfo()'

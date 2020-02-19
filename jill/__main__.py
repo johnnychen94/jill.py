@@ -12,13 +12,6 @@ def main():
     logging.basicConfig(filename=os.devnull,
                         level=logging.DEBUG)
 
-    logging.basicConfig(level=logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    format = logging.Formatter('%(message)s')
-    ch.setFormatter(format)
-    logging.getLogger('').addHandler(ch)
-
     fire.Fire({
         'download': download_package,
         'install': install_julia,

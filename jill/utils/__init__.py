@@ -2,6 +2,7 @@ from .filters import generate_info
 from .filters import is_valid_release
 from .gpg_utils import verify_gpg
 from .interactive_utils import query_yes_no
+from .interactive_utils import color
 from .mount_utils import TarMounter, DmgMounter
 from .sys_utils import current_architecture, current_system
 from .version_utils import Version

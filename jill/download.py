@@ -4,6 +4,7 @@ from .utils import is_version_released
 from .utils import is_full_version
 from .utils import current_system, current_architecture
 from .utils import verify_gpg
+from .utils import color
 
 import wget
 import os
@@ -26,12 +27,17 @@ def _download(url: str, out: str):
     with tempfile.TemporaryDirectory() as temp_outdir:
         temp_outpath = os.path.join(temp_outdir, outname)
         try:
-            logging.info(f"downloading source: {url}")
+            msg = f"downloading from {url}"
+            logging.info(msg)
+            print(msg)
             wget.download(url, temp_outpath)
             print()  # for format usage
-            logging.info(f"finished downloading {outname}")
+            msg = f"finished downloading {outname}"
+            print(f"{color.GREEN}{msg}{color.END}")
         except (URLError, ConnectionError) as e:
-            logging.warning(f"failed to download {outname}")
+            msg = f"failed to download {outname}"
+            logging.info(msg)
+            print(f"{color.RED}{msg}{color.END}")
             return False
 
         if not os.path.isdir(outdir):
@@ -109,6 +115,7 @@ def download_package(version=None, sys=None, arch=None, *,
         # TODO: fix update functionality for it in version_utils
         msg = f"update is disabled for tier-2 support {architecture}"
         logging.warning(msg)
+        print(f"{color.YELLOW}{msg}{color.END}")
         update = False
     else:
         update = True
@@ -120,15 +127,19 @@ def download_package(version=None, sys=None, arch=None, *,
         if not rst:
             msg = f"failed to find Julia release for {release_str}."
             logging.info(msg)
+            print(f"{color.RED}{msg}{color.END}")
             return False
 
-    logging.info(f"download Julia release for {release_str}")
+    msg = f"downloading Julia release for {release_str}"
+    logging.info(msg)
+    print(msg)
     registry = SourceRegistry(upstream=upstream)
     url = registry.query_download_url(version, system, architecture,
                                       max_try=max_try)
     if not url:
         msg = f"failed to find available upstream for {release_str}"
         logging.warning(msg)
+        print(f"{color.RED}{msg}{color.END}")
         return None
 
     outdir = outdir if outdir else '.'
@@ -148,7 +159,9 @@ def download_package(version=None, sys=None, arch=None, *,
         if os.path.isfile(outpath) and not overwrite:
             skip_download = True
     if skip_download:
-        logging.info(f"{outname} already exists, skip downloading")
+        msg = f"{outname} already exists, skip downloading"
+        logging.info(msg)
+        print(f"{color.GREEN}{msg}{color.END}")
         return outpath
 
     package_path = _download(url, outpath)
@@ -165,22 +178,26 @@ def download_package(version=None, sys=None, arch=None, *,
         # a mirror should provides both *.tar.gz and *.tar.gz.asc
         gpg_signature_path = _download(url+".asc", outpath+".asc")
         if not gpg_signature_path:
-            msg = f"failed to download GPG signature for {release_str}"
-            logging.warning(msg)
-            logging.info(f"remove untrusted/broken file")
+            msg = f"failed to download GPG signature for {release_str}\n"
+            msg += "remove untrusted/broken file"
+            logging.info(msg)
+            print(f"{color.RED}{msg}{color.END}")
             os.remove(package_path)
             return False
 
         if not verify_gpg(package_path, gpg_signature_path):
-            logging.warning(f"failed to verify {release_str} downloads")
-            msg = f"remove untrusted/broken files"
+            msg = f"failed to verify {release_str} downloads\n"
+            msg += "remove untrusted/broken files"
             logging.info(msg)
+            print(f"{color.RED}{msg}{color.END}")
             os.remove(package_path)
             os.remove(gpg_signature_path)
             return False
 
         # GPG-verified julia release path
-        logging.info(f"success to verify {release_str}")
+        msg = f"verifying {release_str} succeed"
+        logging.info(msg)
+        print(f"{color.GREEN}{msg}{color.END}")
         return package_path
     else:
         raise ValueError(f"unsupported system {sys}")

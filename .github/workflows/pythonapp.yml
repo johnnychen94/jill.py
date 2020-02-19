@@ -122,8 +122,5 @@ jobs:
           julia -e 'using InteractiveUtils; versioninfo()'
           python3 -m jill install 1.0 --confirm --upstream Official
           julia -e 'using InteractiveUtils; versioninfo()'
+          julia-1 -e 'using InteractiveUtils; versioninfo()'
           julia-1.0 -e 'using InteractiveUtils; versioninfo()'
-          python3 -m jill install nightly --confirm --upstream Official
-          julia -e 'using InteractiveUtils; versioninfo()'
-          julia-1.0 -e 'using InteractiveUtils; versioninfo()'
-          julia-latest -e 'using InteractiveUtils; versioninfo()'

@@ -86,7 +86,14 @@ def make_symlinks(src_bin, symlink_dir, version):
             subprocess.run(["powershell.exe",
                             "setx", "PATH", f'"$env:PATH;{symlink_dir}"'])
         else:
-            with open(os.path.expanduser("~/.bashrc"), "a") as file:
+            msg = "~/.bashrc will be modified"
+            msg += ", if you're not using BASH, then you'll need manually"
+            msg += f" add {symlink_dir} to your PATH\n"
+            logging.info(msg)
+
+            rc_file = os.path.expanduser("~/.bashrc")
+            logging.info(f"{rc_file} is modified")
+            with open(rc_file, "a") as file:
                 file.writelines("\n# added by jill\n")
                 file.writelines(f"export PATH={symlink_dir}:$PATH\n")
         logging.info(f"you need to restart your current shell to update PATH")

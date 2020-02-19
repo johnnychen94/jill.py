@@ -15,3 +15,6 @@ build_package_test_task:
   build_package_test_script:
     - python3 -m jill install --confirm --upstream Official
     - julia -e 'using InteractiveUtils; versioninfo()'
+    - python3 -m jill install 1.0 --confirm --upstream Official
+    - julia -e 'using InteractiveUtils; versioninfo()'
+    - julia-1 -e 'using InteractiveUtils; versioninfo()'

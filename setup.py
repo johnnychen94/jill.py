@@ -16,7 +16,7 @@ with io_open(requirements, mode='r') as fd:
 
 setuptools.setup(
     name='jill',
-    version='0.6.1',
+    version='0.6.2',
     author="Johnny Chen",
     author_email="johnnychen94@hotmail.com",
     description="Julia Installer 4 Linux(and MacOS) - Light",

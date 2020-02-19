@@ -104,16 +104,18 @@ def is_version_released(version, system, architecture,
     rst = False
     if update:
         # query process is time-consuming
-        print(upstream)
         registry = SourceRegistry(upstream=upstream)
         rst = bool(registry.query_download_url(*item,
                                                timeout=timeout,
                                                max_try=1))
         if rst:
             logging.info(f"get new release {item}")
-            with open(RELEASE_CONFIGFILE, 'a') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(item)
+            try:
+                with open(RELEASE_CONFIGFILE, 'a') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow(item)
+            except PermissionError:
+                logging.debug(f"unable to modify {RELEASE_CONFIGFILE}")
         else:
             logging.debug(f"queried {item} = {rst}")
         # only update cache in update mode
@@ -237,10 +239,13 @@ def latest_version(version, system, architecture, **kwargs) -> str:
 def sort_releases():
     releases = read_releases()
     releases.sort(key=lambda x: (x[1], x[2], Version(x[0])))
-    with open(RELEASE_CONFIGFILE, 'w') as csvfile:
-        for item in releases:
-            writer = csv.writer(csvfile)
-            writer.writerow(item)
+    try:
+        with open(RELEASE_CONFIGFILE, 'w') as csvfile:
+            for item in releases:
+                writer = csv.writer(csvfile)
+                writer.writerow(item)
+    except PermissionError:
+        logging.debug(f"unable to modify {RELEASE_CONFIGFILE}")
 
 
 def update_releases(system=None, architecture=None, *,

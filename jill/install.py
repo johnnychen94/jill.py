@@ -216,7 +216,6 @@ def install_julia_windows(package_path,
 def install_julia(version=None, *,
                   install_dir=None,
                   symlink_dir=None,
-                  update=False,
                   upgrade=False,
                   upstream=None,
                   keep_downloads=False,
@@ -226,13 +225,9 @@ def install_julia(version=None, *,
 
     Arguments:
       version: Option examples: 1, 1.2, 1.2.3, latest.
-      By default it's the latest stable release. See also `jill update`.
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
-      update:
-        add `--update` to update release info for incomplete version string
-        (e.g., `1.0`) before downloading.
       upgrade: True to also copy the root environment from older julia version.
       keep_downloads: True to not remove downloaded releases.
       confirm: add `--confirm` to skip interactive prompt.
@@ -261,7 +256,6 @@ def install_julia(version=None, *,
     overwrite = True if version == "latest" else False
     package_path = download_package(version, system, arch,
                                     upstream=upstream,
-                                    update=update,
                                     overwrite=overwrite)
     version = latest_version(version, system, arch)
     if not package_path:

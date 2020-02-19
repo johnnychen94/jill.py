@@ -45,14 +45,12 @@ def download_package(version=None, sys=None, arch=None, *,
                      upstream=None,
                      outdir=None,
                      overwrite=False,
-                     update=False,
                      max_try=3):
     """
     download julia release from nearest servers
 
     Arguments:
       version: Option examples: 1, 1.2, 1.2.3, latest.
-      By default it's the latest stable release. See also `jill update`
       sys: Options are: "linux", "macos", "freebsd", "windows"
       arch: Options are: "i686", "x86_64", "ARMv7", "ARMv8"
       upstream:
@@ -60,9 +58,6 @@ def download_package(version=None, sys=None, arch=None, *,
         if you want to download from JuliaComputing's s3 buckets.
       outdir: where release is downloaded to. By default it's current folder.
       overwrite: True to overwrite existing releases. By default it's False.
-      update:
-        add `--update` to update release info for incomplete version string
-        (e.g., `1.0`) before downloading.
       max_try: try `max_try` times before returning a False.
     """
     version = str(version) if version else ''
@@ -71,11 +66,6 @@ def download_package(version=None, sys=None, arch=None, *,
 
     system = sys if sys else current_system()
     architecture = arch if arch else current_architecture()
-    if architecture in ["ARMv7", "ARMv8"] and update:
-        # TODO: fix update functionality for it in version_utils
-        msg = f"update is disabled for tier-2 support {architecture}"
-        logging.warning(msg)
-        update = False
 
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)
@@ -83,19 +73,11 @@ def download_package(version=None, sys=None, arch=None, *,
 
     release_str = f"{version}-{system}-{architecture}"
     if do_release_check:
-        if not (update or is_version_released(version, system, architecture)):
-            msg = f"{release_str} seems not to be released yet."
-            msg += " you can run 'jill update' first " + \
-                   " or add an '--update' flag to current command."
+        rst = is_version_released(version, system, architecture)
+        if not rst:
+            msg = f"failed to find Julia release for {release_str}."
             logging.info(msg)
             return False
-        else:
-            rst = is_version_released(version, system, architecture,
-                                      update=True)
-            if not rst:
-                msg = f"failed to find Julia release for {release_str}."
-                logging.info(msg)
-                return False
 
     logging.info(f"download Julia release for {release_str}")
     registry = SourceRegistry(upstream=upstream)

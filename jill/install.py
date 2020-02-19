@@ -1,5 +1,4 @@
 from .filters import f_major_version, f_minor_version, f_patch_version
-from .filters import SPECIAL_VERSION_NAMES
 from .download import download_package
 from .interactive_utils import query_yes_no
 from .sys_utils import current_architecture, current_system
@@ -99,7 +98,7 @@ def make_symlinks(src_bin, symlink_dir, version):
 
     os.makedirs(symlink_dir, exist_ok=True)
 
-    if version in SPECIAL_VERSION_NAMES:
+    if version == "latest":
         # issue 11: don't symlink to julia
         link_list = [f"julia-{f_major_version(version)}"]
     else:
@@ -112,12 +111,16 @@ def make_symlinks(src_bin, symlink_dir, version):
         linkpath = os.path.join(symlink_dir, linkname)
         if current_system() == "windows":
             linkpath += ".cmd"
-        if os.path.exists(linkpath) or os.path.islink(linkpath):
-            old_ver = get_exec_version(linkpath)
-            if version != "latest" and Version(old_ver) > Version(version):
-                continue
-            logging.info(f"removing previous symlink {linkname}")
-            os.remove(linkpath)
+        # symlink rules:
+        # 1. always symlink latest
+        # 2. only make new symlink if it's a newer version
+        if version != "latest":
+            if os.path.exists(linkpath) or os.path.islink(linkpath):
+                old_ver = get_exec_version(linkpath)
+                if Version(old_ver) > Version(version):
+                    continue
+                logging.info(f"removing previous symlink {linkname}")
+                os.remove(linkpath)
         logging.info(f"make symlink {linkpath}")
         if current_system() == "windows":
             with open(linkpath, 'w') as f:
@@ -205,7 +208,11 @@ def install_julia_windows(package_path,
         logging.info(f"remove previous julia installation: {dest_path}")
         shutil.rmtree(dest_path)
 
-    if Version(version).next_patch() < Version("1.4.0"):
+    if version == "latest":
+        ver = "999.999.999"
+    else:
+        ver = version
+    if Version(ver).next_patch() < Version("1.4.0"):
         subprocess.check_output([f'{package_path}',
                                  '/S', f'/D={dest_path}'])
     else:

@@ -1,5 +1,8 @@
 # JILL.py
 
+![](https://img.shields.io/badge/system-Windows%7CMacOS%7CLinux%7CFreeBSD-yellowgreen)
+![](https://img.shields.io/badge/arch-i686%7Cx86__64%7CARMv7%7CARMv8-yellowgreen)
+
 [![py version](https://img.shields.io/pypi/pyversions/jill.svg?logo=python&logoColor=white)](https://pypi.org/project/jill)
 [![version](https://img.shields.io/pypi/v/jill.svg)](https://github.com/johnnychen94/jill.py/releases)
 [![Actions Status](https://github.com/johnnychen94/jill.py/workflows/Unit%20test/badge.svg
@@ -7,31 +10,31 @@
 [![codecov](https://codecov.io/gh/johnnychen94/jill.py/branch/master/graph/badge.svg)](https://codecov.io/gh/johnnychen94/jill.py)
 [![release-date](https://img.shields.io/github/release-date/johnnychen94/jill.py)](https://github.com/johnnychen94/jill.py/releases)
 
-The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) - Julia Installer 4 Linux (and MacOS) - Light
+The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light
 
 ## Features
 
-* download *latest* Julia release from *nearest* mirror server. Check [sources](jill/config/sources.json) for the list of all registered mirrors.
-* install julia for Linux, MacOS and Windows (including nightly build: `latest`)
-* manage multiple julia releases
-* easily set up a new release mirror
+_let's make a simple and stupid julia installer_ [中文说明](README_zh.md)
+
+* download *latest* Julia release from *nearest* mirror server.
+* across multiple platforms.
+* manage multiple julia releases.
 
 ## Installation
 
 First you'll need to install `jill` using pip: `pip install jill --user -U`
 
-Note that `Python >= 3.6` is required.
+Note that `Python >= 3.6` is required. For docker images, you also need to make sure `wget` and `gnupg` are installed.
 
 ## Usage examples for most users
 
 TL;DR `jill install [version]` covers most of your need.
 
-`jill install` does the following things:
+When you type `jill install`, it does the following things:
 
 1. query latest stable release, it's `1.3.1` at the time of writing.
 2. download, verify and install julia `1.3.1`
-3. make symlinks: `julia`, `julia-1`, `julia-1.3` and `julia-1.3.1`
-4. remove downloaded files
+3. make alias: `julia-1`, `julia-1.3` and `julia-1.3.1`
 
 Valid `version` syntax:
 
@@ -43,23 +46,20 @@ Valid `version` syntax:
 
 Here's a list of slightly advanced usages that you may be interested in:
 
-* download:
+* download only:
     - latest stable release for current system: `jill download`
-    - latest `1.y` version: `jill download 1`
-    - latest `1.3.z` version: `jill download 1.3`
-    - temporary releases: `jill download 1.4.0-rc1`
-    - from specific upstream: `jill download --upstream Official`
-    - specific release version: `jill download --version 1.3.0`
-    - specific system: `jill download --sys freebsd`
-    - specific architecture: `jill download --arch i686`
+    - specific system: `jill download --sys freebsd --arch x86_64`
     - download Julia to specific dir: `jill download --outdir another/dir`
 * install Julia for current system:
-    - system-wide for root: `sudo jill install` (make symlink in `/usr/bin`)
-    - only for current non-root user: `jill install` (make symlink in `~/.local/bin`)
-    - specific version: `jill install 1.3`
-    - also copy root project from older julia environment: `jill install --upgrade`
+    - (linux only) system-wide for root: `sudo jill install`
+    - upgrade from older julia version: `jill install --upgrade`
     - don't need interactive promopt: `jill install --confirm`
-* find out all registered upstreams: `jill upstream`
+* upstream:
+    - from specific upstream: `jill download --upstream Official`
+    - find out all registered upstreams: `jill upstream`
+    - add a private upstream: make a copy of [public registry](jill/config/sources.json) at:
+        * Linux, MacOS and FreeBSD: `~/.config/jill/sources.json`
+        * Windows: `~/AppData/Local/julias/sources.json`
 * check the not-so-elaborative documentation: `jill [COMMAND] -h` (e.g., `jill download -h`)
 
 ## For who are interested in setting up a new release mirror

@@ -87,12 +87,11 @@ def make_symlinks(src_bin, symlink_dir, version):
                             "setx", "PATH", f'"$env:PATH;{symlink_dir}"'])
         else:
             msg = "~/.bashrc will be modified"
-            msg += ", if you're not using BASH, then you'll need manually"
-            msg += f" add {symlink_dir} to your PATH\n"
+            msg += "\nif you're not using BASH, then you'll need manually"
+            msg += f" add {symlink_dir} to your PATH"
             logging.info(msg)
 
             rc_file = os.path.expanduser("~/.bashrc")
-            logging.info(f"{rc_file} is modified")
             with open(rc_file, "a") as file:
                 file.writelines("\n# added by jill\n")
                 file.writelines(f"export PATH={symlink_dir}:$PATH\n")

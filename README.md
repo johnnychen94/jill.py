@@ -1,6 +1,6 @@
 # JILL.py
 
-![](https://img.shields.io/badge/system-Windows%7CMacOS%7CLinux%7CFreeBSD-yellowgreen)
+![](https://img.shields.io/badge/system-Windows%7CmacOS%7CLinux%7CFreeBSD-yellowgreen)
 ![](https://img.shields.io/badge/arch-i686%7Cx86__64%7CARMv7%7CARMv8-yellowgreen)
 
 [![py version](https://img.shields.io/pypi/pyversions/jill.svg?logo=python&logoColor=white)](https://pypi.org/project/jill)
@@ -24,7 +24,7 @@ _let's make a simple and stupid julia installer_ [中文说明](README_zh.md)
 
 First you'll need to install `jill` using pip: `pip install jill --user -U`
 
-Note that `Python >= 3.6` is required. For docker images, you also need to make sure `wget` and `gnupg` are installed.
+Note that `Python >= 3.6` is required. For base docker images, you also need to make sure `wget` and `gnupg` are installed.
 
 ## Usage examples for most users
 
@@ -55,9 +55,9 @@ Here's a list of slightly advanced usages that you may be interested in:
     - upgrade from older julia version: `jill install --upgrade`
     - don't need interactive promopt: `jill install --confirm`
 * upstream:
-    - from specific upstream: `jill download --upstream Official`
+    - from specific upstream: `jill install --upstream Official`
     - find out all registered upstreams: `jill upstream`
-    - add a private upstream: make a copy of [public registry](jill/config/sources.json) at:
+    - add a private upstream: make a modifed copy of [public registry](jill/config/sources.json) at:
         * Linux, MacOS and FreeBSD: `~/.config/jill/sources.json`
         * Windows: `~/AppData/Local/julias/sources.json`
 * check the not-so-elaborative documentation: `jill [COMMAND] -h` (e.g., `jill download -h`)

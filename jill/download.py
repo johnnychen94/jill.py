@@ -71,9 +71,18 @@ def download_package(version=None, sys=None, arch=None, *,
     do_release_check = not is_full_version(version)
     version = latest_version(version, system, architecture)
 
+    if architecture in ["ARMv7", "ARMv8"]:
+        # TODO: fix update functionality for it in version_utils
+        msg = f"update is disabled for tier-2 support {architecture}"
+        logging.warning(msg)
+        update = False
+    else:
+        update = True
+
     release_str = f"{version}-{system}-{architecture}"
     if do_release_check:
-        rst = is_version_released(version, system, architecture)
+        rst = is_version_released(version, system, architecture,
+                                  update=update)
         if not rst:
             msg = f"failed to find Julia release for {release_str}."
             logging.info(msg)

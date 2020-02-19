@@ -34,7 +34,7 @@ def is_full_version(version):
 
 
 def is_version_released(version, system, architecture,
-                        update=True,
+                        update=False,
                         upstream=None,
                         timeout=5,
                         cache=dict()):
@@ -48,12 +48,6 @@ def is_version_released(version, system, architecture,
     item = str(version), system, architecture
     if item in cache:
         return cache[item]
-
-    if architecture in ["ARMv7", "ARMv8"]:
-        # TODO: fix update functionality for it in version_utils
-        msg = f"update is disabled for tier-2 support {architecture}"
-        logging.warning(msg)
-        update = False
 
     rst = False
     if update:
@@ -113,6 +107,13 @@ def latest_patch_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest X.Y.z version starting from input version X.Y.Z
     """
+    if not kwargs.get("update", False):
+        # just query from the sorted database
+        versions = [item for item in read_releases()
+                    if (item[2] == architecture and
+                        get_version(version).next_minor() > get_version(item[0]))]  # nopep8
+        return versions[-1][0]
+
     return _latest_version(Version.next_patch,
                            str(version), system, architecture,
                            **kwargs)
@@ -122,6 +123,13 @@ def latest_minor_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest X.y.z version starting from input version X.Y.Z
     """
+    if not kwargs.get("update", False):
+        # just query from the sorted database
+        versions = [item for item in read_releases()
+                    if (item[2] == architecture and
+                        get_version(version).next_major() > get_version(item[0]))]  # nopep8
+        return versions[-1][0]
+
     latest_minor = _latest_version(Version.next_minor,
                                    version, system, architecture,
                                    **kwargs)
@@ -134,6 +142,13 @@ def latest_major_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest x.y.z version starting from input version X.Y.Z
     """
+    if not kwargs.get("update", False):
+        # just query from the sorted database
+        versions = [item for item in read_releases()
+                    if (item[2] == architecture and
+                        get_version("1.0.0").next_major() > get_version(item[0]))]  # nopep8
+        return versions[-1][0]
+
     latest_major = _latest_version(Version.next_major,
                                    version, system, architecture,
                                    **kwargs)

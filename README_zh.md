@@ -27,6 +27,11 @@
 
 简而言之，`jill install [version]` 能满足你绝大部分要求
 
+<details>
+<summary>安装 demo</summary>
+<img class="install" src="screenshots/install_demo.png"/>
+</details>
+
 当你输入`jill install`的时候，它其实做了以下几件事:
 
 1. 找到最新的稳定版(目前是`1.3.1`)

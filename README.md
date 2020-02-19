@@ -30,6 +30,11 @@ Note that `Python >= 3.6` is required. For base docker images, you also need to 
 
 TL;DR `jill install [version]` covers most of your need.
 
+<details>
+<summary>installation demo</summary>
+<img class="install" src="screenshots/install_demo.png"/>
+</details>
+
 When you type `jill install`, it does the following things:
 
 1. query latest stable release, it's `1.3.1` at the time of writing.

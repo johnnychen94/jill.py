@@ -84,6 +84,8 @@ jobs:
           python -m jill install --confirm --upstream Official
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia --project=. -e 'using Pkg; Pkg.add(\"ImageCore\")'
+      - name: test symlink
+        run: |
           python -m jill install 1.0 --confirm --upstream Official
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia-1.0 -e 'using InteractiveUtils; versioninfo()'

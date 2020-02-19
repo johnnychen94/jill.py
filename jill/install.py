@@ -104,6 +104,8 @@ def make_symlinks(src_bin, symlink_dir, version):
 
     for linkname in link_list:
         linkpath = os.path.join(symlink_dir, linkname)
+        if current_system() == "windows":
+            linkpath += ".cmd"
         if os.path.exists(linkpath) or os.path.islink(linkpath):
             old_ver = get_exec_version(linkpath)
             if version != "latest" and Version(old_ver) > Version(version):
@@ -112,7 +114,7 @@ def make_symlinks(src_bin, symlink_dir, version):
             os.remove(linkpath)
         logging.info(f"make symlink {linkpath}")
         if current_system() == "windows":
-            with open(linkpath + ".cmd", 'w') as f:
+            with open(linkpath, 'w') as f:
                 # create a cmd file to mimic how we do symlinks in linux
                 f.writelines(["@echo off\n", f"{src_bin} %*"])
         else:

@@ -144,7 +144,7 @@ def latest_patch_version(version, system, architecture, **kwargs) -> str:
     if version == "latest":
         return version
     # TODO: this is only useful for ARM, remove it (#16)
-    if (architecture in ["armv7l", "aarch64"] and
+    if (architecture in ["ARMv7", "ARMv8"] and
             not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
@@ -167,7 +167,7 @@ def latest_minor_version(version, system, architecture, **kwargs) -> str:
         return version
 
     # TODO: this is only useful for ARM, remove it (#16)
-    if (architecture in ["armv7l", "aarch64"] and
+    if (architecture in ["ARMv7", "ARMv8"] and
             not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()
@@ -193,7 +193,7 @@ def latest_major_version(version, system, architecture, **kwargs) -> str:
         return version
 
     # TODO: this is only useful for ARM, remove it (#16)
-    if (architecture in ["armv7l", "aarch64"] and
+    if (architecture in ["ARMv7", "ARMv8"] and
             not kwargs.get("update", False)):
         # just query from the sorted database
         versions = [item for item in read_releases()

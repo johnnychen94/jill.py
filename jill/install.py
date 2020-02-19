@@ -44,6 +44,19 @@ def default_install_dir():
         raise ValueError(f"Unsupported system: {system}")
 
 
+def get_exec_version(path):
+    ver_cmd = [path, "--version"]
+    try:
+        # outputs: "julia version 1.4.0-rc1"
+        version = subprocess.check_output(ver_cmd).decode("utf-8")
+        version = version.lower().split("version")[-1].strip()
+    except subprocess.CalledProcessError as e:
+        # in case it's not executable
+        logging.warn(e)
+        version = "0.0.1"
+    return version
+
+
 def last_julia_version(version=None):
     # version should follow semantic version syntax
     def sort_key(ver):
@@ -91,12 +104,17 @@ def make_symlinks(src_bin, symlink_dir, version):
 
     for linkname in link_list:
         linkpath = os.path.join(symlink_dir, linkname)
+        if current_system() == "windows":
+            linkpath += ".cmd"
         if os.path.exists(linkpath) or os.path.islink(linkpath):
+            old_ver = get_exec_version(linkpath)
+            if version != "latest" and Version(old_ver) > Version(version):
+                continue
             logging.info(f"removing previous symlink {linkname}")
             os.remove(linkpath)
         logging.info(f"make symlink {linkpath}")
         if current_system() == "windows":
-            with open(linkpath + ".cmd", 'w') as f:
+            with open(linkpath, 'w') as f:
                 # create a cmd file to mimic how we do symlinks in linux
                 f.writelines(["@echo off\n", f"{src_bin} %*"])
         else:

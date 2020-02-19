@@ -79,15 +79,16 @@ jobs:
           pip install -r requirements.txt
           pip install coverage
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
       - name: test install
         run: |
           python -m jill install --confirm --upstream Official
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia --project=. -e 'using Pkg; Pkg.add(\"ImageCore\")'
+      - name: test symlink
+        run: |
+          python -m jill install 1.0 --confirm --upstream Official
+          & julia -e 'using InteractiveUtils; versioninfo()'
+          & julia-1.0 -e 'using InteractiveUtils; versioninfo()'
 
   arm_job:
     runs-on: ubuntu-18.04
@@ -113,3 +114,6 @@ jobs:
           pip3 install -r requirements.txt
           python3 -m jill install --confirm --upstream Official
           julia -e 'using InteractiveUtils; versioninfo()'
+          python3 -m jill install 1.0 --confirm --upstream Official
+          julia -e 'using InteractiveUtils; versioninfo()'
+          julia-1.0 -e 'using InteractiveUtils; versioninfo()'

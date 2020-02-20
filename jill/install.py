@@ -4,7 +4,7 @@ from .utils import current_architecture, current_system
 from .utils import latest_version
 from .utils import DmgMounter, TarMounter
 from .utils import Version
-from .utils import color
+from .utils import color, show_verbose
 from .download import download_package
 
 import os
@@ -122,16 +122,30 @@ def make_symlinks(src_bin, symlink_dir, version):
         # symlink rules:
         # 1. always symlink latest
         # 2. only make new symlink if it's a newer version
+        #   - julia      --> latest stable X.Y.Z
+        #   - julia-1    --> latest stable 1.Y.Z
+        #   - julia-1.0  --> latest stable 1.0.Z
+        #   - don't make symlink to patch level
         if os.path.exists(linkpath) or os.path.islink(linkpath):
-            old_ver = get_exec_version(linkpath)
-            if Version(old_ver) > Version(version):
-                # it's always false if version == "latest"
+            if (os.path.islink(linkpath) and
+                os.readlink(linkpath) == src_bin):
+                # happens when installing a new patch version
                 continue
-            msg = f"{color.YELLOW}removing previous symlink"
+
+            old_ver = Version(get_exec_version(linkpath))
+            new_ver = Version(get_exec_version(src_bin))
+            if show_verbose():
+                print(f"old symlink version: {old_ver}")
+                print(f"new installation version: {new_ver}")
+            if old_ver > new_ver:
+                # if two versions are the same, use the new one
+                continue
+
+            msg = f"{color.YELLOW}remove old symlink"
             msg += f" {linkname}{color.END}"
             print(msg)
             os.remove(linkpath)
-        print(f"{color.GREEN}make symlink {linkpath}{color.END}")
+        print(f"{color.GREEN}make new symlink {linkpath}{color.END}")
         if current_system() == "windows":
             with open(linkpath, 'w') as f:
                 # create a cmd file to mimic how we do symlinks in linux
@@ -319,7 +333,7 @@ def install_julia(version=None, *,
             return False
 
     overwrite = True if version == "latest" else False
-    print(f"{color.BOLD}----- Download Package -----{color.END}")
+    print(f"{color.BOLD}----- Download Julia -----{color.END}")
     package_path = download_package(version, system, arch,
                                     upstream=upstream,
                                     overwrite=overwrite)

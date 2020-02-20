@@ -39,7 +39,7 @@ When you type `jill install`, it does the following things:
 
 1. query latest stable release, it's `1.3.1` at the time of writing.
 2. download, verify and install julia `1.3.1`
-3. make alias: `julia-1`, `julia-1.3` and `julia-1.3.1`
+3. make alias: `julia-1` and `julia-1.3`
 
 Valid `version` syntax:
 

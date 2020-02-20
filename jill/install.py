@@ -112,8 +112,7 @@ def make_symlinks(src_bin, symlink_dir, version):
         link_list = [f"julia-{f_major_version(version)}"]
     else:
         link_list = [f"julia-{f(version)}" for f in (f_major_version,
-                                                     f_minor_version,
-                                                     f_patch_version)]
+                                                     f_minor_version)]
         link_list.append("julia")
 
     for linkname in link_list:

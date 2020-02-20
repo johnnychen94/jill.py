@@ -7,6 +7,7 @@ from .defaults import SOURCE_CONFIGFILE
 from .net_utils import query_ip
 from .net_utils import port_response_time
 from .net_utils import is_url_available
+from .sys_utils import show_verbose
 from .filters import generate_info
 from .interactive_utils import color
 
@@ -198,6 +199,8 @@ class SourceRegistry:
 
         url_list = chain.from_iterable(repeat(url_list, max_try))
         for url in url_list:
+            if show_verbose():
+                print(f"query {url}")
             if is_url_available(url, timeout):
                 return url
         return None

@@ -34,7 +34,10 @@ jobs:
           pip install coverage --quiet
 
       - name: Test jill download and install
+        # make an invalid symlink before installation
+        # issue: https://github.com/abelsiqueira/jill/issues/25
         run: |
+          mkdir ~/.local/bin -p && ln -sf /abcde ~/.local/bin/julia
           make test
 
       - name: Test jill upstream

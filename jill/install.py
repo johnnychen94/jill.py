@@ -51,9 +51,9 @@ def get_exec_version(path):
         # outputs: "julia version 1.4.0-rc1"
         version = subprocess.check_output(ver_cmd).decode("utf-8")
         version = version.lower().split("version")[-1].strip()
-    except subprocess.CalledProcessError as e:
-        # in case it's not executable
-        logging.warn(e)
+    except: # nopep8
+        # in case it fails in any situation: invalid target or command(.cmd)
+        # issue: https://github.com/abelsiqueira/jill/issues/25
         version = "0.0.1"
     return version
 

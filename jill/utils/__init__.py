@@ -5,6 +5,7 @@ from .interactive_utils import query_yes_no
 from .interactive_utils import color
 from .mount_utils import TarMounter, DmgMounter
 from .sys_utils import current_architecture, current_system
+from .sys_utils import show_verbose
 from .version_utils import Version
 from .version_utils import latest_version
 from .version_utils import is_version_released
@@ -31,6 +32,7 @@ __all__ = [
     # sys_utils
     "current_architecture",
     "current_system",
+    "show_verbose",
 
     # version_utils
     "Version",

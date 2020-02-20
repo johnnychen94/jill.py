@@ -4,6 +4,8 @@ from .filters import VALID_SYSTEM, VALID_ARCHITECTURE
 from .filters import f_major_version, f_minor_version, f_patch_version
 from .defaults import RELEASE_CONFIGFILE
 from .sys_utils import current_system, current_architecture
+from .sys_utils import show_verbose
+from .interactive_utils import color
 
 from .source_utils import SourceRegistry
 
@@ -108,6 +110,10 @@ def is_version_released(version, system, architecture,
         rst = bool(registry.query_download_url(*item,
                                                timeout=timeout,
                                                max_try=1))
+        if show_verbose():
+            c = color.GREEN if rst else color.RED
+            msg = f"{c}{item}={rst}{color.END}"
+            print(msg)
         if rst:
             logging.info(f"get new release {item}")
             try:
@@ -281,7 +287,9 @@ def update_releases(system=None, architecture=None, *,
 
     # the first run gets all x.y.0 versions
     # the second run gets all x.y.z versions
-    logging.info("check new Julia release info, it will take a while")
+    msg = "check new Julia release info, it will take a while"
+    logging.info(msg)
+    print(msg)
     kwargs = {
         "update": True,
         "upstream": upstream,

@@ -116,30 +116,33 @@ def is_valid_release(version, system, architecture):
 
 class NameFilter:
     def __init__(self,
+                 name: str,
                  f: Callable = identity,
                  rules: Optional[Mapping] = None,
                  validate: Callable = no_validate):
         self.f = f
+        self.name = name
         self.rules = rules if rules else {}
         self.validate = validate
 
     def __call__(self, *args, **kwargs):
         if not self.validate(*args, **kwargs):
             # TODO: add error handler
-            msg = f"validation fails:\n"
-            msg += f"  - args: {args}\n  - kwargs: {kwargs}"
+            msg = f"validation on {self.name} fails:\n"
+            msg += f"  - args: {args}\n  - kwargs: {kwargs}\n"
+            msg += f"Please check if you have passed the right parameters"
             raise ValueError(msg)
         # directly return rst if there're no special filter rules
         rst = self.f(*args, **kwargs)
         return self.rules.get(rst, rst)
 
 
-f_major_version = NameFilter(lambda x: x.lstrip('v').split('.')[0],
+f_major_version = NameFilter("version", lambda x: x.lstrip('v').split('.')[0],
                              validate=is_version)
-f_minor_version = NameFilter(lambda x: '.'.join(x.lstrip('v').
-                                                split('.')[0:2]),
+f_minor_version = NameFilter("version", lambda x: '.'.join(x.lstrip('v').
+                                                           split('.')[0:2]),
                              validate=is_version)
-f_patch_version = NameFilter(lambda x: x.lstrip('v').split('-')[0],
+f_patch_version = NameFilter("version", lambda x: x.lstrip('v').split('-')[0],
                              validate=is_version)
 
 
@@ -171,32 +174,35 @@ def _version(ver):
         return ver.lstrip('v')
 
 
-f_vmajor_version = NameFilter(_vmajor_version)
-f_Vmajor_version = NameFilter(lambda x: f_vmajor_version(x).capitalize())
-f_vminor_version = NameFilter(_vminor_version)
-f_Vminor_version = NameFilter(lambda x: f_vminor_version(x).capitalize())
-f_vpatch_version = NameFilter(_vpatch_version)
-f_Vpatch_version = NameFilter(lambda x: f_vpatch_version(x).capitalize())
+f_vmajor_version = NameFilter("version", _vmajor_version)
+f_Vmajor_version = NameFilter(
+    "version", lambda x: f_vmajor_version(x).capitalize())
+f_vminor_version = NameFilter("version", _vminor_version)
+f_Vminor_version = NameFilter(
+    "version", lambda x: f_vminor_version(x).capitalize())
+f_vpatch_version = NameFilter("version", _vpatch_version)
+f_Vpatch_version = NameFilter(
+    "version", lambda x: f_vpatch_version(x).capitalize())
 
-f_version = NameFilter(_version, validate=is_version)
+f_version = NameFilter("version", _version, validate=is_version)
 
-f_system = NameFilter(validate=is_system)
-f_System = NameFilter(f=lambda x: f_system(x).capitalize())
-f_SYSTEM = NameFilter(f=lambda x: f_system(x).upper())
+f_system = NameFilter("system", validate=is_system)
+f_System = NameFilter("system", f=lambda x: f_system(x).capitalize())
+f_SYSTEM = NameFilter("system", f=lambda x: f_system(x).upper())
 
-f_sys = NameFilter(rules=rule_sys, validate=is_system)
-f_Sys = NameFilter(f=lambda x: f_sys(x).capitalize())
-f_SYS = NameFilter(f=lambda x: f_sys(x).upper())
+f_sys = NameFilter("sys", rules=rule_sys, validate=is_system)
+f_Sys = NameFilter("sys", f=lambda x: f_sys(x).capitalize())
+f_SYS = NameFilter("sys", f=lambda x: f_sys(x).upper())
 
-f_os = NameFilter(rules=rules_os, validate=is_system)
-f_Os = NameFilter(f=lambda x: f_os(x).capitalize())
-f_OS = NameFilter(f=lambda x: f_os(x).upper())
+f_os = NameFilter("os", rules=rules_os, validate=is_system)
+f_Os = NameFilter("os", f=lambda x: f_os(x).capitalize())
+f_OS = NameFilter("os", f=lambda x: f_os(x).upper())
 
-f_arch = NameFilter(rules=rules_arch, validate=is_architecture)
-f_Arch = NameFilter(f=lambda x: f_arch(x).capitalize())
-f_ARCH = NameFilter(f=lambda x: f_arch(x).upper())
+f_arch = NameFilter("arch", rules=rules_arch, validate=is_architecture)
+f_Arch = NameFilter("arch", f=lambda x: f_arch(x).capitalize())
+f_ARCH = NameFilter("arch", f=lambda x: f_arch(x).upper())
 
-f_osarch = NameFilter(f=lambda os, arch: f"{os}-{arch}",
+f_osarch = NameFilter("osarch", f=lambda os, arch: f"{os}-{arch}",
                       rules=rules_osarch,
                       validate=lambda os, arch:
                       is_os(os) and is_architecture(arch))
@@ -216,17 +222,18 @@ def _OSarch(os, arch):
     return os.upper() + '-' + arch
 
 
-f_Osarch = NameFilter(_Osarch)
-f_OSarch = NameFilter(_OSarch)
+f_Osarch = NameFilter("osarch", _Osarch)
+f_OSarch = NameFilter("osarch", _OSarch)
 
-f_osbit = NameFilter(f=lambda os, arch: f"{os}{arch}",
+f_osbit = NameFilter("osbit", f=lambda os, arch: f"{os}{arch}",
                      rules=rules_osbit,
                      validate=lambda os, arch:
                      is_os(os) and is_architecture(arch))
 
-f_bit = NameFilter(rules=rules_bit, validate=is_architecture)
+f_bit = NameFilter("bit", rules=rules_bit, validate=is_architecture)
 
-f_extension = NameFilter(rules=rules_extension, validate=is_system)
+f_extension = NameFilter(
+    "extension", rules=rules_extension, validate=is_system)
 
 
 def _meta_filename(t, *args, **kwargs):
@@ -243,8 +250,8 @@ def _latest_filename(**kwargs):
     return _meta_filename(default_latest_filename_template, **kwargs)
 
 
-f_filename = NameFilter(_filename)
-f_latest_filename = NameFilter(_latest_filename)
+f_filename = NameFilter("filename", _filename)
+f_latest_filename = NameFilter("filename", _latest_filename)
 
 
 def generate_info(plain_version: str,

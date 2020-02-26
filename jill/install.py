@@ -51,7 +51,7 @@ def get_exec_version(path):
         # outputs: "julia version 1.4.0-rc1"
         version = subprocess.check_output(ver_cmd).decode("utf-8")
         version = version.lower().split("version")[-1].strip()
-    except: # nopep8
+    except:  # nopep8
         # in case it fails in any situation: invalid target or command(.cmd)
         # issue: https://github.com/abelsiqueira/jill/issues/25
         version = "0.0.1"
@@ -128,7 +128,7 @@ def make_symlinks(src_bin, symlink_dir, version):
         #   - don't make symlink to patch level
         if os.path.exists(linkpath) or os.path.islink(linkpath):
             if (os.path.islink(linkpath) and
-                os.readlink(linkpath) == src_bin):
+                    os.readlink(linkpath) == src_bin):
                 # happens when installing a new patch version
                 continue
 
@@ -332,12 +332,22 @@ def install_julia(version=None, *,
         if not to_continue:
             return False
 
+    wrong_args = False
+    try:
+        version = latest_version(version, system, arch)
+    except ValueError as e:
+        # hide the nested error stack :P
+        wrong_args = True
+    if wrong_args:
+        msg = f"wrong version argument: {version}\n"
+        msg += f"Example: jill install 1"
+        raise(ValueError(msg))
+
     overwrite = True if version == "latest" else False
     print(f"{color.BOLD}----- Download Julia -----{color.END}")
     package_path = download_package(version, system, arch,
                                     upstream=upstream,
                                     overwrite=overwrite)
-    version = latest_version(version, system, arch)
     if not package_path:
         return False
 

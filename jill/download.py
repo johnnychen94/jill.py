@@ -109,7 +109,19 @@ def download_package(version=None, sys=None, arch=None, *,
 
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)
-    version = latest_version(version, system, architecture)
+    wrong_args = False
+    try:
+        version = latest_version(version, system, architecture)
+    except ValueError as e:
+        # hide the nested error stack :P
+        wrong_args = True
+    if wrong_args:
+        msg = f"something wrong for the platform argument you passed:\n"
+        msg += f"  - version: {version}\n"
+        msg += f"  - system: {system}\n"
+        msg += f"  - archtecture: {architecture}\n"
+        msg += f"example: jill download 1 linux x86_64"
+        raise(ValueError(msg))
 
     if architecture in ["ARMv7", "ARMv8"]:
         # TODO: fix update functionality for it in version_utils

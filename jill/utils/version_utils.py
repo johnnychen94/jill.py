@@ -117,6 +117,7 @@ def is_version_released(version, system, architecture,
         if rst:
             logging.info(f"get new release {item}")
             try:
+                os.chmod(RELEASE_CONFIGFILE, mode=0o755) # TODO: put this line to the "right" place
                 with open(RELEASE_CONFIGFILE, 'a') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow(item)
@@ -169,9 +170,7 @@ def latest_minor_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest X.y.z version starting from input version X
     """
-    # if user passes a complete version here, then we don't need to query
-    # from local storage, just trying to download it would be fine.
-    if is_full_version(version):
+    if version == "latest":
         return version
 
     # TODO: this is only useful for ARM, remove it (#16)
@@ -195,9 +194,7 @@ def latest_major_version(version, system, architecture, **kwargs) -> str:
     """
     return the latest x.y.z version
     """
-    # if user passes a complete version here, then we don't need to query
-    # from local storage, just trying to download it would be fine.
-    if is_full_version(version):
+    if version == "latest":
         return version
 
     # TODO: this is only useful for ARM, remove it (#16)
@@ -221,7 +218,7 @@ def latest_major_version(version, system, architecture, **kwargs) -> str:
     return latest_patch
 
 
-def latest_version(version, system, architecture, **kwargs) -> str:
+def latest_version(version, system, architecture, update=True, **kwargs) -> str:
     """
     find the latest version for partial semantic version string. Directly
     return `version` if it's already a complete version string.

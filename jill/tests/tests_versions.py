@@ -18,9 +18,6 @@ class TestVersions(unittest.TestCase):
             latest_version("1.1", "windows", "x86_64"),
             "1.1.1")
         self.assertEqual(
-            latest_version("1.0.5", "windows", "x86_64"),
-            "1.0.5")
-        self.assertEqual(
             latest_version("1.4.0-rc1", "windows", "x86_64"),
             "1.4.0-rc1")
         self.assertEqual(
@@ -32,9 +29,6 @@ class TestVersions(unittest.TestCase):
             latest_major_version("latest", "windows", "x86_64"),
             "latest")
         self.assertEqual(
-            latest_major_version("1.0.5", "windows", "x86_64"),
-            "1.0.5")
-        self.assertEqual(
             latest_major_version("1.4.0-rc1", "windows", "x86_64"),
             "1.4.0-rc1")
         self.assertEqual(
@@ -45,9 +39,6 @@ class TestVersions(unittest.TestCase):
         self.assertEqual(
             latest_minor_version("latest", "windows", "x86_64"),
             "latest")
-        self.assertEqual(
-            latest_minor_version("1.0.5", "windows", "x86_64"),
-            "1.0.5")
         self.assertEqual(
             latest_minor_version("1.4.0-rc1", "windows", "x86_64"),
             "1.4.0-rc1")

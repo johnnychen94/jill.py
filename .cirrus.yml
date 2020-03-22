@@ -10,6 +10,7 @@ build_package_test_task:
     - echo $PATH
 
   build_package_test_script:
+    - export DEBUG=1
     - python3 -m jill install --confirm --upstream Official
     - julia -e 'using InteractiveUtils; versioninfo()'
     - python3 -m jill install 1.0 --confirm --upstream Official

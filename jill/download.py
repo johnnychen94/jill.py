@@ -109,9 +109,10 @@ def download_package(version=None, sys=None, arch=None, *,
 
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)
+
     wrong_args = False
     try:
-        version = latest_version(version, system, architecture)
+        version = latest_version(version, system, architecture, update=True)
     except ValueError as e:
         # hide the nested error stack :P
         wrong_args = True
@@ -123,19 +124,9 @@ def download_package(version=None, sys=None, arch=None, *,
         msg += f"example: jill download 1 linux x86_64"
         raise(ValueError(msg))
 
-    if architecture in ["ARMv7", "ARMv8"]:
-        # TODO: fix update functionality for it in version_utils
-        msg = f"update is disabled for tier-2 support {architecture}"
-        logging.warning(msg)
-        print(f"{color.YELLOW}{msg}{color.END}")
-        update = False
-    else:
-        update = True
-
     release_str = f"{version}-{system}-{architecture}"
     if do_release_check:
-        rst = is_version_released(version, system, architecture,
-                                  update=update)
+        rst = is_version_released(version, system, architecture)
         if not rst:
             msg = f"failed to find Julia release for {release_str}."
             logging.info(msg)

@@ -117,7 +117,8 @@ def is_version_released(version, system, architecture,
         if rst:
             logging.info(f"get new release {item}")
             try:
-                os.chmod(RELEASE_CONFIGFILE, mode=0o755) # TODO: put this line to the "right" place
+                # TODO: put this line to the "right" place
+                os.chmod(RELEASE_CONFIGFILE, mode=0o755)
                 with open(RELEASE_CONFIGFILE, 'a') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow(item)
@@ -152,6 +153,7 @@ def latest_patch_version(version, system, architecture, **kwargs) -> str:
     """
     if version == "latest":
         return version
+
     # TODO: this is only useful for ARM, remove it (#16)
     if (architecture in ["ARMv7", "ARMv8"] and
             not kwargs.get("update", False)):
@@ -228,15 +230,26 @@ def latest_version(version, system, architecture, update=True, **kwargs) -> str:
     if is_full_version(version):
         return version
 
+    if architecture in ["ARMv7", "ARMv8"]:
+        # TODO: fix update functionality for it in version_utils
+        msg = f"update is disabled for tier-2 support {architecture}"
+        logging.warning(msg)
+        print(f"{color.YELLOW}{msg}{color.END}")
+        update = False
+    else:
+        update = True
+
+    if update:
+        print(f"query the latest {version} version, it may take seconds...")
     if len(version.strip()) == 0:
         # if empty string is provided, query the latest version since 1.0.0
-        return latest_major_version('1', system, architecture, **kwargs)
+        return latest_major_version('1', system, architecture, update=update, **kwargs)
     else:
         # TODO: we can also support ^ and > semantics here
         f_list = [latest_minor_version,
                   latest_patch_version]
         idx = len(version.split('.')) - 1
-        return f_list[idx](version, system, architecture, **kwargs)
+        return f_list[idx](version, system, architecture, update=update, **kwargs)
 
 
 def sort_releases():

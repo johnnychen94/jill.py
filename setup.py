@@ -16,7 +16,7 @@ with io_open(requirements, mode='r') as fd:
 
 setuptools.setup(
     name='jill',
-    version='0.6.8',
+    version='0.6.9',
     author="Johnny Chen",
     author_email="johnnychen94@hotmail.com",
     description="JILL -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light",

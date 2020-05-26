@@ -39,7 +39,7 @@ class ReleaseSource:
         self.name = name
         self.url_templates = [Template(x) for x in urls]
         # TODO: make latest an optional config
-        self.latest_url_templates = [Template(x) for x in latest_urls]
+        self.latest_url_templates = [Template(x) for x in latest_urls if x]
         self.timeout = timeout
         self._latencies = dict()  # type: ignore
 

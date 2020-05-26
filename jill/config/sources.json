@@ -9,6 +9,15 @@
                 "https://julialangnightlies-s3.julialang.org/bin/$sys/$arch/$latest_filename"
             ]
         },
+        "BFSU": {
+            "name": "Beijing Foreign Studies University",
+            "urls": [
+                "https://mirrors.bfsu.edu.cn/julia-releases/bin/$sys/$arch/$minor_version/$filename"
+            ],
+            "latest_urls": [
+                ""
+            ]
+        },
         "USTC": {
             "name": "University of Science and Technology of China",
             "urls": [

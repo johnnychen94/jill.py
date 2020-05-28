@@ -99,7 +99,7 @@ class ReleaseSource:
         url_list = [t.substitute(**configs) for t in template_lists]
         url_list.sort(key=lambda url:
                       self.latencies[urlparse(url).netloc])
-        return url_list[0]
+        return url_list[0] if url_list else ""
 
 
 def read_registry():
@@ -184,6 +184,7 @@ class SourceRegistry:
         """
         url_list = [src.get_url(plain_version, system, architecture)
                     for src in self.registry.values()]
+        url_list = [url for url in url_list if url]
         url_list.sort(key=lambda url:
                       self.latencies[urlparse(url).netloc])
         return url_list

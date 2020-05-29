@@ -10,17 +10,17 @@
 [![codecov](https://codecov.io/gh/johnnychen94/jill.py/branch/master/graph/badge.svg)](https://codecov.io/gh/johnnychen94/jill.py)
 [![release-date](https://img.shields.io/github/release-date/johnnychen94/jill.py)](https://github.com/johnnychen94/jill.py/releases)
 
-跨平台的Julia一键安装脚本
+跨平台的 Julia 一键安装脚本
 
 ## 特性
 
-* 从最近的镜像站下载最新的Julia版本
+* 从最近的镜像站下载最新的 Julia 版本
 * 跨平台
-* 安装并管理多个Julia版本
+* 安装并管理多个 Julia 版本
 
 ## 安装 jill
 
-首先你要通过 pip 来安装`jill`: `pip install jill --user -U`，并且需要3.6以上的 Python 版本
+首先你要通过 pip 来安装`jill`: `pip install jill --user -U`，并且需要 `3.6` 以上的 Python 版本
 
 
 ## 使用帮助
@@ -32,13 +32,13 @@
 <img class="install" src="screenshots/install_demo.png"/>
 </details>
 
-当你输入`jill install`的时候，它其实做了以下几件事:
+当你输入 `jill install` 的时候，它其实做了以下几件事:
 
-1. 找到最新的稳定版(目前是`1.3.1`)
+1. 找到最新的稳定版(目前是`1.4.2`)
 2. 下载、验证并安装Julia
-3. 创建一些别名：`julia-1`, `julia-1.3`
+3. 创建一些别名，例如：`julia`, `julia-1`, `julia-1.4`, `julia-latest`
 
-`version`是可选的：
+其中 `version` 是可选的，支持的语法为：
 
 - `stable`: 最新稳定版
 - `1`: 最新的`1.y.z`稳定版本
@@ -53,8 +53,8 @@
     - 下载其他系统及平台的安装包：`jill download --sys linux --arch i686`
 * 安装：
     - (Linux only) 所有用户都可以使用：`sudo jill install`
-    - 从旧版本“升级”： `jill install --upgrade`
-    - 不需要交互：`jill install --confirm`
+    - 从旧的 Julia 版本“升级”： `jill install --upgrade`
+    - 不需要交互确认直接安装：`jill install --confirm`
 * 下载源：
     - 列出所有下载源
     - 指定从官网下载：`jill download --upstream Official`

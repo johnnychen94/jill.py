@@ -73,7 +73,7 @@ def is_url_available(url, timeout) -> bool:
         logging.debug(f"failed: {str(e)}")
         return False
 
-    if r.status_code//100 == 4:
+    if r.status_code//100 == 4 or r.status_code//100 == 5:
         logging.debug(f"failed: {r.status_code} error")
         return False
     elif r.status_code == 301 or r.status_code == 302:

@@ -226,7 +226,7 @@ def latest_version(version: str, system, architecture, update=True, **kwargs) ->
     return `version` if it's already a complete version string.
     """
     # supporting legacy versions is really of low priority
-    if Version(version) < Version("0.6.0"):
+    if version and Version(version) < Version("0.6.0"):
         raise(ValueError('Julia < v"0.6.0" is not supported.'))
 
     # if user passes a complete version here, then we don't need to query

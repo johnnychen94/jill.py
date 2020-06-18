@@ -100,7 +100,7 @@ def download_package(version=None, sys=None, arch=None, *,
       max_try:
         try `max_try` times before returning a False. The default value is 3.
     """
-    version = str(version) if str(version) else ""
+    version = str(version) if (version or str(version) == "0") else ""
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 

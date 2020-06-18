@@ -312,7 +312,7 @@ def install_julia(version=None, *,
     install_dir = install_dir if install_dir else default_install_dir()
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     system, arch = current_system(), current_architecture()
-    version = str(version) if str(version) else ''
+    version = str(version) if (version or str(version) == "0") else ''
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 

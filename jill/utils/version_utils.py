@@ -220,11 +220,15 @@ def latest_major_version(version, system, architecture, **kwargs) -> str:
     return latest_patch
 
 
-def latest_version(version, system, architecture, update=True, **kwargs) -> str:
+def latest_version(version: str, system, architecture, update=True, **kwargs) -> str:
     """
     find the latest version for partial semantic version string. Directly
     return `version` if it's already a complete version string.
     """
+    # supporting legacy versions is really of low priority
+    if Version(version) < Version("0.6.0"):
+        raise(ValueError('Julia < v"0.6.0" is not supported.'))
+
     # if user passes a complete version here, then we don't need to query
     # from local storage, just trying to download it would be fine.
     if is_full_version(version):
@@ -307,7 +311,7 @@ def update_releases(system=None, architecture=None, *,
     }
     for _ in range(2):
         versions = set(map(lambda x: x[0], read_releases(stable_only=True)))
-        versions = versions if len(versions) != 0 else {"1.0.0"}
+        versions = versions if len(versions) != 0 else {"0.6.0"}
 
         for item in product(versions, systems, architectures):
             # get all x.y.0 versions

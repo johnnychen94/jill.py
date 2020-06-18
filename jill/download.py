@@ -100,7 +100,7 @@ def download_package(version=None, sys=None, arch=None, *,
       max_try:
         try `max_try` times before returning a False. The default value is 3.
     """
-    version = str(version) if version else ""
+    version = str(version) if str(version) else ""
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 
@@ -118,10 +118,10 @@ def download_package(version=None, sys=None, arch=None, *,
         wrong_args = True
     if wrong_args:
         msg = f"something wrong for the platform argument you passed:\n"
-        msg += f"  - version: {version}\n"
+        msg += f"  - version(>= 0.6.0): {version}\n"
         msg += f"  - system: {system}\n"
         msg += f"  - archtecture: {architecture}\n"
-        msg += f"example: jill download 1 linux x86_64"
+        msg += f"example: `jill download 1 linux x86_64`"
         raise(ValueError(msg))
 
     release_str = f"{version}-{system}-{architecture}"

@@ -312,7 +312,7 @@ def install_julia(version=None, *,
     install_dir = install_dir if install_dir else default_install_dir()
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     system, arch = current_system(), current_architecture()
-    version = str(version) if version else ''
+    version = str(version) if str(version) else ''
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 
@@ -339,8 +339,8 @@ def install_julia(version=None, *,
         # hide the nested error stack :P
         wrong_args = True
     if wrong_args:
-        msg = f"wrong version argument: {version}\n"
-        msg += f"Example: jill install 1"
+        msg = f"wrong version(>= 0.6.0) argument: {version}\n"
+        msg += f"Example: `jill install 1`"
         raise(ValueError(msg))
 
     overwrite = True if version == "latest" else False

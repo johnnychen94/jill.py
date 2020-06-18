@@ -112,7 +112,8 @@ def download_package(version=None, sys=None, arch=None, *,
 
     wrong_args = False
     try:
-        version = latest_version(version, system, architecture, update=True)
+        version = latest_version(
+            version, system, architecture, update=True, upstream=upstream)
     except ValueError as e:
         # hide the nested error stack :P
         wrong_args = True
@@ -126,7 +127,8 @@ def download_package(version=None, sys=None, arch=None, *,
 
     release_str = f"{version}-{system}-{architecture}"
     if do_release_check:
-        rst = is_version_released(version, system, architecture)
+        rst = is_version_released(
+            version, system, architecture, upstream=upstream)
         if not rst:
             msg = f"failed to find Julia release for {release_str}."
             logging.info(msg)

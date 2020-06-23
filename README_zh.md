@@ -1,5 +1,7 @@
 # JILL.py
 
+_跨平台的 Julia 一键安装脚本_
+
 ![](https://img.shields.io/badge/system-Windows%7CmacOS%7CLinux%7CFreeBSD-yellowgreen)
 ![](https://img.shields.io/badge/arch-i686%7Cx86__64%7CARMv7%7CARMv8-yellowgreen)
 
@@ -9,8 +11,15 @@
 )](https://github.com/johnnychen94/jill.py/actions)
 [![codecov](https://codecov.io/gh/johnnychen94/jill.py/branch/master/graph/badge.svg)](https://codecov.io/gh/johnnychen94/jill.py)
 [![release-date](https://img.shields.io/github/release-date/johnnychen94/jill.py)](https://github.com/johnnychen94/jill.py/releases)
+[![README](https://img.shields.io/badge/README-English-blue)](README.md)
 
-跨平台的 Julia 一键安装脚本
+为什么使用 `jill.py`? 常见的包管理工具有时会因为依赖版本的原因（例如提供一个错误的LLVM版本）安装一个不能正常使用的 Julia，
+因此推荐的安装方式是从 [Julia 下载](https://julialang.org/downloads/) 中下载并解压 Julia 官方提供的 Julia 二进制程序。
+`jill.py` 的目的是为了让这一操作变得尽可能简单。
+
+用 Python 安装 Julia? 因为 Python 现在已经成为了一个主流的运维工具，因此使用 Python 可以带来一个跨平台的统一安装程序。
+
+使用 `jill.py` 安全吗？是的，`jill` 会使用 GPG 来检查每一个下载的包。
 
 ## 特性
 

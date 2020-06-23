@@ -1,5 +1,7 @@
 # JILL.py
 
+_The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light_
+
 ![](https://img.shields.io/badge/system-Windows%7CmacOS%7CLinux%7CFreeBSD-yellowgreen)
 ![](https://img.shields.io/badge/arch-i686%7Cx86__64%7CARMv7%7CARMv8-yellowgreen)
 
@@ -9,16 +11,28 @@
 )](https://github.com/johnnychen94/jill.py/actions)
 [![codecov](https://codecov.io/gh/johnnychen94/jill.py/branch/master/graph/badge.svg)](https://codecov.io/gh/johnnychen94/jill.py)
 [![release-date](https://img.shields.io/github/release-date/johnnychen94/jill.py)](https://github.com/johnnychen94/jill.py/releases)
+[![中文README](https://img.shields.io/badge/README-%E4%B8%AD%E6%96%87-blue)](README_zh.md)
 
-The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light
+Why `jill.py`? Distro package managers (e.g., `apt`, `pac`, `chocho`) is likely to provide a broken Julia with
+incorrect binary dependencies (e.g., `LLVM` ) versions. Hence it's recommended to download and
+extract the Julia binary provided in [Julia Downloads](https://julialang.org/downloads/). `jill.py` doesn't
+do anything magical, but just makes such operation even stupid.
+
+Using Python to install Julia? This is because Python has become one of the main tool for sys admins and it's
+available in all platforms. This makes a cross-platform install for Julia possible.
+
+Is it safe to use this? Yes, `jill.py` use GPG to check every tarballs after downloading. `*.dmg`/`*.pkg` for macOS and
+`.exe` for Windows are already singed.
 
 ## Features
 
-_let's make a simple and stupid julia installer_ [中文说明](README_zh.md)
+_let's make a simple and stupid julia installer_
 
 * download *latest* Julia release from *nearest* mirror server.
 * across multiple platforms.
 * manage multiple julia releases.
+
+
 
 ## Installation
 

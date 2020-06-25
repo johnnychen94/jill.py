@@ -189,7 +189,9 @@ def install_julia_linux(package_path,
             msg = f"{color.YELLOW}remove previous Julia installation:"
             msg += f" {dest_path}{color.END}"
             print(msg)
-        shutil.copytree(src_path, dest_path)
+        # preserve lib symlinks, otherwise it might cause troubles
+        # see also: https://github.com/JuliaGPU/CUDA.jl/issues/249
+        shutil.copytree(src_path, dest_path, symlinks=True)
         print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     os.chmod(dest_path, 0o755)  # issue 12
     bin_path = os.path.join(dest_path, "bin", "julia")
@@ -218,7 +220,9 @@ def install_julia_mac(package_path,
             msg += f" {dest_path}{color.END}"
             print(msg)
             shutil.rmtree(dest_path)
-        shutil.copytree(src_path, dest_path)
+        # preserve lib symlinks, otherwise it might cause troubles
+        # see also: https://github.com/JuliaGPU/CUDA.jl/issues/249
+        shutil.copytree(src_path, dest_path, symlinks=True)
         print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     bin_path = os.path.join(dest_path,
                             "Contents", "Resources", "julia", "bin", "julia")

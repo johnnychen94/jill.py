@@ -45,7 +45,8 @@ _跨平台的 Julia 一键安装脚本_
 
 1. 找到最新的稳定版(目前是`1.4.2`)
 2. 下载、验证并安装Julia
-3. 创建一些别名，例如：`julia`, `julia-1`, `julia-1.4`, `julia-latest`
+3. 创建一些别名，例如：`julia`, `julia-1`, `julia-1.4`
+  * 对于每日构建版，别名则只会绑定到 `julia-latest`
 
 其中 `version` 是可选的，支持的语法为：
 
@@ -72,6 +73,22 @@ _跨平台的 Julia 一键安装脚本_
         * Windows: `~/AppData/Local/julias/sources.json`
 
 更多的参数及其作用请查看帮助文档: `jill [COMMAND] -h` (例如`jill install -h`)
+
+
+## 案例 -- Cron
+
+通过使用`cron`，`jill` 还能够保证在你的服务器上提供一个最新版本的每日构建版：
+
+```bash
+# /etc/cron.d/jill
+PATH=/usr/local/bin:/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# install a fresh nightly build every day
+* 0 * * * root jill install latest --confirm
+```
+
+类似地，你也可以通过加一个 `jill install --confrim` 来保证 `julia` 永远是最新地稳定发行版。一旦有新的 Julia 版本
+发布了，`jill` 就能够下载到它 -- 你甚至不需要更新`jill`。
 
 ## 镜像源的搭建
 

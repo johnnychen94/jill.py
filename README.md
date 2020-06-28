@@ -53,7 +53,8 @@ When you type `jill install`, it does the following things:
 
 1. query latest stable release, it's `1.4.2` at the time of writing.
 2. download, verify and install julia `1.4.2`
-3. make alias: `julia`, `julia-1`, `julia-1.4` and possibly `julia-latest`
+3. make alias: `julia`, `julia-1`, `julia-1.4`
+  * for nightly build, it only bind alias to `julia-latest`
 
 Valid `version` syntax:
 
@@ -81,6 +82,24 @@ Here's a list of slightly advanced usages that you may be interested in:
         * Windows: `~/AppData/Local/julias/sources.json`
 
 You can find a more verbose documentation using `jill [COMMAND] -h` (e.g., `jill download -h`)
+
+
+## Example with cron
+
+If you're tired of seeing `(xx days old master)` in your nightly build version, then `jill` can
+make your nightly build always the latest version using `cron`:
+
+```bash
+# /etc/cron.d/jill
+PATH=/usr/local/bin:/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# install a fresh nightly build every day
+* 0 * * * root jill install latest --confirm
+```
+
+Similarly, you can also add a cron job for `jill install --confirm` so that you always get a
+latest stable release for `julia`.  `jill` knows the existence of a new version of Julia once
+it's released -- you don't even need to upgrade `jill`.
 
 ## For who are interested in setting up a new release mirror
 

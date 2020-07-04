@@ -18,10 +18,10 @@ incorrect binary dependencies (e.g., `LLVM` ) versions. Hence it's recommended t
 extract the Julia binary provided in [Julia Downloads](https://julialang.org/downloads/). `jill.py` doesn't
 do anything magical, but just makes such operation even stupid.
 
-Using Python to install Julia? This is because Python has become one of the main tool for sys admins and it's
-available in all platforms. This makes a cross-platform installer for Julia possible.
+Using Python to install Julia? This is because Python has became one of the main tool for sys admins and it's
+available in all platforms; this makes a cross-platform installer for Julia possible.
 
-Is it safe to use this? Yes, `jill.py` use GPG to check every tarballs after downloading. `*.dmg`/`*.pkg` for macOS and
+Is it safe to use this? Yes, `jill.py` use GPG to check every tarballs after downloading. Also, `*.dmg`/`*.pkg` for macOS and
 `.exe` for Windows are already singed.
 
 ## Features

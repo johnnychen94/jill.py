@@ -55,7 +55,7 @@ When you type `jill install`, it does the following things:
 1. query latest stable release, it's `1.4.2` at the time of writing.
 2. download, verify and install julia `1.4.2`
 3. make alias: `julia`, `julia-1`, `julia-1.4`
-  * for nightly build, it only bind alias to `julia-latest`
+    * for nightly build, it only bind alias to `julia-latest`
 
 Valid `version` syntax:
 

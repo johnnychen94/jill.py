@@ -43,8 +43,9 @@ Note that `Python >= 3.6` is required. For base docker images, you also need to 
 
 ## Usage examples for most users
 
-TL;DR `jill install [version]` covers most of your need. For the first-time users of `jill.py`, you may need to modify `PATH` accordingly
-so that your shell can find the executables when you type `julia`.
+Basic usage: `jill install [version] [--confirm] [--upstream UPSTREAM] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
+
+For the first-time users of `jill.py`, you may need to modify `PATH` accordingly so that your shell can find the executables when you type `julia`.
 
 <details>
 <summary>installation demo</summary>
@@ -74,7 +75,7 @@ Here's a list of slightly advanced usages that you may be interested in:
     - download Julia to specific dir: `jill download --outdir another/dir`
 * install Julia for current system:
     - (linux only) system-wide for root: `sudo jill install`
-    - upgrade from older julia version: `jill install --upgrade`
+    - upgrade from older julia version: `jill install --upgrade` (copy and paste the root environment folder)
     - don't need interactive promopt: `jill install --confirm`
 * upstream:
     - from specific upstream: `jill install --upstream Official`

@@ -19,11 +19,11 @@ jobs:
         python: [3.6, 3.8]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: add symlink dir to PATH
         run: echo "::add-path::$HOME/.local/bin"
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
 
@@ -63,14 +63,18 @@ jobs:
   musl_job:
     name: Unit Test for musl
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sys: [linux-musl]
+        python: [3.6]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: add symlink dir to PATH
         run: echo "::add-path::$HOME/.local/bin"
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: ${{ matrix.python }}
 
       - name: Install dependencies
         run: |
@@ -94,11 +98,11 @@ jobs:
       matrix:
         os: [windows-latest]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: add symlink dir to PATH
         run: echo "::add-path::$HOME/AppData/Local/julias/bin"
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: 3.6
 
@@ -134,7 +138,7 @@ jobs:
 
     name: Unit Test
     steps:
-      - uses: actions/checkout@v1.0.0
+      - uses: actions/checkout@v2.0.0
 
       # it's running in docker container, so we need to squash all codes into one step
       - name: Test jill install

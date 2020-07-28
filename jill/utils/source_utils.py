@@ -211,3 +211,11 @@ def show_upstream():
     """print all registered upstream servers"""
     registry = SourceRegistry()
     print(registry.info())
+
+
+def verify_upstream(registry_name):
+    registry = SourceRegistry()
+    if registry_name not in registry.registry:
+        available_names = '"' + '", "'.join(registry.registry.keys()) + '"'
+        raise(ValueError(
+            f'registry "{registry_name}" not in {available_names}'))

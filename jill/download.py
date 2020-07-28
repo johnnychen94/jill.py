@@ -1,4 +1,4 @@
-from .utils import SourceRegistry
+from .utils import SourceRegistry, verify_upstream
 from .utils import latest_version
 from .utils import is_version_released
 from .utils import is_full_version
@@ -110,6 +110,8 @@ def download_package(version=None, sys=None, arch=None, *,
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)
 
+    if upstream:
+        verify_upstream(upstream)
     wrong_args = False
     try:
         version = latest_version(

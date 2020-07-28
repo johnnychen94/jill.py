@@ -14,6 +14,7 @@ from .version_utils import update_releases
 from .version_utils import read_releases
 from .source_utils import SourceRegistry
 from .source_utils import show_upstream
+from .source_utils import verify_upstream
 
 __all__ = [
     # filters
@@ -44,5 +45,6 @@ __all__ = [
 
     # source_utils
     "SourceRegistry",
-    "show_upstream"
+    "show_upstream",
+    "verify_upstream"
 ]

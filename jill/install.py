@@ -4,6 +4,7 @@ from .utils import current_architecture, current_system
 from .utils import latest_version
 from .utils import DmgMounter, TarMounter
 from .utils import Version
+from .utils import verify_upstream
 from .utils import color, show_verbose
 from .download import download_package
 
@@ -335,6 +336,8 @@ def install_julia(version=None, *,
         if not to_continue:
             return False
 
+    if upstream:
+        verify_upstream(upstream)
     wrong_args = False
     try:
         version = latest_version(

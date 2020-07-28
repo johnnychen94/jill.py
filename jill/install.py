@@ -329,8 +329,7 @@ def install_julia(version=None, *,
         question += f"  1) install Julia {version_str} for {system}-{arch}"
         question += f" into {color.UNDERLINE}{install_dir}{color.END}\n"
         question += f"  2) make symlinks in {color.UNDERLINE}{symlink_dir}{color.END}\n"
-        question += f"  3) add {color.UNDERLINE}{symlink_dir}{color.END}"
-        question += " to PATH if necessary\n"
+        question += f"You may need to manually add {color.UNDERLINE}{symlink_dir}{color.END} to PATH\n"
         question += "Continue installation?"
         to_continue = query_yes_no(question)
         if not to_continue:

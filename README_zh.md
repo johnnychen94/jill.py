@@ -35,7 +35,8 @@ _跨平台的 Julia 一键安装脚本_
 
 ## 使用帮助
 
-简而言之，`jill install [version]` 能满足你绝大部分要求
+简而言之，`jill install [version]` 能满足你绝大部分要求。对于初次使用 `jill.py` 的用户而言，你可能需要修改 `PATH`
+来让命令行正常找到 Julia.
 
 <details>
 <summary>安装 demo</summary>

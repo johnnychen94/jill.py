@@ -43,7 +43,8 @@ Note that `Python >= 3.6` is required. For base docker images, you also need to 
 
 ## Usage examples for most users
 
-TL;DR `jill install [version]` covers most of your need.
+TL;DR `jill install [version]` covers most of your need. For the first-time users of `jill.py`, you may need to modify `PATH` accordingly
+so that your shell can find the executables when you type `julia`.
 
 <details>
 <summary>installation demo</summary>

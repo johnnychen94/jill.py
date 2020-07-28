@@ -44,7 +44,8 @@ rules_extension = {
     "windows": "exe",
     "linux": "tar.gz",
     "macos": "dmg",
-    "freebsd": "tar.gz"
+    "freebsd": "tar.gz",
+    "musl": "tar.gz"
 }
 rules_bit = {
     "i686": 32,
@@ -53,8 +54,8 @@ rules_bit = {
     "ARMv7": 32,
 }
 
-VALID_SYSTEM = ["windows", "linux", "freebsd", "macos"]
-VALID_OS = ["win", "linux", "freebsd", "mac"]
+VALID_SYSTEM = ["windows", "linux", "musl", "freebsd", "macos"]
+VALID_OS = ["win", "linux", "musl", "freebsd", "mac"]
 VALID_ARCHITECTURE = list(rules_arch.keys())
 VALID_ARCH = list(rules_arch.values())
 

@@ -2,7 +2,7 @@ from .utils import SourceRegistry, verify_upstream
 from .utils import latest_version
 from .utils import is_version_released
 from .utils import is_full_version
-from .utils import current_system, current_architecture
+from .utils import current_system, current_architecture, current_libc
 from .utils import verify_gpg
 from .utils import color
 
@@ -87,7 +87,7 @@ def download_package(version=None, sys=None, arch=None, *,
     Arguments:
       version:
         The Julia version you want to install. See also `jill install`
-      sys: Options are: "linux", "macos", "freebsd", "windows"
+      sys: Options are: "linux", "musl", "macos", "freebsd", "windows"
       arch: Options are: "i686", "x86_64", "ARMv7", "ARMv8"
       upstream:
         manually choose a download upstream. For example, set it to "Official"
@@ -102,6 +102,10 @@ def download_package(version=None, sys=None, arch=None, *,
     version = "" if version == "stable" else version
 
     system = sys if sys else current_system()
+    if system == "linux" and current_libc() == "musl":
+        # currently Julia tags musl as a system, e.g.,
+        # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
+        system = "musl"
     architecture = arch if arch else current_architecture()
 
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
@@ -173,7 +177,7 @@ def download_package(version=None, sys=None, arch=None, *,
         # macOS and Windows releases are codesigned with certificates
         # that are verified by the operating system during installation
         return package_path
-    elif system in ["linux", "freebsd"]:
+    elif system in ["linux", "freebsd", "musl"]:
         # need additional verification using GPG
         if not package_path:
             return package_path
@@ -203,4 +207,5 @@ def download_package(version=None, sys=None, arch=None, *,
         print(f"{color.GREEN}{msg}{color.END}")
         return package_path
     else:
+        os.remove(package_path)
         raise ValueError(f"unsupported system {sys}")

@@ -92,6 +92,8 @@ Here's a list of slightly advanced usages that you may be interested in:
 
 You can find a more verbose documentation using `jill [COMMAND] -h` (e.g., `jill download -h`)
 
+For Julia (>= 1.5.0) in Linux with `musl` dependency, you can download/install it by passing `--sys musl` command.
+`--sys linux` will give you Julia binaries built with `glibc` dependency.
 
 ## Example with cron
 

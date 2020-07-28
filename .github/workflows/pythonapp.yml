@@ -60,6 +60,32 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
 
+  musl_job:
+    name: Unit Test for musl
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: add symlink dir to PATH
+        run: echo "::add-path::$HOME/.local/bin"
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip --quiet
+          pip install -r requirements.txt --quiet
+          pip install coverage --quiet
+
+      - name: Test jill download and install
+        # make an invalid symlink before installation
+        # issue: https://github.com/abelsiqueira/jill/issues/25
+        run: |
+          mkdir ~/.local/bin -p && ln -sf /abcde ~/.local/bin/julia
+          python -m jill download --sys musl --upstream Official
+          python -m jill install --upstream Official --confirm
+          julia -e 'using InteractiveUtils; versioninfo()'
 
   windows_job:
     name: Unit Test
@@ -108,25 +134,25 @@ jobs:
 
     name: Unit Test
     steps:
-    - uses: actions/checkout@v1.0.0
+      - uses: actions/checkout@v1.0.0
 
-    # it's running in docker container, so we need to squash all codes into one step
-    - name: Test jill install
-      uses: uraimo/run-on-arch-action@v1.0.5
-      with:
-        architecture: ${{ matrix.architecture }}
-        distribution: ubuntu18.04
-        # no --update because not arm is tier 2 support in Julia
-        run: |
-          apt-get update -qq
-          apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools gnupg wget --no-install-recommends
-          export DEBUG=True
-          pip3 install --upgrade pip --quiet
-          pip3 install -r requirements.txt --quiet
-          python3 -m jill upstream
-          python3 -m jill install --confirm --upstream Official
-          julia -e 'using InteractiveUtils; versioninfo()'
-          python3 -m jill install 1.0 --confirm --upstream Official
-          julia -e 'using InteractiveUtils; versioninfo()'
-          julia-1 -e 'using InteractiveUtils; versioninfo()'
-          julia-1.0 -e 'using InteractiveUtils; versioninfo()'
+      # it's running in docker container, so we need to squash all codes into one step
+      - name: Test jill install
+        uses: uraimo/run-on-arch-action@v1.0.5
+        with:
+          architecture: ${{ matrix.architecture }}
+          distribution: ubuntu18.04
+          # no --update because not arm is tier 2 support in Julia
+          run: |
+            apt-get update -qq
+            apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools gnupg wget --no-install-recommends
+            export DEBUG=True
+            pip3 install --upgrade pip --quiet
+            pip3 install -r requirements.txt --quiet
+            python3 -m jill upstream
+            python3 -m jill install --confirm --upstream Official
+            julia -e 'using InteractiveUtils; versioninfo()'
+            python3 -m jill install 1.0 --confirm --upstream Official
+            julia -e 'using InteractiveUtils; versioninfo()'
+            julia-1 -e 'using InteractiveUtils; versioninfo()'
+            julia-1.0 -e 'using InteractiveUtils; versioninfo()'

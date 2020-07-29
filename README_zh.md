@@ -1,5 +1,9 @@
 # JILL.py
 
+<p>
+  <img width="150" align='right' src="logo.png">
+</p>
+
 _跨平台的 Julia 一键安装脚本_
 
 ![](https://img.shields.io/badge/system-Windows%7CmacOS%7CLinux%7CFreeBSD-yellowgreen)

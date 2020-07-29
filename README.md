@@ -1,5 +1,9 @@
 # JILL.py
 
+<p>
+  <img width="150" align='right' src="logo.png">
+</p>
+
 _The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light_
 
 ![](https://img.shields.io/badge/system-Windows%7CmacOS%7CLinux%7CFreeBSD-yellowgreen)

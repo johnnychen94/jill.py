@@ -93,7 +93,7 @@ PATH=/usr/local/bin:/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 * 0 * * * root jill install latest --confirm
 ```
 
-类似地，你也可以通过加一个 `jill install --confrim` 来保证 `julia` 永远是最新地稳定发行版。一旦有新的 Julia 版本
+类似地，你也可以通过加一个 `jill install --confirm` 来保证 `julia` 永远是最新地稳定发行版。一旦有新的 Julia 版本
 发布了，`jill` 就能够下载到它 -- 你甚至不需要更新`jill`。
 
 ## 镜像源的搭建

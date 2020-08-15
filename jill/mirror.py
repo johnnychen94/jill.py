@@ -135,9 +135,17 @@ def mirror(outdir="julia_pkg", *,
     """
     Download/sync all Julia releases
 
+    1. checks if there're new julia releases
+    2. downloads all releases Julia releases into `outdir` (default `./julia_pkg`)
+    3. (Optional): with flag `--period PERIOD`, it will repeat step 1 and 2 every `PERIOD` seconds
+
     If you want to modify the default mirror configuration, then provide
     a `mirror.json` file and pass the path to `config`. By default it's at
     the current directory. A template can be found at [1]
+
+    Repository [jill-mirror](https://github.com/johnnychen94/julia-mirror) provides an easy to
+    start `docker-compose.yml` for you to start with, which is just a simple docker image built
+    upon `jill mirror`.
 
     [1]: https://github.com/johnnychen94/jill.py/blob/master/mirror.example.json # nopep8
 

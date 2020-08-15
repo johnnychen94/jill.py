@@ -110,21 +110,7 @@ it's released -- you don't even need to upgrade `jill`.
 
 ## For who are interested in setting up a new release mirror
 
-### Mirror
-
-`jill mirror [outdir]`:
-
-1. checks if there're new julia releases
-2. downloads all releases Julia releases into `outdir` (default `./julia_pkg`)
-3. (Optional): with flag `--period PERIOD`, it will repeat step 1 and 2 every `PERIOD` seconds
-
-You can create a `mirror.json` in current folder to override the default mirror
-behaviors. The [mirror configuration example](mirror.example.json) shows the default
-values for all possible configurable items.
-
-Repository [jill-mirror](https://github.com/johnnychen94/julia-mirror) provides an easy to
-start `docker-compose.yml` for you to start with, which is just a simple docker image built
-upon `jill mirror`.
+This section is not for common `jill.py` users that simply wants to download and install Julia.
 
 ### Register new mirror
 

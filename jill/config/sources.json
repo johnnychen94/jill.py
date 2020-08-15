@@ -35,6 +35,16 @@
             "latest_urls": [
                 "https://mirrors.zju.edu.cn/julia/releases/latest/$latest_filename"
             ]
-        }
+        },
+        "SJTUG": {
+             "name": "Shanghai Jiao Tong University Linux User Group",
+             "urls": [
+                 "https://mirrors.sjtug.sjtu.edu.cn/julia-releases/bin/$sys/$arch/$minor_version/$filename"
+             ],
+             "latest_urls": [
+                 ""
+             ]
+         }
     }
 }
+

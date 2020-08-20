@@ -18,8 +18,8 @@
                 ""
             ]
         },
-        "Tsinghua": {
-            "name": "Tsinghua University",
+        "TUNA": {
+            "name": "Tsinghua University TUNA Association",
             "urls": [
                 "https://mirrors.tuna.tsinghua.edu.cn/julia-releases/bin/$sys/$arch/$minor_version/$filename"
             ],

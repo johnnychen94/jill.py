@@ -239,8 +239,6 @@ def latest_version(version: str, system, architecture, update=True, **kwargs) ->
         logging.warning(msg)
         print(f"{color.YELLOW}{msg}{color.END}")
         update = False
-    else:
-        update = True
 
     if update:
         print(f"query the latest {version} version, it may take seconds...")

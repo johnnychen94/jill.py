@@ -47,7 +47,9 @@ Note that `Python >= 3.6` is required. For base docker images, you also need to 
 
 ## Usage examples for most users
 
-Basic usage: `jill install [version] [--confirm] [--upstream UPSTREAM] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
+Basic usage:
+
+`jill install [version] [--confirm] [--upstream UPSTREAM] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
 
 For the first-time users of `jill.py`, you may need to modify `PATH` accordingly so that your shell can find the executables when you type `julia`.
 
@@ -56,7 +58,7 @@ For the first-time users of `jill.py`, you may need to modify `PATH` accordingly
 <img class="install" src="screenshots/install_demo.png"/>
 </details>
 
-When you type `jill install`, it does the following things:
+When you type `jill install` (the simplest usage), it does the following things:
 
 1. query latest stable release, it's `1.4.2` at the time of writing.
 2. download, verify and install julia `1.4.2`

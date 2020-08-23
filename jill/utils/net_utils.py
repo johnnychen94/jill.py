@@ -1,6 +1,9 @@
+from .sys_utils import show_verbose
+
 from urllib.parse import urlparse
 from ipaddress import ip_address
 
+from requests_futures.sessions import FuturesSession
 import socket
 import requests
 import time
@@ -65,20 +68,31 @@ def port_response_time(host, port, timeout=2):
     return min(roundtrip, timeout)
 
 
-def is_url_available(url, timeout) -> bool:
-    try:
-        logging.debug(f"try {url}")
-        r = requests.head(url, timeout=timeout)
-    except RequestException as e:
-        logging.debug(f"failed: {str(e)}")
-        return False
+def first_response(url_lists, timeout):
+    """
+    send HEAD request to each url, return the first url that responses and skip drop all other urls.
+    """
+    def _query(url):
+        if show_verbose():
+            print(f"send HEAD request to {url}")
+        return session.head(url, timeout=timeout, allow_redirects=True)
 
-    if r.status_code//100 == 4 or r.status_code//100 == 5:
-        logging.debug(f"failed: {r.status_code} error")
-        return False
-    elif r.status_code == 301 or r.status_code == 302:
-        # redirect
-        new_url = r.headers['Location']
-        return is_url_available(new_url, timeout)
-    else:
-        return True
+    if show_verbose():
+        print(f"HEAD request timeout: {timeout}")
+
+    with FuturesSession(max_workers=5) as session:
+        futures = [_query(url) for url in url_lists]
+
+        while True:
+            time.sleep(0.1)
+
+            status = [x.running() for x in futures]
+            for future in futures:
+                try:
+                    if future.done() and future.result().status_code == 200:
+                        return future.result().url
+                except RequestException:
+                    continue
+
+            if not any(status):
+                return None

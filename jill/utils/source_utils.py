@@ -6,7 +6,7 @@ from .defaults import default_scheme_ports
 from .defaults import SOURCE_CONFIGFILE
 from .net_utils import query_ip
 from .net_utils import port_response_time
-from .net_utils import is_url_available
+from .net_utils import first_response
 from .sys_utils import show_verbose
 from .filters import generate_info
 from .interactive_utils import color
@@ -15,13 +15,10 @@ from itertools import chain, repeat
 from urllib.parse import urlparse
 from string import Template
 
-import requests
 import json
 import os
 
 from typing import List
-
-from requests.exceptions import RequestException
 
 
 class ReleaseSource:
@@ -191,20 +188,13 @@ class SourceRegistry:
 
     def query_download_url(self,
                            version, system, arch, *,
-                           max_try=3, timeout=10):
+                           timeout=3):
         """
         return a valid download url to nearest mirror server. If there isn't
         such version then return None.
         """
         url_list = self._get_urls(version, system, arch)
-
-        url_list = chain.from_iterable(repeat(url_list, max_try))
-        for url in url_list:
-            if show_verbose():
-                print(f"query {url}")
-            if is_url_available(url, timeout):
-                return url
-        return None
+        return first_response(url_list, timeout=timeout)
 
 
 def show_upstream():

@@ -90,7 +90,7 @@ def read_releases(stable_only=False) -> List[Tuple]:
 def is_version_released(version, system, architecture,
                         update=False,
                         upstream=None,
-                        timeout=5,
+                        timeout=2,
                         cache=dict()):
     if not is_valid_release(version, system, architecture):
         return False
@@ -108,8 +108,7 @@ def is_version_released(version, system, architecture,
         # query process is time-consuming
         registry = SourceRegistry(upstream=upstream)
         rst = bool(registry.query_download_url(*item,
-                                               timeout=timeout,
-                                               max_try=1))
+                                               timeout=timeout))
         if show_verbose():
             c = color.GREEN if rst else color.RED
             msg = f"{c}{item}={rst}{color.END}"
@@ -270,7 +269,7 @@ def sort_releases():
 
 def update_releases(system=None, architecture=None, *,
                     upstream="Official",
-                    timeout=5):
+                    timeout=2):
     """
     check if there're new Julia releases
 

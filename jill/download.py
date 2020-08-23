@@ -50,8 +50,7 @@ def _download(url: str, out: str):
 def download_package(version=None, sys=None, arch=None, *,
                      upstream=None,
                      outdir=None,
-                     overwrite=False,
-                     max_try=3):
+                     overwrite=False):
     """
     download julia release from nearest servers
 
@@ -97,8 +96,6 @@ def download_package(version=None, sys=None, arch=None, *,
         where release is downloaded to. By default it's the current folder.
       overwrite:
         add `--overwrite` flag to overwrite existing releases.
-      max_try:
-        try `max_try` times before returning a False. The default value is 3.
     """
     version = str(version) if (version or str(version) == "0") else ""
     version = "latest" if version == "nightly" else version
@@ -141,8 +138,7 @@ def download_package(version=None, sys=None, arch=None, *,
     logging.info(msg)
     print(msg)
     registry = SourceRegistry(upstream=upstream)
-    url = registry.query_download_url(version, system, architecture,
-                                      max_try=max_try)
+    url = registry.query_download_url(version, system, architecture)
     if not url:
         msg = f"failed to find available upstream for {release_str}"
         logging.warning(msg)

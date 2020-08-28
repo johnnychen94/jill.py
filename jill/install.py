@@ -16,7 +16,7 @@ import logging
 
 
 def default_depot_path():
-    return os.path.expanduser("~/.julia")
+    return os.environ.get("JULIA_DEPOT_PATH", os.path.expanduser("~/.julia"))
 
 
 def default_symlink_dir():

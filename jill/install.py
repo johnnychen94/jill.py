@@ -9,10 +9,10 @@ from .utils import color, show_verbose
 from .download import download_package
 
 import os
+import re
 import getpass
 import shutil
 import subprocess
-import logging
 
 
 def default_depot_path():
@@ -74,6 +74,7 @@ def last_julia_version(version=None):
     version = float(f_minor_version(version)) if version else 999.999
     proj_versions = os.listdir(os.path.join(default_depot_path(),
                                             "environments"))
+    proj_versions = [x for x in proj_versions if re.fullmatch(r"v\d+\.\d+", x)]
     proj_versions = sorted(filter(lambda ver: sort_key(ver) < version,
                                   proj_versions),
                            key=sort_key)

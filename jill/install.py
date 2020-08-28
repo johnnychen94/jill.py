@@ -9,6 +9,7 @@ from .utils import color, show_verbose
 from .download import download_package
 
 import os
+import tempfile
 import re
 import getpass
 import shutil
@@ -168,8 +169,14 @@ def copy_root_project(version):
     src_path = os.path.join(env_path, old_ver)
     dest_path = os.path.join(env_path, f"v{mver}")
 
+    if src_path == dest_path:
+        return None
+
     if os.path.exists(dest_path):
         bak_path = os.path.join(env_path, f"v{mver}.bak")
+        if os.path.exists(bak_path):
+            print(f"{color.YELLOW}delete old backup {bak_path}{color.END}")
+            shutil.rmtree(bak_path)
         shutil.move(dest_path, bak_path)
         print(f"{color.YELLOW}move {dest_path} to {bak_path}{color.END}")
     shutil.copytree(src_path, dest_path)

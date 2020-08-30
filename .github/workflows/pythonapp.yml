@@ -90,6 +90,12 @@ jobs:
           python -m jill download --sys musl --upstream Official
           python -m jill install --upstream Official --confirm
           julia -e 'using InteractiveUtils; versioninfo()'
+          python -m jill install 1 --upstream Official --confirm
+          julia -e 'using InteractiveUtils; versioninfo()'
+          julia-1 -e 'using InteractiveUtils; versioninfo()'
+          python -m jill install 1.5 --upstream Official --confirm
+          julia -e 'using InteractiveUtils; versioninfo()'
+          julia-1.5 -e 'using InteractiveUtils; versioninfo'
 
   windows_job:
     name: Unit Test

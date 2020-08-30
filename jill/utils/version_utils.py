@@ -153,15 +153,6 @@ def latest_patch_version(version, system, architecture, **kwargs) -> str:
     if version == "latest":
         return version
 
-    # TODO: this is only useful for ARM, remove it (#16)
-    if (architecture in ["ARMv7", "ARMv8"] and
-            not kwargs.get("update", False)):
-        # just query from the sorted database
-        versions = [item for item in read_releases()
-                    if (item[2] == architecture and
-                        Version(version).next_minor() > Version(item[0]))]  # nopep8
-        return versions[-1][0]
-
     return _latest_version(Version.next_patch,
                            str(version), system, architecture,
                            **kwargs)
@@ -173,15 +164,6 @@ def latest_minor_version(version, system, architecture, **kwargs) -> str:
     """
     if version == "latest":
         return version
-
-    # TODO: this is only useful for ARM, remove it (#16)
-    if (architecture in ["ARMv7", "ARMv8"] and
-            not kwargs.get("update", False)):
-        # just query from the sorted database
-        versions = [item for item in read_releases()
-                    if (item[2] == architecture and
-                        Version(version).next_major() > Version(item[0]))]  # nopep8
-        return versions[-1][0]
 
     latest_minor = _latest_version(Version.next_minor,
                                    version, system, architecture,
@@ -197,15 +179,6 @@ def latest_major_version(version, system, architecture, **kwargs) -> str:
     """
     if version == "latest":
         return version
-
-    # TODO: this is only useful for ARM, remove it (#16)
-    if (architecture in ["ARMv7", "ARMv8"] and
-            not kwargs.get("update", False)):
-        # just query from the sorted database
-        versions = [item for item in read_releases()
-                    if (item[2] == architecture and
-                        Version("1.0.0").next_major() > Version(item[0]))]  # nopep8
-        return versions[-1][0]
 
     latest_major = _latest_version(Version.next_major,
                                    version, system, architecture,
@@ -233,24 +206,53 @@ def latest_version(version: str, system, architecture, update=True, **kwargs) ->
     if is_full_version(version):
         return version
 
-    if architecture in ["ARMv7", "ARMv8"]:
-        # TODO: fix update functionality for it in version_utils
-        msg = f"update is disabled for tier-2 support {architecture}"
-        logging.warning(msg)
-        print(f"{color.YELLOW}{msg}{color.END}")
-        update = False
-
     if update:
         print(f"query the latest {version} version, it may take seconds...")
     if len(version.strip()) == 0:
-        # if empty string is provided, query the latest version since 1.0.0
-        return latest_major_version('1', system, architecture, update=update, **kwargs)
+        # if empty string is provided, query the latest version since the latest stable released
+        # version. This version might not be released yet for specific platform, e.g., ARMv7, in
+        # this case, we query the database and return the latest one
+        versions = sorted(
+            set(map(lambda x: x[0], read_releases(stable_only=True))), key=Version)
+        ver = latest_major_version(
+            max(versions), system, architecture, update=update, **kwargs)
+
+        if is_version_released(ver, system, architecture, update=update, **kwargs):
+            return ver
+        else:
+            for ver in reversed(versions):
+                if is_version_released(ver, system, architecture, update=False, **kwargs):
+                    if Version(ver) < Version(max(versions)):
+                        print(
+                            f'{color.YELLOW}failed to find version "{version}", fallback to "{ver}"{color.END}')
+                    return ver
+            print(
+                f'{color.RED}failed to find latest version for "{version}"{color.END}')
+            return max(versions)
+
     else:
         # TODO: we can also support ^ and > semantics here
-        f_list = [latest_minor_version,
-                  latest_patch_version]
         idx = len(version.split('.')) - 1
-        return f_list[idx](version, system, architecture, update=update, **kwargs)
+        f = [latest_minor_version, latest_patch_version][idx]
+        ver = f(version, system, architecture,
+                update=update, **kwargs)
+
+        if is_version_released(ver, system, architecture, update=update, **kwargs):
+            return ver
+        else:
+            f = [f_major_version, f_minor_version][idx]
+            versions = sorted(
+                [x[0] for x in read_releases(stable_only=True) if f(x[0]) == version], key=Version)
+            for ver in versions:
+                if is_version_released(ver, system, architecture, update=False, **kwargs):
+                    if Version(ver) < Version(max(versions)):
+                        version_str = version if version else "latest"
+                        print(
+                            f'{color.YELLOW}failed to find version "{version_str}", fallback to "{ver}"{color.END}')
+                    return ver
+                print(
+                    f'{color.RED}failed to find latest version for "{version}"{color.END}')
+                return max(versions)
 
 
 def sort_releases():

@@ -102,7 +102,7 @@ def download_package(version=None, sys=None, arch=None, *,
     version = "" if version == "stable" else version
 
     system = sys if sys else current_system()
-    if system == "linux" and current_libc() == "musl":
+    if system == "linux" and current_system() == "linux" and current_libc() == "musl":
         # currently Julia tags musl as a system, e.g.,
         # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
         system = "musl"

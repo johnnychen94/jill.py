@@ -1,6 +1,6 @@
 from .utils.filters import f_major_version, f_minor_version, f_patch_version
 from .utils import query_yes_no
-from .utils import current_architecture, current_system
+from .utils import current_architecture, current_system, current_libc
 from .utils import latest_version
 from .utils import DmgMounter, TarMounter
 from .utils import Version
@@ -9,7 +9,6 @@ from .utils import color, show_verbose
 from .download import download_package
 
 import os
-import tempfile
 import re
 import getpass
 import shutil
@@ -329,6 +328,11 @@ def install_julia(version=None, *,
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
 
+    if system == "linux" and current_libc() == "musl":
+        # currently Julia tags musl as a system, e.g.,
+        # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
+        system = "musl"
+
     hello_msg()
     if system == "windows":
         install_dir = install_dir.replace("\\\\", "\\")
@@ -368,12 +372,13 @@ def install_julia(version=None, *,
 
     if system == "macos":
         installer = install_julia_mac
-    elif system in ["linux", "freebsd"]:
+    elif system in ["linux", "freebsd", "musl"]:
         # technically it's tarball installer
         installer = install_julia_linux
     elif system == "windows":
         installer = install_julia_windows
     else:
+        os.remove(package_path)
         raise ValueError(f"Unsupported system: {system}")
 
     print(f"{color.BOLD}----- Install Julia -----{color.END}")

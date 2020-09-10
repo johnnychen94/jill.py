@@ -151,7 +151,7 @@ def make_symlinks(src_bin, symlink_dir, version):
         if current_system() == "windows":
             with open(linkpath, 'w') as f:
                 # create a cmd file to mimic how we do symlinks in linux
-                f.writelines(["@echo off\n", f"{src_bin} %*"])
+                f.writelines(["@echo off\n", f"\"{src_bin}\" %*"])
         else:
             os.symlink(src_bin, linkpath)
 

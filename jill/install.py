@@ -151,7 +151,7 @@ def make_symlinks(src_bin, symlink_dir, version):
         if current_system() == "windows":
             with open(linkpath, 'w') as f:
                 # create a cmd file to mimic how we do symlinks in linux
-                f.writelines(["@echo off\n", f"{src_bin} %*"])
+                f.writelines(['@echo off\n', f'"{src_bin}" %*'])
         else:
             os.symlink(src_bin, linkpath)
 
@@ -322,7 +322,9 @@ def install_julia(version=None, *,
         where you want symlinks(e.g., `julia`, `julia-1`) placed.
     """
     install_dir = install_dir if install_dir else default_install_dir()
+    install_dir = os.path.abspath(install_dir)
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
+    symlink_dir = os.path.abspath(symlink_dir)
     system, arch = current_system(), current_architecture()
     version = str(version) if (version or str(version) == "0") else ''
     version = "latest" if version == "nightly" else version
@@ -335,7 +337,7 @@ def install_julia(version=None, *,
 
     hello_msg()
     if system == "windows":
-        install_dir = install_dir.replace("\\\\", "\\")
+        install_dir = install_dir.replace("\\\\", "\\").strip('\'"')
     if not confirm:
         version_str = version if version else "latest stable release"
         question = "jill will:\n"

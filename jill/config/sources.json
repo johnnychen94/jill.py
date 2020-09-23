@@ -33,16 +33,7 @@
                 "https://mirrors.ustc.edu.cn/julia/releases/$vminor_version/$filename"
             ],
             "latest_urls": [
-                "https://mirrors.ustc.edu.cn/julia/releases/latest/$latest_filename"
-            ]
-        },
-        "ZJU": {
-            "name": "Zhejiang University",
-            "urls": [
-                "https://mirrors.zju.edu.cn/julia/releases/$vminor_version/$filename"
-            ],
-            "latest_urls": [
-                "https://mirrors.zju.edu.cn/julia/releases/latest/$latest_filename"
+                ""
             ]
         },
         "SJTUG": {

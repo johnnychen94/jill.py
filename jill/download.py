@@ -133,7 +133,7 @@ def download_package(version=None, sys=None, arch=None, *,
         rst = is_version_released(
             version, system, architecture, upstream=upstream)
         if not rst:
-            msg = f"failed to find Julia release for {release_str}."
+            msg = f"failed to find {release_str} in available upstream. Please try it later."
             logging.info(msg)
             print(f"{color.RED}{msg}{color.END}")
             return False
@@ -144,7 +144,7 @@ def download_package(version=None, sys=None, arch=None, *,
     registry = SourceRegistry(upstream=upstream)
     url = registry.query_download_url(version, system, architecture)
     if not url:
-        msg = f"failed to find available upstream for {release_str}"
+        msg = f"failed to find {release_str} in available upstream. Please try it later."
         logging.warning(msg)
         print(f"{color.RED}{msg}{color.END}")
         return None

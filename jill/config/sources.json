@@ -30,7 +30,7 @@
         "USTC": {
             "name": "University of Science and Technology of China",
             "urls": [
-                "https://mirrors.ustc.edu.cn/julia/releases/$vminor_version/$filename"
+                "http://mirrors.ustc.edu.cn/julia-releases/bin/$sys/$arch/$minor_version/$filename"
             ],
             "latest_urls": [
                 ""

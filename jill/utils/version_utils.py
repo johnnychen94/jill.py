@@ -254,6 +254,11 @@ def latest_version(version: str, system, architecture, update=True, **kwargs) ->
                     f'{color.RED}failed to find latest version for "{version}"{color.END}')
                 return max(versions)
 
+    # reaches here if user has provide a wrong version
+    msg = f"{color.RED}version {version} is not available, use latest stable release.{color.END}"
+    print(msg)
+    return latest_version("", system, architecture, update, **kwargs)
+
 
 def sort_releases():
     releases = read_releases()

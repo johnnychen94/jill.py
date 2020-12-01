@@ -16,7 +16,13 @@ download_install_test:
 	done
 
 	# check if symlinks are created successfully
-	bash installtest.sh 1.0.5
+	julia-1 -e 'using InteractiveUtils; versioninfo()'
+	julia-1.4 -e 'using InteractiveUtils; versioninfo()'
+	julia-1.3 -e 'using InteractiveUtils; versioninfo()'
+	julia-1.2 -e 'using InteractiveUtils; versioninfo()'
+	julia-1.1 -e 'using InteractiveUtils; versioninfo()'
+	julia-1.0 -e 'using InteractiveUtils; versioninfo()'
+	
 	find . -type f -size +20M -name "julia-*" -delete ; \
 
 test:

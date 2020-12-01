@@ -3,8 +3,6 @@ from .defaults import GPG_PUBLIC_KEY_PATH
 from gnupg import GPG
 from tempfile import TemporaryDirectory
 
-import os
-
 
 def _verify_gpg(gpg: GPG, datafile, signature_file):
     # this requires gnupg installed in the system
@@ -21,7 +19,17 @@ def verify_gpg(datafile, signature_file=None) -> bool:
 
     with open(GPG_PUBLIC_KEY_PATH) as fh:
         keycontent = fh.read()
-    with TemporaryDirectory() as tmpdir:
-        gpg = GPG(gnupghome=tmpdir)
-        gpg.import_keys(keycontent)
-        return bool(_verify_gpg(gpg, datafile, signature_file))
+
+    rst = False
+    try:
+        with TemporaryDirectory() as tmpdir:
+            gpg = GPG(gnupghome=tmpdir)
+            gpg.import_keys(keycontent)
+            rst = bool(_verify_gpg(gpg, datafile, signature_file))
+    except FileNotFoundError:
+        # issue #45 -- might reaches here during the temp dir cleanup
+        # This might only related to VM environment
+        # https://bugs.python.org/issue25717
+        pass
+    finally:
+        return rst

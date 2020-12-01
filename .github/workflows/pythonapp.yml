@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: add symlink dir to PATH
-        run: echo '$HOME/.local/bin' >> $GITHUB_PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -70,7 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: add symlink dir to PATH
-        run: echo '$HOME/.local/bin' >> $GITHUB_PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -106,7 +106,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: add symlink dir to PATH
-        run: echo '$HOME/AppData/Local/julias/bin' >> $GITHUB_PATH
+        run: echo "$HOME/AppData/Local/julias/bin" >> $GITHUB_PATH
       - name: Set up Python
         uses: actions/setup-python@v2
         with:

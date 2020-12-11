@@ -80,8 +80,10 @@ _跨平台的 Julia 一键安装脚本_
 
 更多的参数及其作用请查看帮助文档: `jill [COMMAND] -h` (例如`jill install -h`)
 
-关于Libc依赖，Julia >=1.5.0 提供了分别使用 `musl` 和 `glibc` 的二进制程序，你可以用 `--sys musl` 来下载/安装基于`musl`
-的Julia版本。
+关于Libc依赖，Julia >=1.5.0 提供了分别使用 `musl` 和 `glibc` 的二进制程序，你可以
+
+- 安装： 依然还是正常的 `jill install`; `jill` 在这里会自动判断你是否在使用 `musl`
+- 下载： 用 `--sys musl` 来下载基于`musl`的版本，以及用`--sys linux` 来下载glibc的版本
 
 
 ## 案例 -- Cron

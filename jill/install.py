@@ -46,9 +46,24 @@ def default_install_dir():
         raise ValueError(f"Unsupported system: {system}")
 
 
-def get_exec_version(path=None):
-    if path is None:
-        path = shutil.which("julia")
+def is_installed(version, check_symlinks=True):
+    """
+        check if the required version is already installed.
+    """
+    check_list = ["julia"]
+    if version == "latest":
+        check_list.append("julia-latest")
+    if version != "latest" and check_symlinks:
+        check_list.extend([f"julia-{f_major_version(version)}",
+                           f"julia-{f_minor_version(version)}"])
+
+    for path in check_list:
+        if Version(get_exec_version(shutil.which(path))) != Version(version):
+            return False
+    return True
+
+
+def get_exec_version(path):
     ver_cmd = [path, "--version"]
     try:
         # outputs: "julia version 1.4.0-rc1"
@@ -370,7 +385,7 @@ def install_julia(version=None, *,
         msg += f"Example: `jill install 1`"
         raise(ValueError(msg))
 
-    if not reinstall and Version(version) == Version(get_exec_version()):
+    if not reinstall and is_installed(version):
         print(f"julia {version} already installed.")
         return True
 

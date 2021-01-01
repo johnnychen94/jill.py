@@ -287,7 +287,8 @@ def install_julia(version=None, *,
                   upgrade=False,
                   upstream=None,
                   keep_downloads=False,
-                  confirm=False):
+                  confirm=False,
+                  reinstall=False):
     """
     Install the Julia programming language for your current system
 
@@ -318,6 +319,9 @@ def install_julia(version=None, *,
       keep_downloads:
         add `--keep_downloads` flag to not remove downloaded releases.
       confirm: add `--confirm` flag to skip interactive prompt.
+      reinstall:
+        jill will skip the installation if the required Julia version already exists,
+        add `--reinstall` flag to force the reinstallation.
       install_dir:
         where you want julia packages installed.
       symlink_dir:
@@ -366,7 +370,7 @@ def install_julia(version=None, *,
         msg += f"Example: `jill install 1`"
         raise(ValueError(msg))
 
-    if Version(version) == Version(get_exec_version()):
+    if not reinstall and Version(version) == Version(get_exec_version()):
         print(f"julia {version} already installed.")
         return True
 

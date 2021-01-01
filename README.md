@@ -49,7 +49,7 @@ Note that `Python >= 3.6` is required. For base docker images, you also need to 
 
 Basic usage:
 
-`jill install [version] [--confirm] [--upstream UPSTREAM] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
+`jill install [version] [--confirm] [--upstream UPSTREAM] [--reinstall] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
 
 For the first-time users of `jill.py`, you may need to modify `PATH` accordingly so that your shell can find the executables when you type `julia`.
 

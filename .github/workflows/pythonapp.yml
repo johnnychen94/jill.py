@@ -88,14 +88,14 @@ jobs:
         run: |
           mkdir ~/.local/bin -p && ln -sf /abcde ~/.local/bin/julia
           python -m jill download --sys musl --upstream Official
-          python -m jill install --upstream Official --confirm
+          python -m jill install --upstream Official --confirm --reinstall
           julia -e 'using InteractiveUtils; versioninfo()'
-          python -m jill install 1 --upstream Official --confirm
+          python -m jill install 1 --upstream Official --confirm --reinstall
           julia -e 'using InteractiveUtils; versioninfo()'
           julia-1 -e 'using InteractiveUtils; versioninfo()'
-          python -m jill install 1.5 --upstream Official --confirm
+          python -m jill install 1.5 --upstream Official --confirm --reinstall
           julia -e 'using InteractiveUtils; versioninfo()'
-          julia-1.5 -e 'using InteractiveUtils; versioninfo'
+          julia-1.5 -e 'using InteractiveUtils; versioninfo()'
 
   windows_job:
     name: Unit Test
@@ -122,17 +122,17 @@ jobs:
       - name: test install
         run: |
           python -m jill upstream
-          python -m jill install --confirm --upstream Official
+          python -m jill install --confirm --upstream Official --reinstall
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia --project=. -e 'using Pkg; Pkg.add(\"ImageCore\")'
       - name: test symlink
         run: |
-          python -m jill install 1.0 --confirm --upstream Official
+          python -m jill install 1.0 --confirm --upstream Official --reinstall
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia-1.0 -e 'using InteractiveUtils; versioninfo()'
       - name: test nightly
         run: |
-          python -m jill install latest --confirm --upstream Official
+          python -m jill install latest --confirm --upstream Official --reinstall
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia-1.0 -e 'using InteractiveUtils; versioninfo()'
           & julia-latest -e 'using InteractiveUtils; versioninfo()'

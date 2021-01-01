@@ -11,7 +11,7 @@ download_install_test:
 	for julia_version in $(JULIA_VERSIONS) ; do \
 		echo "Test Julia version:" $$julia_version ; \
 		coverage run -a -m jill download $$julia_version ; \
-		coverage run -a -m jill install $$julia_version --confirm --keep_downloads ; \
+		coverage run -a -m jill install $$julia_version --confirm --keep_downloads --reinstall ; \
 		julia -e 'using InteractiveUtils; versioninfo()' ; \
 	done
 

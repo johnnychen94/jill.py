@@ -46,6 +46,23 @@ def default_install_dir():
         raise ValueError(f"Unsupported system: {system}")
 
 
+def is_installed(version, check_symlinks=True):
+    """
+        check if the required version is already installed.
+    """
+    check_list = ["julia"]
+    if version == "latest":
+        check_list.append("julia-latest")
+    if version != "latest" and check_symlinks:
+        check_list.extend([f"julia-{f_major_version(version)}",
+                           f"julia-{f_minor_version(version)}"])
+
+    for path in check_list:
+        if Version(get_exec_version(shutil.which(path))) != Version(version):
+            return False
+    return True
+
+
 def get_exec_version(path):
     ver_cmd = [path, "--version"]
     try:
@@ -285,7 +302,8 @@ def install_julia(version=None, *,
                   upgrade=False,
                   upstream=None,
                   keep_downloads=False,
-                  confirm=False):
+                  confirm=False,
+                  reinstall=False):
     """
     Install the Julia programming language for your current system
 
@@ -316,6 +334,9 @@ def install_julia(version=None, *,
       keep_downloads:
         add `--keep_downloads` flag to not remove downloaded releases.
       confirm: add `--confirm` flag to skip interactive prompt.
+      reinstall:
+        jill will skip the installation if the required Julia version already exists,
+        add `--reinstall` flag to force the reinstallation.
       install_dir:
         where you want julia packages installed.
       symlink_dir:
@@ -363,6 +384,10 @@ def install_julia(version=None, *,
         msg = f"wrong version(>= 0.6.0) argument: {version}\n"
         msg += f"Example: `jill install 1`"
         raise(ValueError(msg))
+
+    if not reinstall and is_installed(version):
+        print(f"julia {version} already installed.")
+        return True
 
     overwrite = True if version == "latest" else False
     print(f"{color.BOLD}----- Download Julia -----{color.END}")

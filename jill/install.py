@@ -46,7 +46,9 @@ def default_install_dir():
         raise ValueError(f"Unsupported system: {system}")
 
 
-def get_exec_version(path):
+def get_exec_version(path=None):
+    if path is None:
+        path = shutil.which("julia")
     ver_cmd = [path, "--version"]
     try:
         # outputs: "julia version 1.4.0-rc1"
@@ -363,6 +365,10 @@ def install_julia(version=None, *,
         msg = f"wrong version(>= 0.6.0) argument: {version}\n"
         msg += f"Example: `jill install 1`"
         raise(ValueError(msg))
+
+    if Version(version) == Version(get_exec_version()):
+        print(f"julia {version} already installed.")
+        return True
 
     overwrite = True if version == "latest" else False
     print(f"{color.BOLD}----- Download Julia -----{color.END}")

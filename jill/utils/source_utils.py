@@ -96,7 +96,7 @@ class ReleaseSource:
         url_list = [t.substitute(**configs) for t in template_lists]
         url_list.sort(key=lambda url:
                       self.latencies[urlparse(url).netloc])
-        return url_list[0] if url_list else ""
+        return url_list if url_list else ""
 
 
 def read_registry():
@@ -179,8 +179,9 @@ class SourceRegistry:
         system and architecture. Special version name such as 'latest' are
         treated differently.
         """
-        url_list = [src.get_url(plain_version, system, architecture)
-                    for src in self.registry.values()]
+        url_list = []
+        for src in self.registry.values():
+            url_list.extend(src.get_url(plain_version, system, architecture))
         url_list = [url for url in url_list if url]
         url_list.sort(key=lambda url:
                       self.latencies[urlparse(url).netloc])

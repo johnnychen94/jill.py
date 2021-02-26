@@ -27,7 +27,7 @@ rules_osarch = {
     "win-x86_64": "win64",
     "mac-x86_64": "mac64",
     "linux-ARMv7": "linux-armv7l",
-    "linux-ARMv8": "linux-aarch64"
+    "linux-ARMv8": "linux-aarch64",
 }
 rules_osbit = {
     "wini686": "win32",

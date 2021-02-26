@@ -34,7 +34,7 @@ def _download(url: str, out: str):
             print()  # for format usage
             msg = f"finished downloading {outname}"
             print(f"{color.GREEN}{msg}{color.END}")
-        except (URLError, ConnectionError) as e:
+        except (URLError, ConnectionError):
             msg = f"failed to download {outname}"
             logging.info(msg)
             print(f"{color.RED}{msg}{color.END}")
@@ -75,8 +75,7 @@ def download_package(version=None, sys=None, arch=None, *,
     If you're interested in downloading from an unregistered private
     mirror, you can provide a `sources.json` file to CONFIG_PATH and use
     `jill upstream` to check if your mirror is added. A config template
-    can be found at [1]. For how to make such mirror, please refer to
-    `jill mirror`.
+    can be found at [1].
 
     CONFIG_PATH:
       * windows: `~\\AppData\\Local\\julias\\sources.json`
@@ -115,9 +114,8 @@ def download_package(version=None, sys=None, arch=None, *,
         verify_upstream(upstream)
     wrong_args = False
     try:
-        version = latest_version(
-            version, system, architecture, update=True, upstream=upstream)
-    except ValueError as e:
+        version = latest_version(version, system, architecture)
+    except ValueError:
         # hide the nested error stack :P
         wrong_args = True
     if wrong_args:
@@ -130,8 +128,7 @@ def download_package(version=None, sys=None, arch=None, *,
 
     release_str = f"{version}-{system}-{architecture}"
     if do_release_check:
-        rst = is_version_released(
-            version, system, architecture, upstream=upstream)
+        rst = is_version_released(version, system, architecture)
         if not rst:
             msg = f"failed to find {release_str} in available upstream. Please try it later."
             logging.info(msg)

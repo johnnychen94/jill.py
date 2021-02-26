@@ -8,3 +8,4 @@ julia_pkg
 __pycache__
 /*.log
 /.vscode
+.DS_Store

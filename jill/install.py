@@ -377,7 +377,7 @@ def install_julia(version=None, *,
     try:
         version = latest_version(
             version, system, arch, update=True, upstream=upstream)
-    except ValueError as e:
+    except ValueError:
         # hide the nested error stack :P
         wrong_args = True
     if wrong_args:

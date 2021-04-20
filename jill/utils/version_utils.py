@@ -2,7 +2,7 @@ from .filters import is_valid_release
 from .filters import is_system, is_architecture
 from .filters import VALID_SYSTEM, VALID_ARCHITECTURE
 from .filters import f_major_version, f_minor_version, f_patch_version
-from .defaults import VERSIONS_URL
+from .defaults import VERSIONS_URL, VERSIONS_SCHEMA_FILE_PATH, VERSIONS_SCHEMA_URL
 from .sys_utils import current_system, current_architecture
 from .sys_utils import show_verbose
 from .interactive_utils import color
@@ -17,7 +17,9 @@ import os
 import logging
 import requests
 import json
+import jsonschema
 
+from jsonschema.exceptions import ValidationError
 from typing import Tuple, List
 
 
@@ -78,7 +80,29 @@ def cache_read_remote_json(url, cache=dict()):
     if not cache:
         print(
             f'{color.GREEN}querying release information (from julialang-s3.julialang.org){color.END}')
-        cache.update(json.loads(requests.get(url).text))
+        version_list = json.loads(requests.get(url).text)
+
+        # Validate the downloaded content with `versions_schema.json`.
+        # This file is unlikely to be outdated so we keep a copy
+        # inside `jill`. If it gets outdated, then print a warning message and
+        # download the lastest schema file.
+        # When there're new arch/sys that makes this our copy outdated, it's very
+        # likely that `jill` doesn't support it.
+        with open(VERSIONS_SCHEMA_FILE_PATH, "r") as file:
+            schema = json.load(file)
+        is_valid = False
+        try:
+            jsonschema.validate(version_list, schema)
+            is_valid = True
+        except ValidationError:
+            is_valid = False
+            print(
+                f'{color.YELLOW} failed to validate versions file, retry with latest schema...')
+            schema = json.load(requests.get(VERSIONS_SCHEMA_URL).text)
+        if not is_valid:
+            jsonschema.validate(version_list, schema)
+
+        cache.update(version_list)
     return cache
 
 

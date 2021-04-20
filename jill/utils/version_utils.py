@@ -71,17 +71,30 @@ class Version(semantic_version.Version):
         return ".".join([major, minor, patch])
 
 
+def cache_read_remote_json(url, cache=dict()):
+    """
+        If not cached, download and read json content from remote URL `url`.
+    """
+    if not cache:
+        print(
+            f'{color.GREEN}querying release information (from julialang-s3.julialang.org){color.END}')
+        cache.update(json.loads(requests.get(url).text))
+    return cache
+
+
 def read_releases(stable_only=False) -> List[Tuple]:
     """
     read release info from versions.json (VERSIONS_URL)
+    The content will be cached so will only download the data once.
     """
-    print(f'{color.GREEN}querying release information (from julialang-s3.julialang.org){color.END}')
-    v = json.loads(requests.get(VERSIONS_URL).text)
+    # Here we only cache the raw content so that post processing like `stable_only` filter
+    # works as expected.
+    v = cache_read_remote_json(VERSIONS_URL)
     releases = []
     for item in v.items():
         ver = item[0]
-        stab = item[1]['stable']
-        if not stable_only or stab:
+        is_stable = item[1]['stable']
+        if not stable_only or is_stable:
             files = item[1]['files']
             for file in files:
                 # TODO: Use inverse filters here instead of hardcoding....
@@ -100,13 +113,12 @@ def read_releases(stable_only=False) -> List[Tuple]:
                     arch = 'ARMv8'
                 elif arch == 'armv7l':
                     arch = 'ARMv7'
-                
+
                 releases.append((ver, system, arch))
-    return releases
+    return releases  # type: ignore
 
 
-def is_version_released(version, system, architecture,
-                        cache=dict(), stable_only=False):
+def is_version_released(version, system, architecture, stable_only=False):
     """
         Checks if the given version number is released for the given system and architecture.
         Note: returns True for version="latest" if system and architecture are valid.
@@ -118,14 +130,9 @@ def is_version_released(version, system, architecture,
     if version == "latest":
         return True
 
-    if not cache:
-        cache = read_releases(stable_only=stable_only)
-
+    version_list = read_releases(stable_only=stable_only)
     item = str(version), system, architecture
-    if item in cache:
-        return True
-    
-    return False
+    return (item in version_list)
 
 
 def latest_version(version: str, system, architecture, stable_only=True, **kwargs) -> str:
@@ -138,8 +145,7 @@ def latest_version(version: str, system, architecture, stable_only=True, **kwarg
     if version and Version(version) < Version("0.6.0"):
         raise(ValueError('Julia < v"0.6.0" is not supported.'))
 
-    # if user passes a complete version here, then we don't need to query
-    # from local storage, just trying to download it would be fine.
+    # Download whatever the user requests; ignores `stable_only`.
     if is_full_version(version):
         return version
 

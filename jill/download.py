@@ -100,6 +100,7 @@ def download_package(version=None, sys=None, arch=None, *,
     version = str(version) if (version or str(version) == "0") else ""
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
+    upstream = upstream if upstream else os.environ.get("JILL_UPSTREAM", None)
 
     system = sys if sys else current_system()
     if system == "linux" and current_system() == "linux" and current_libc() == "musl":

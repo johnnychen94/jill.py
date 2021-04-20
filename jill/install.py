@@ -350,6 +350,7 @@ def install_julia(version=None, *,
     version = str(version) if (version or str(version) == "0") else ''
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
+    upstream = upstream if upstream else os.environ.get("JILL_UPSTREAM", None)
 
     if system == "linux" and current_libc() == "musl":
         # currently Julia tags musl as a system, e.g.,

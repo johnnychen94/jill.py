@@ -10,7 +10,6 @@ from .version_utils import Version
 from .version_utils import latest_version
 from .version_utils import is_version_released
 from .version_utils import is_full_version
-from .version_utils import update_releases
 from .version_utils import read_releases
 from .source_utils import SourceRegistry
 from .source_utils import show_upstream
@@ -40,7 +39,6 @@ __all__ = [
     "Version",
     "is_full_version",
     "latest_version",
-    "update_releases",
     "is_version_released",
     "read_releases",
 

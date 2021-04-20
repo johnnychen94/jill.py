@@ -5,6 +5,7 @@ from .utils import is_full_version
 from .utils import current_system, current_architecture, current_libc
 from .utils import verify_gpg
 from .utils import color
+from .utils.filters import canonicalize_sys, canonicalize_arch
 
 import wget
 import os
@@ -86,8 +87,8 @@ def download_package(version=None, sys=None, arch=None, *,
     Arguments:
       version:
         The Julia version you want to install. See also `jill install`
-      sys: Options are: "linux", "musl", "macos", "freebsd", "windows"
-      arch: Options are: "i686", "x86_64", "ARMv7", "ARMv8"
+      sys: Options are: "linux", "musl", "macos", "freebsd", "windows"/"winnt"/"win"
+      arch: Options are: "i686"/"x86", "x86_64"/"x64", "ARMv7"/"armv7l", "ARMv8"/"aarch64"
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
@@ -101,12 +102,12 @@ def download_package(version=None, sys=None, arch=None, *,
     version = "" if version == "stable" else version
     upstream = upstream if upstream else os.environ.get("JILL_UPSTREAM", None)
 
-    system = sys if sys else current_system()
+    system = sys if canonicalize_sys(sys) else current_system()
     if system == "linux" and current_system() == "linux" and current_libc() == "musl":
         # currently Julia tags musl as a system, e.g.,
         # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
         system = "musl"
-    architecture = arch if arch else current_architecture()
+    architecture = arch if canonicalize_arch(arch) else current_architecture()
 
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)
@@ -171,7 +172,7 @@ def download_package(version=None, sys=None, arch=None, *,
 
     package_path = _download(url, outpath)
 
-    if system in ["windows", "macos"]:
+    if system in ["winnt", "mac"]:
         # macOS and Windows releases are codesigned with certificates
         # that are verified by the operating system during installation
         return package_path

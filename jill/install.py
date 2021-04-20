@@ -21,7 +21,7 @@ def default_depot_path():
 
 def default_symlink_dir():
     system = current_system()
-    if system == "windows":
+    if system == "winnt":
         return os.path.expanduser(r"~\AppData\Local\julias\bin")
     if getpass.getuser() == "root":
         # available to all users
@@ -33,14 +33,14 @@ def default_symlink_dir():
 
 def default_install_dir():
     system = current_system()
-    if system == "macos":
+    if system == "mac":
         return "/Applications"
     elif system in ["linux", "freebsd"]:
         if getpass.getuser() == "root":
             return "/opt/julias"
         else:
             return os.path.expanduser("~/packages/julias")
-    elif system == "windows":
+    elif system == "winnt":
         return os.path.expanduser(r"~\AppData\Local\julias")
     else:
         raise ValueError(f"Unsupported system: {system}")
@@ -398,12 +398,12 @@ def install_julia(version=None, *,
     if not package_path:
         return False
 
-    if system == "macos":
+    if system == "mac":
         installer = install_julia_mac
     elif system in ["linux", "freebsd", "musl"]:
         # technically it's tarball installer
         installer = install_julia_linux
-    elif system == "windows":
+    elif system == "winnt":
         installer = install_julia_windows
     else:
         os.remove(package_path)

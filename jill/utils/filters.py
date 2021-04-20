@@ -3,6 +3,7 @@ Module `filters` defines placeholders and how names are filtered.
 """
 from .defaults import default_filename_template
 from .defaults import default_latest_filename_template
+from .defaults import load_placeholder, load_alias
 
 import re
 from string import Template
@@ -14,50 +15,43 @@ VERSION_REGEX = re.compile(
 SPECIAL_VERSION_NAMES = ["latest", "nightly", "stable"]
 
 
-rule_sys = {"windows": "winnt", "macos": "mac"}
-rules_os = {"windows": "win", "macos": "mac"}
-rules_arch = {
-    "i686": "x86",
-    "x86_64": "x64",
-    "ARMv8": "aarch64",
-    "ARMv7": "armv7l"
-}
-rules_osarch = {
-    "win-i686": "win32",
-    "win-x86_64": "win64",
-    "mac-x86_64": "mac64",
-    "linux-ARMv7": "linux-armv7l",
-    "linux-ARMv8": "linux-aarch64",
-}
-rules_osbit = {
-    "wini686": "win32",
-    "winx86_64": "win64",
-    "macx86_64": "mac64",
-    "linuxARMv7": "linuxarmv7l",
-    "linuxARMv8": "linuxaarch64",
-    "linuxx86_64": "linux64",
-    "linuxi686": "linux32",
-    "freebsdx86_64": "freebsd64",
-    "freebsdi686": "freebsd32"
-}
-rules_extension = {
-    "windows": "exe",
-    "linux": "tar.gz",
-    "macos": "dmg",
-    "freebsd": "tar.gz",
-    "musl": "tar.gz"
-}
-rules_bit = {
-    "i686": 32,
-    "x86_64": 64,
-    "ARMv8": 64,
-    "ARMv7": 32,
-}
+def is_version(version):
+    if version in SPECIAL_VERSION_NAMES:
+        return True
+    else:
+        return bool(VERSION_REGEX.match(version))
 
-VALID_SYSTEM = ["windows", "linux", "musl", "freebsd", "macos"]
-VALID_OS = ["win", "linux", "musl", "freebsd", "mac"]
-VALID_ARCHITECTURE = list(rules_arch.keys())
-VALID_ARCH = list(rules_arch.values())
+
+def canonicalize_arch(arch: Optional[str]):
+    """
+        Canonicalize arch names to arch names defined by Julia schema.
+
+        For example, `--sys=win` is allowed in jill but this is
+        not listed in Julia's `versions-schema.json`. This function
+        maps these alias into the legal names defined by
+        `versions-schema.json`.
+
+        The canonicalize rule is defined in `jill/config/alias.json`, for
+        names not in that list, it's an identity map.
+    """
+    if arch is not None:
+        return load_alias()["Arch"].get(arch.lower(), arch.lower())
+
+
+def canonicalize_sys(os: Optional[str]):
+    """
+        Canonicalize sys names to OS names defined by Julia schema.
+
+        For example, `--sys=win` is allowed in jill but this is
+        not listed in Julia's `versions-schema.json`. This function
+        maps these alias into the legal names defined by
+        `versions-schema.json`.
+
+        The canonicalize rule is defined in `jill/config/alias.json`, for
+        names not in that list, it's an identity map.
+    """
+    if os is not None:
+        return load_alias()["OS"].get(os.lower(), os.lower())
 
 
 def identity(*args):
@@ -68,51 +62,18 @@ def no_validate(*args, **kwargs):
     return True
 
 
-def is_system(system):
-    if system not in VALID_SYSTEM:
-        err_msg = f"{system} isn't a valid system, "
-        err_msg += f"possible choices are: {', '.join(VALID_SYSTEM)}"
-        raise ValueError(err_msg)
-    return True
+def _Osarch(os, arch):
+    if os in ["win", "mac"]:
+        return f_osarch(os, arch).capitalize()
+    os, arch = f_osarch(os, arch).split('-')
+    return os.capitalize() + '-' + arch
 
 
-def is_os(os):
-    return os in VALID_OS
-
-
-def is_architecture(arch):
-    if arch not in VALID_ARCHITECTURE:
-        err_msg = f"{arch} isn't a valid architecture, "
-        err_msg += f"possible choices are: {', '.join(VALID_ARCHITECTURE)}"
-        raise ValueError(err_msg)
-    return True
-
-
-def is_arch(arch):
-    return arch in VALID_ARCH
-
-
-def is_version(version):
-    if version in SPECIAL_VERSION_NAMES:
-        return True
-    else:
-        return bool(VERSION_REGEX.match(version))
-
-
-def is_valid_release(version, system, architecture):
-    if (system == "windows"
-            and architecture not in ["i686", "x86_64"]):
-        return False
-    if (system == "macos"
-            and architecture not in ["x86_64"]):
-        return False
-    if (system == "freebsd"
-            and architecture not in ["x86_64"]):
-        return False
-    if (version == "latest" and (
-            architecture not in ["i686", "x86_64"])):
-        return False
-    return True
+def _OSarch(os, arch):
+    if os in ["win", "mac"]:
+        return f_osarch(os, arch).upper()
+    os, arch = f_osarch(os, arch).split('-')
+    return os.upper() + '-' + arch
 
 
 class NameFilter:
@@ -123,7 +84,11 @@ class NameFilter:
                  validate: Callable = no_validate):
         self.f = f
         self.name = name
-        self.rules = rules if rules else {}
+        if rules:
+            self.rules = rules
+        else:
+            rules = load_placeholder().get(name, dict())
+            self.rules = rules if rules else dict()
         self.validate = validate
 
     def __call__(self, *args, **kwargs):
@@ -187,54 +152,30 @@ f_Vpatch_version = NameFilter(
 
 f_version = NameFilter("version", _version, validate=is_version)
 
-f_system = NameFilter("system", validate=is_system)
+
+f_system = NameFilter("system")
 f_System = NameFilter("system", f=lambda x: f_system(x).capitalize())
 f_SYSTEM = NameFilter("system", f=lambda x: f_system(x).upper())
 
-f_sys = NameFilter("sys", rules=rule_sys, validate=is_system)
+f_sys = NameFilter("sys")
 f_Sys = NameFilter("sys", f=lambda x: f_sys(x).capitalize())
 f_SYS = NameFilter("sys", f=lambda x: f_sys(x).upper())
 
-f_os = NameFilter("os", rules=rules_os, validate=is_system)
+f_os = NameFilter("os")
 f_Os = NameFilter("os", f=lambda x: f_os(x).capitalize())
 f_OS = NameFilter("os", f=lambda x: f_os(x).upper())
 
-f_arch = NameFilter("arch", rules=rules_arch, validate=is_architecture)
+f_arch = NameFilter("arch")
 f_Arch = NameFilter("arch", f=lambda x: f_arch(x).capitalize())
 f_ARCH = NameFilter("arch", f=lambda x: f_arch(x).upper())
 
-f_osarch = NameFilter("osarch", f=lambda os, arch: f"{os}-{arch}",
-                      rules=rules_osarch,
-                      validate=lambda os, arch:
-                      is_os(os) and is_architecture(arch))
+f_osarch = NameFilter("osarch", f=lambda os, arch: f"{os}-{arch}")
+f_Osarch = NameFilter("osarch", f=_Osarch)
+f_OSarch = NameFilter("osarch", f=_OSarch)
 
-
-def _Osarch(os, arch):
-    if os in ["win", "mac"]:
-        return f_osarch(os, arch).capitalize()
-    os, arch = f_osarch(os, arch).split('-')
-    return os.capitalize() + '-' + arch
-
-
-def _OSarch(os, arch):
-    if os in ["win", "mac"]:
-        return f_osarch(os, arch).upper()
-    os, arch = f_osarch(os, arch).split('-')
-    return os.upper() + '-' + arch
-
-
-f_Osarch = NameFilter("osarch", _Osarch)
-f_OSarch = NameFilter("osarch", _OSarch)
-
-f_osbit = NameFilter("osbit", f=lambda os, arch: f"{os}{arch}",
-                     rules=rules_osbit,
-                     validate=lambda os, arch:
-                     is_os(os) and is_architecture(arch))
-
-f_bit = NameFilter("bit", rules=rules_bit, validate=is_architecture)
-
-f_extension = NameFilter(
-    "extension", rules=rules_extension, validate=is_system)
+f_osbit = NameFilter("osbit", f=lambda os, arch: f"{os}{arch}")
+f_bit = NameFilter("bit")
+f_extension = NameFilter("extension")
 
 
 def _meta_filename(t, *args, **kwargs):
@@ -259,6 +200,9 @@ def generate_info(plain_version: str,
                   system: str,
                   architecture: str,
                   **kwargs):
+    system = canonicalize_sys(system)
+    architecture = canonicalize_arch(architecture)
+
     os = f_os(system)
     arch = f_arch(architecture)
 

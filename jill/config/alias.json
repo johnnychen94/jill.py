@@ -1,0 +1,14 @@
+{
+    "Arch": {
+        "x86": "i686",
+        "x64": "x86_64",
+        "armv8": "aarch64",
+        "armv7": "armv7l"
+    },
+    "OS": {
+        "macos": "mac",
+        "darwin": "mac",
+        "windows": "winnt",
+        "win": "winnt"
+    }
+}

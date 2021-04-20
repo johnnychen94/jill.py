@@ -13,11 +13,11 @@ def current_system():
     if rst.lower() == "linux":
         return "linux"
     elif rst.lower() == "darwin":
-        return "macos"
+        return "mac"
     elif rst.lower() == "freebsd":
         return "freebsd"
     elif rst.lower() == "windows":
-        return "windows"
+        return "winnt"
     else:
         raise ValueError(f"Unsupported system {rst}")
 
@@ -25,9 +25,9 @@ def current_system():
 def current_architecture():
     arch = platform.machine()
     if arch.lower() == "aarch64":
-        return "ARMv8"
+        return "aarch64"
     elif arch.lower() == "armv7l":
-        return "ARMv7"
+        return "armv7l"
     elif arch.lower() == "i386":
         return "i686"
     elif arch.lower() == "amd64":

@@ -1,0 +1,38 @@
+{
+    "sys": {},
+    "os": {
+        "winnt": "win"
+    },
+    "arch": {
+        "i686": "x86",
+        "x86_64": "x64"
+    },
+    "osarch": {
+        "win-i686": "win32",
+        "win-x86_64": "win64",
+        "mac-x86_64": "mac64"
+    },
+    "osbit": {
+        "wini686": "win32",
+        "winx86_64": "win64",
+        "macx86_64": "mac64",
+        "linuxx86_64": "linux64",
+        "linuxi686": "linux32",
+        "freebsdx86_64": "freebsd64",
+        "freebsdi686": "freebsd32"
+    },
+    "extension": {
+        "winnt": "exe",
+        "linux": "tar.gz",
+        "mac": "dmg",
+        "freebsd": "tar.gz",
+        "musl": "tar.gz"
+    },
+    "bit": {
+        "i686": 32,
+        "x86_64": 64,
+        "aarch64": 64,
+        "armv7l": 32
+    }
+
+}

@@ -7,7 +7,8 @@
             ],
             "latest_urls": [
                 "https://julialangnightlies-s3.julialang.org/bin/$sys/$arch/$latest_filename"
-            ]
+            ],
+            "versions": "https://julialang-s3.julialang.org/bin/versions.json"
         },
         "BFSU": {
             "name": "Beijing Foreign Studies University",
@@ -16,7 +17,8 @@
             ],
             "latest_urls": [
                 ""
-            ]
+            ],
+            "versions": "https://mirrors.bfsu.edu.cn/julia-releases/bin/versions.json"
         },
         "TUNA": {
             "name": "Tsinghua University TUNA Association",
@@ -26,7 +28,8 @@
             ],
             "latest_urls": [
                 ""
-            ]
+            ],
+            "versions": "https://mirrors.tuna.tsinghua.edu.cn/julia-releases/bin/versions.json"
         },
         "USTC": {
             "name": "University of Science and Technology of China",
@@ -35,7 +38,8 @@
             ],
             "latest_urls": [
                 ""
-            ]
+            ],
+            "versions": "https://mirrors.ustc.edu.cn/julia-releases/bin/versions.json"
         },
         "SJTUG": {
              "name": "Shanghai Jiao Tong University Linux User Group",
@@ -44,7 +48,8 @@
              ],
              "latest_urls": [
                  ""
-             ]
+             ],
+             "versions": "https://mirrors.sjtug.sjtu.edu.cn/julia-releases/bin/versions.json"
          }
     }
 }

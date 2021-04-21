@@ -116,7 +116,8 @@ def download_package(version=None, sys=None, arch=None, *,
         verify_upstream(upstream)
     wrong_args = False
     try:
-        version = latest_version(version, system, architecture)
+        version = latest_version(
+            version, system, architecture, upstream=upstream)
     except ValueError:
         # hide the nested error stack :P
         wrong_args = True
@@ -130,7 +131,8 @@ def download_package(version=None, sys=None, arch=None, *,
 
     release_str = f"{version}-{system}-{architecture}"
     if do_release_check:
-        rst = is_version_released(version, system, architecture)
+        rst = is_version_released(
+            version, system, architecture, upstream=upstream)
         if not rst:
             msg = f"failed to find {release_str} in available upstream. Please try it later."
             logging.info(msg)

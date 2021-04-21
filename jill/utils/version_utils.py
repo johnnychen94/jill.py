@@ -1,9 +1,10 @@
 from .filters import f_major_version, f_minor_version, f_patch_version
 from .filters import canonicalize_arch, canonicalize_sys
 from .defaults import load_versions_schema
-from .defaults import VERSIONS_URL, VERSIONS_SCHEMA_URL
+from .defaults import DEFAULT_VERSIONS_URL, VERSIONS_SCHEMA_URL
+from .net_utils import first_response
+from .source_utils import read_registry
 from .interactive_utils import color
-
 import semantic_version
 
 import requests
@@ -64,14 +65,25 @@ class Version(semantic_version.Version):
         return ".".join([major, minor, patch])
 
 
-def read_remote_json(url, cache=dict()):
+def read_remote_versions(upstream, cache=dict()):
     """
         If not cached, download and read json content from remote URL `url`.
     """
     if not cache:
+        registry = read_registry()
+        if upstream in registry:
+            versions_url = registry[upstream].versions_url
+        else:
+            # If not specified, use the first response as the result
+            # TODO: we can share the first_response result here so that later
+            #       downloading (e.g., `query_download_url`) does not need to check
+            #       it again.
+            versions_url_list = [x.versions_url for x in registry.values()]
+            versions_url = first_response(versions_url_list, timeout=0.5)
+            versions_url = versions_url if versions_url else DEFAULT_VERSIONS_URL
         print(
-            f'{color.GREEN}querying release information (from julialang-s3.julialang.org){color.END}')
-        version_list = json.loads(requests.get(url).text)
+            f'{color.GREEN}querying release information from {versions_url}{color.END}')
+        version_list = json.loads(requests.get(versions_url).text)
 
         # Validate the downloaded content with `versions_schema.json`.
         # This file is unlikely to be outdated so we keep a copy
@@ -95,14 +107,14 @@ def read_remote_json(url, cache=dict()):
     return cache
 
 
-def read_releases(minimal_version='0.6.0', stable_only=False) -> List[Tuple[str, str, str]]:
+def read_releases(minimal_version='0.6.0', stable_only=False, upstream=None) -> List[Tuple[str, str, str]]:
     """
-    read release info from versions.json (VERSIONS_URL)
+    read release info from versions.json.
     The content will be cached so will only download the data once.
     """
     # Here we only cache the raw content so that post processing like `stable_only` filter
     # works as expected.
-    v = read_remote_json(VERSIONS_URL)
+    v = read_remote_versions(upstream=upstream)
     releases = []
     for item in v.items():
         ver = item[0]
@@ -129,7 +141,7 @@ def read_releases(minimal_version='0.6.0', stable_only=False) -> List[Tuple[str,
     return releases
 
 
-def is_version_released(version, system, arch, stable_only=False):
+def is_version_released(version, system, arch, **kwargs):
     """
         Checks if the given version number is released for the given system and architecture.
         Note: returns True for version="latest" if system and architecture are valid.
@@ -140,12 +152,12 @@ def is_version_released(version, system, arch, stable_only=False):
         # return True here without any extra checks.
         return True
 
-    version_list = read_releases(stable_only=stable_only)
+    version_list = read_releases(**kwargs)
     item = str(version), canonicalize_sys(system), canonicalize_arch(arch)
     return (item in version_list)
 
 
-def latest_version(version: str, system, arch, stable_only=True, **kwargs) -> str:
+def latest_version(version: str, system, arch, **kwargs) -> str:
     """
     Autocompletes a partial semantic version string to the latest compatible full version string.
     Directly returns `version` if it's already a complete version string (without checking that it's
@@ -161,7 +173,7 @@ def latest_version(version: str, system, arch, stable_only=True, **kwargs) -> st
         return version
 
     # query system/architecture-compatible releases
-    releases = read_releases(stable_only=stable_only)
+    releases = read_releases(**kwargs)
     compat_releases = [x for x in releases if x[1] == system and x[2] == arch]
     if len(compat_releases) == 0:
         raise(ValueError(

@@ -18,12 +18,13 @@ import time
 
 
 class MirrorConfig:
-    def __init__(self, configfile, outdir):
+    def __init__(self, configfile, outdir, upstream=None):
         if current_system() == "windows":
             # Windows users (e.g., me) sometimes confuse the use of \\ and \
             outdir = outdir.replace("\\\\", "\\")
         self.configfile = os.path.abspath(os.path.expanduser(configfile))
         self.outdir = outdir
+        self.upstream = upstream
 
     @property
     def config(self):
@@ -97,7 +98,7 @@ class MirrorConfig:
     @property
     def version(self):
         versions = list(set(map(lambda x: x[0],
-                                read_releases(stable_only=True))))
+                                read_releases(stable_only=True, upstream=self.upstream))))
         # not using our extended Version
         versions.sort(key=lambda ver: semantic_version.Version(ver))
         if self.require_latest:
@@ -106,15 +107,15 @@ class MirrorConfig:
 
     @property
     def system(self):
-        return set(map(lambda x: x[1], read_releases()))
+        return set(map(lambda x: x[1], read_releases(upstream=self.upstream)))
 
     @property
     def architecture(self):
-        return set(map(lambda x: x[2], read_releases()))
+        return set(map(lambda x: x[2], read_releases(upstream=self.upstream)))
 
     @property
     def releases(self):
-        return read_releases(stable_only=self.stable_only)
+        return read_releases(stable_only=self.stable_only, upstream=self.upstream)
 
     def logging(self):
         logging.info(f"mirror configuration:")
@@ -139,13 +140,12 @@ class MirrorConfig:
 
 
 class Mirror:
-    def __init__(self,  config):
+    def __init__(self,  config, **kwargs):
         if not isinstance(config, MirrorConfig):
-            config = MirrorConfig(config)
+            config = MirrorConfig(config, **kwargs)
         self.config = config
 
-    def pull_releases(self, *,
-                      upstream=None):
+    def pull_releases(self):
         for item in self.config.releases:
             filepath = self.config.get_outpath(*item)
             outpath = os.path.join(self.config.outdir, filepath)
@@ -155,7 +155,7 @@ class Mirror:
             overwrite = self.config.overwrite
             download_package(*item,
                              outdir=outdir,
-                             upstream=upstream,
+                             upstream=self.config.upstream,
                              overwrite=overwrite)
         if self.config.require_latest:
             for (system, arch) in product(self.config.system, self.config.architecture):
@@ -208,11 +208,11 @@ def mirror(outdir="julia_pkg", *,
     logger.addHandler(fh)
     # TODO: filter out urllib3 debug logs
 
-    m = Mirror(MirrorConfig(config, outdir=outdir))
+    m = Mirror(MirrorConfig(config, outdir=outdir, upstream=upstream))
     m.config.logging()
     while True:
         logging.info("START: pull Julia releases")
-        m.pull_releases(upstream=upstream)
+        m.pull_releases()
         logging.info("END: pulling Julia releases")
 
         if period == 0:

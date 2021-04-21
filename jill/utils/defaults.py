@@ -32,7 +32,7 @@ def get_configfiles(filename):
 
 SOURCE_CONFIGFILE = get_configfiles("sources.json")
 GPG_PUBLIC_KEY_PATH = os.path.join(PKG_ROOT, ".gnupg", "juliareleases.asc")
-VERSIONS_URL = "https://julialang-s3.julialang.org/bin/versions.json"
+DEFAULT_VERSIONS_URL = "https://julialang-s3.julialang.org/bin/versions.json"
 VERSIONS_SCHEMA_URL = "https://julialang-s3.julialang.org/bin/versions-schema.json"
 
 # for mirror usage: where releases are downloaded to

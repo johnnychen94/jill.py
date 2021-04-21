@@ -110,7 +110,13 @@ def read_releases(stable_only=False) -> List[Tuple[str, str, str]]:
         if not stable_only or is_stable:
             files = item[1]['files']
             for file in files:
-                releases.append((ver, file['os'], file['arch']))
+                os = file['os']
+                libc = file['triplet'].split('-')[2]
+                if libc == "musl":
+                    # currently Julia tags musl as a system, e.g.,
+                    # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
+                    os = "musl"
+                releases.append((ver, os, file['arch']))
     return releases
 
 

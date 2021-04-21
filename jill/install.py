@@ -267,7 +267,7 @@ def install_julia_windows(package_path,
     dest_path = os.path.join(install_dir,
                              f"julia-{f_minor_version(version)}")
     if os.path.exists(dest_path):
-        shutil.rmtree(dest_path)
+        shutil.rmtree(dest_path, ignore_errors=True)
         msg = f"{color.YELLOW}remove previous Julia installation:"
         msg += f" {dest_path}{color.END}"
         print(msg)

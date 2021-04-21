@@ -91,6 +91,9 @@ _跨平台的 Julia 一键安装脚本_
 - 下载： 用 `--sys musl` 来下载基于`musl`的版本，以及用`--sys linux` 来下载glibc的版本
 
 
+在你已经提前知道最近的镜像站的情况下， 环境变量 `JILL_UPSTREAM` 可以用来关闭 `jill` 的 “查询最近的上游” 这一功能，
+从而加速整个 `jill` 的下载过程。 （不过 `jill --upstream` 的优先级更高一些）
+
 ## 案例 -- Cron
 
 通过使用`cron`，`jill` 还能够保证在你的服务器上提供一个最新版本的每日构建版：
@@ -105,7 +108,3 @@ PATH=/usr/local/bin:/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 
 类似地，你也可以通过加一个 `jill install --confirm` 来保证 `julia` 永远是最新地稳定发行版。一旦有新的 Julia 版本
 发布了，`jill` 就能够下载到它 -- 你甚至不需要更新`jill`。
-
-## 镜像源的搭建
-
-Check the [English version](README.md) :)

@@ -1,0 +1,128 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "type": "object",
+    "additionalProperties": {
+        "$ref": "#/definitions/WelcomeValue"
+    },
+    "definitions": {
+        "WelcomeValue": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/File"
+                    }
+                },
+                "stable": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "files",
+                "stable"
+            ],
+            "title": "WelcomeValue"
+        },
+        "File": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "triplet": {
+                    "$ref": "#/definitions/Triplet"
+                },
+                "kind": {
+                    "$ref": "#/definitions/Kind"
+                },
+                "arch": {
+                    "$ref": "#/definitions/Arch"
+                },
+                "sha256": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "os": {
+                    "$ref": "#/definitions/OS"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "qt-uri-protocols": [
+                        "https"
+                    ],
+                    "qt-uri-extensions": [
+                        ".dmg",
+                        ".exe",
+                        ".gz",
+                        ".zip"
+                    ]
+                },
+                "asc": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "arch",
+                "kind",
+                "os",
+                "sha256",
+                "size",
+                "triplet",
+                "url",
+                "version"
+            ],
+            "title": "File"
+        },
+        "Arch": {
+            "type": "string",
+            "enum": [
+                "x86_64",
+                "i686",
+                "powerpc64le",
+                "aarch64",
+                "armv7l"
+            ],
+            "title": "Arch"
+        },
+        "Kind": {
+            "type": "string",
+            "enum": [
+                "archive",
+                "installer"
+            ],
+            "title": "Kind"
+        },
+        "OS": {
+            "type": "string",
+            "enum": [
+                "mac",
+                "winnt",
+                "linux",
+                "freebsd"
+            ],
+            "title": "OS"
+        },
+        "Triplet": {
+            "type": "string",
+            "enum": [
+                "x86_64-apple-darwin14",
+                "x86_64-w64-mingw32",
+                "i686-w64-mingw32",
+                "x86_64-linux-gnu",
+                "i686-linux-gnu",
+                "powerpc64le-linux-gnu",
+                "aarch64-linux-gnu",
+                "armv7l-linux-gnueabihf",
+                "x86_64-unknown-freebsd11.1",
+                "x86_64-linux-musl"
+            ],
+            "title": "Triplet"
+        }
+    }
+}

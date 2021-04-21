@@ -1,5 +1,4 @@
 from .filters import generate_info
-from .filters import is_valid_release
 from .gpg_utils import verify_gpg
 from .interactive_utils import query_yes_no
 from .interactive_utils import color
@@ -18,13 +17,13 @@ from .source_utils import verify_upstream
 __all__ = [
     # filters
     "generate_info",
-    "is_valid_release",
 
     # gpg_utils
     "verify_gpg",
 
     # interactive_utils
     "query_yes_no",
+    "color",
 
     # mount_utils
     "TarMounter", "DmgMounter",

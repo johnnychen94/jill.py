@@ -26,6 +26,7 @@ class ReleaseSource:
                  name: str,
                  urls: List[str],
                  latest_urls: List[str],
+                 versions: str = None,
                  timeout=2.0):
         # seperate stable and nightly versions because:
         #   * JuliaComputing stores them in two different s3 buckets
@@ -38,6 +39,7 @@ class ReleaseSource:
         # TODO: make latest an optional config
         self.latest_url_templates = [Template(x) for x in latest_urls if x]
         self.timeout = timeout
+        self.versions_url = versions
         self._latencies = dict()  # type: ignore
 
     @property

@@ -15,10 +15,6 @@ class TestVersions(unittest.TestCase):
 
         self.assertFalse(is_version_released("1.5.10", "winnt", "x86_64"))
 
-        self.assertTrue(is_version_released("0.1.2", "mac", "x86_64"))
-        self.assertFalse(is_version_released("0.1.2", "winnt", "x86_64"))
-        self.assertFalse(is_version_released("0.1.2", "mac", "i686"))
-
         self.assertTrue(is_version_released("latest", "mac", "x86_64"))
 
         self.assertTrue(is_version_released(

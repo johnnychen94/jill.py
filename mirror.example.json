@@ -3,5 +3,6 @@
     "latest_filename": "$latest_filename",
     "path": "releases/$vminor_version/$filename",
     "overwrite": "False",
-    "require_latest": "True"
+    "require_latest": "True",
+    "stable_only": "False"
 }

@@ -95,7 +95,7 @@ def read_remote_json(url, cache=dict()):
     return cache
 
 
-def read_releases(stable_only=False) -> List[Tuple[str, str, str]]:
+def read_releases(minimal_version='0.6.0', stable_only=False) -> List[Tuple[str, str, str]]:
     """
     read release info from versions.json (VERSIONS_URL)
     The content will be cached so will only download the data once.
@@ -108,6 +108,15 @@ def read_releases(stable_only=False) -> List[Tuple[str, str, str]]:
         ver = item[0]
         is_stable = item[1]['stable']
         if not stable_only or is_stable:
+
+            # minimal_version works only when is_stable=True
+            try:
+                # TODO: a cleaner solution
+                if Version(ver) < Version(minimal_version):
+                    continue
+            except:
+                continue
+
             files = item[1]['files']
             for file in files:
                 os = file['os']

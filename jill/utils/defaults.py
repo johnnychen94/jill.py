@@ -35,6 +35,9 @@ GPG_PUBLIC_KEY_PATH = os.path.join(PKG_ROOT, ".gnupg", "juliareleases.asc")
 VERSIONS_URL = "https://julialang-s3.julialang.org/bin/versions.json"
 VERSIONS_SCHEMA_URL = "https://julialang-s3.julialang.org/bin/versions-schema.json"
 
+# for mirror usage: where releases are downloaded to
+default_path_template = "releases/$vminor_version/$filename"
+
 
 def load_versions_schema(download=False, cache=dict()) -> Dict:
     """

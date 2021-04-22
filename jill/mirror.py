@@ -167,7 +167,7 @@ class Mirror:
                 logging.info(f"start to pull {filepath}")
                 download_package(*item,
                                  outdir=outdir,
-                                 upstream=upstream,
+                                 upstream=self.config.upstream,
                                  overwrite=True)
 
 

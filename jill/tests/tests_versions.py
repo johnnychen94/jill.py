@@ -47,5 +47,5 @@ class TestVersions(unittest.TestCase):
             latest_version("999.999.999", "winnt", "x86_64"),
             "999.999.999")
         self.assertEqual(
-            latest_version("1.6", "linux", "armv7l"),
-            "1.4.1")
+            latest_version("999.999", "linux", "armv7l"),
+            latest_version("", "linux", "armv7l"))

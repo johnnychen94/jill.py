@@ -71,7 +71,8 @@ def read_remote_versions(upstream, cache=dict()):
     """
     if not cache:
         registry = read_registry()
-        if upstream in registry:
+        if upstream in registry and registry[upstream].versions_url is not None:
+            # For backward-compatibility, `versions` item is optional (issue #64)
             versions_url = registry[upstream].versions_url
         else:
             # If not specified, use the first response as the result

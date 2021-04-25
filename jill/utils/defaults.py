@@ -14,7 +14,7 @@ def get_configfiles(filename):
     """generate a list of config files ordered with their priorities"""
     configfile_list = []
     sys = current_system()
-    if sys in ["macos", "freebsd", "linux"]:
+    if sys in ["mac", "freebsd", "linux"]:
         configfile_list.append(
             os.path.join(os.path.expanduser("~"),
                          ".config", "jill", filename)

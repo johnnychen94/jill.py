@@ -108,7 +108,7 @@ def make_symlinks(src_bin, symlink_dir, version):
     system = current_system()
     if symlink_dir not in os.environ["PATH"].split(os.pathsep):
         print(f"add {symlink_dir} to PATH")
-        if system == "windows":
+        if system == "winnt":
             # FIXME: this alse copies system PATH to user PATH
             subprocess.run(["powershell.exe",
                             "setx", "PATH", f'"$env:PATH;{symlink_dir}"'])
@@ -136,7 +136,7 @@ def make_symlinks(src_bin, symlink_dir, version):
 
     for linkname in link_list:
         linkpath = os.path.join(symlink_dir, linkname)
-        if current_system() == "windows":
+        if current_system() == "winnt":
             linkpath += ".cmd"
         # symlink rules:
         # 1. always symlink latest
@@ -165,7 +165,7 @@ def make_symlinks(src_bin, symlink_dir, version):
             print(msg)
             os.remove(linkpath)
         print(f"{color.GREEN}make new symlink {linkpath}{color.END}")
-        if current_system() == "windows":
+        if current_system() == "winnt":
             with open(linkpath, 'w') as f:
                 # create a cmd file to mimic how we do symlinks in linux
                 f.writelines(['@echo off\n', f'"{src_bin}" %*'])
@@ -358,7 +358,7 @@ def install_julia(version=None, *,
         system = "musl"
 
     hello_msg()
-    if system == "windows":
+    if system == "winnt":
         install_dir = install_dir.replace("\\\\", "\\").strip('\'"')
     if not confirm:
         version_str = version if version else "latest stable release"

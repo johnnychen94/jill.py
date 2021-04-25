@@ -19,7 +19,7 @@ def get_configfiles(filename):
             os.path.join(os.path.expanduser("~"),
                          ".config", "jill", filename)
         )
-    elif sys == "windows":
+    elif sys == "winnt":
         configfile_list.append(
             os.path.join(os.path.expanduser(r"~\AppData\Local\julias"),
                          filename)

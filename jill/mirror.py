@@ -19,7 +19,7 @@ import time
 
 class MirrorConfig:
     def __init__(self, configfile, outdir, upstream=None):
-        if current_system() == "windows":
+        if current_system() == "winnt":
             # Windows users (e.g., me) sometimes confuse the use of \\ and \
             outdir = outdir.replace("\\\\", "\\")
         self.configfile = os.path.abspath(os.path.expanduser(configfile))

@@ -17,7 +17,7 @@ _The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Jul
 [![release-date](https://img.shields.io/github/release-date/johnnychen94/jill.py)](https://github.com/johnnychen94/jill.py/releases)
 [![中文README](https://img.shields.io/badge/README-%E4%B8%AD%E6%96%87-blue)](README_zh.md)
 
-Why `jill.py`? Distro package managers (e.g., `apt`, `pac`, `chocho`) is likely to provide a broken Julia with
+Why `jill.py`? Distro package managers (e.g., `apt`, `pac`) is likely to provide a broken Julia with
 incorrect binary dependencies (e.g., `LLVM` ) versions. Hence it's recommended to download and
 extract the Julia binary provided in [Julia Downloads](https://julialang.org/downloads/). `jill.py` doesn't
 do anything magical, but just makes such operation even stupid.

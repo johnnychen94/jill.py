@@ -143,27 +143,30 @@ def download_package(version=None, sys=None, arch=None, *,
     logging.info(msg)
     print(msg)
 
-    # Step 1: look up url in the specified upstream. If not found, give a warning.
-    # Step 2: fall back to upstream Official. If not found, give an error and exit.
+    def query_url(upstream):
+        # Step 1: look up url in the specified upstream. If not found, give a warning.
+        # Step 2: fall back to upstream Official. If not found, give an error and exit.
 
-    # Step 1 is skipped if Official is already the specifed upstream, or if no 
-    # upstream is specified (will try all upstreams)
-    if not (upstream == "Official" or upstream is None):
-        registry = SourceRegistry(upstream=upstream)
-        url = registry.query_download_url(version, system, architecture)
-        if not url:
-            msg = f"failed to find {release_str} in upstream {upstream}. Fallback to upstream Official."
-            logging.warning(msg)
-            print(f"{color.RED}{msg}{color.END}")
-
-    registry = SourceRegistry(upstream=None if upstream is None else "Official")
-    url = registry.query_download_url(version, system, architecture)
+        # Step 1 is skipped if Official is already the specifed upstream, or if no
+        # upstream is specified (will try all upstreams)
+        if upstream == "Official" or upstream is None:
+            registry = SourceRegistry(upstream=upstream)
+            url = registry.query_download_url(version, system, architecture)
+            return None
+        else:
+            registry = SourceRegistry(upstream=upstream)
+            url = registry.query_download_url(version, system, architecture)
+            if not url:
+                msg = f"failed to find {release_str} in upstream {upstream}. Fallback to upstream Official."
+                logging.warning(msg)
+                print(f"{color.RED}{msg}{color.END}")
+                return query_url("Official")  # fallback to Official
+    url = query_url(upstream)
     if not url:
-        msg = f"failed to find {release_str} in upstream Official. Please try it later."
+        msg = f"failed to find {release_str} in available upstreams. Please try it later."
         logging.error(msg)
         print(f"{color.RED}{msg}{color.END}")
         return None
-    
 
     outdir = outdir if outdir else '.'
     outdir = os.path.abspath(outdir)

@@ -143,6 +143,11 @@ def download_package(version=None, sys=None, arch=None, *,
     logging.info(msg)
     print(msg)
 
+    # Step 1: look up url in the specified upstream. If not found, give a warning.
+    # Step 2: fall back to upstream Official. If not found, give an error and exit.
+
+    # Step 1 is skipped if Official is already the specifed upstream, or if no 
+    # upstream is specified (will try all upstreams)
     if not (upstream == "Official" or upstream is None):
         registry = SourceRegistry(upstream=upstream)
         url = registry.query_download_url(version, system, architecture)

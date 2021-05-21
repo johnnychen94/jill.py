@@ -144,11 +144,20 @@ def download_package(version=None, sys=None, arch=None, *,
     print(msg)
     registry = SourceRegistry(upstream=upstream)
     url = registry.query_download_url(version, system, architecture)
-    if not url:
-        msg = f"failed to find {release_str} in available upstream. Please try it later."
+    if not url and upstream != "Official":
+        msg = f"failed to find {release_str} in upstream {upstream}. Fallback to upstream Official."
         logging.warning(msg)
         print(f"{color.RED}{msg}{color.END}")
-        return None
+        
+        upstream = "Official"
+        registry = SourceRegistry(upstream=upstream)
+        url = registry.query_download_url(version, system, architecture)
+        if not url:
+            msg = f"failed to find {release_str} in upstream {upstream}. Please try it later."
+            logging.warning(msg)
+            print(f"{color.RED}{msg}{color.END}")
+            return None
+    
 
     outdir = outdir if outdir else '.'
     outdir = os.path.abspath(outdir)

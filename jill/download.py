@@ -160,6 +160,8 @@ def download_package(version=None, sys=None, arch=None, *,
                 logging.warning(msg)
                 print(f"{color.RED}{msg}{color.END}")
                 return query_url("Official")  # fallback to Official
+            else:
+                return url
     url = query_url(upstream)
     if not url:
         msg = f"failed to find {release_str} in available upstreams. Please try it later."

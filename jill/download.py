@@ -151,8 +151,7 @@ def download_package(version=None, sys=None, arch=None, *,
         # upstream is specified (will try all upstreams)
         if upstream == "Official" or upstream is None:
             registry = SourceRegistry(upstream=upstream)
-            url = registry.query_download_url(version, system, architecture)
-            return None
+            return registry.query_download_url(version, system, architecture)
         else:
             registry = SourceRegistry(upstream=upstream)
             url = registry.query_download_url(version, system, architecture)

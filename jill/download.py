@@ -142,11 +142,25 @@ def download_package(version=None, sys=None, arch=None, *,
     msg = f"downloading Julia release for {release_str}"
     logging.info(msg)
     print(msg)
-    registry = SourceRegistry(upstream=upstream)
-    url = registry.query_download_url(version, system, architecture)
+
+    def query_url(upstream):
+        registry = SourceRegistry(upstream=upstream)
+        url = registry.query_download_url(version, system, architecture)
+        if url:
+            return url
+        # if fails to find an valid url in given upstream, falls back to "Official"
+        if upstream == "Official" or upstream is None:
+            # if "Official" is already tried, then there's no need to retry
+            return None
+        else:
+            msg = f"failed to find {release_str} in upstream {upstream}. Fallback to upstream Official."
+            logging.warning(msg)
+            print(f"{color.RED}{msg}{color.END}")
+            return query_url("Official")  # fallback to Official
+    url = query_url(upstream)
     if not url:
-        msg = f"failed to find {release_str} in available upstream. Please try it later."
-        logging.warning(msg)
+        msg = f"failed to find {release_str} in available upstreams. Please try it later."
+        logging.error(msg)
         print(f"{color.RED}{msg}{color.END}")
         return None
 

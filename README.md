@@ -49,7 +49,7 @@ Note that `Python >= 3.6` is required. For base docker images, you also need to 
 
 Basic usage:
 
-`jill install [version] [--confirm] [--upstream UPSTREAM] [--reinstall] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
+`jill install [version] [--confirm] [--upstream UPSTREAM] [--unstable] [--reinstall] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
 
 For the first-time users of `jill.py`, you may need to modify `PATH` accordingly so that your shell can find the executables when you type `julia`.
 
@@ -60,9 +60,9 @@ For the first-time users of `jill.py`, you may need to modify `PATH` accordingly
 
 When you type `jill install` (the simplest usage), it does the following things:
 
-1. query latest stable release, it's `1.4.2` at the time of writing.
-2. download, verify and install julia `1.4.2`
-3. make alias: `julia`, `julia-1`, `julia-1.4`
+1. query latest stable release, it's `1.6.1` at the time of writing.
+2. download, verify and install julia `1.6.1`
+3. make alias: `julia`, `julia-1`, `julia-1.6`
     * for nightly build, it only bind alias to `julia-latest`
 
 Valid `version` syntax:
@@ -72,6 +72,14 @@ Valid `version` syntax:
 - `1.2`: latest stable `1.2.z` release
 - `1.2.3`/`1.2.3-rc1`: as it is
 - `nightly`/`latest`: nightly builds
+
+At the time of writing, "1.6.1" and "1.7.0-beta1" are released, while "1.7.0" isn't yet.
+There are two ways to install an unstable release version `1.7.0-beta1`:
+
+- `jill install 1.7.0-beta1`, as you explicitly requested, installs "1.7.0-beta1" for you.
+- `jill install 1.7 --unstable` will give you the latest 1.7.x version including those unstable ones.
+  Because "1.7.0" is not released yet, it will gives you "1.7.0-beta1". The result may change when
+  more releases are coming. Note that it won't include the "nightly" builds.
 
 Here's a list of slightly advanced usages that you may be interested in:
 

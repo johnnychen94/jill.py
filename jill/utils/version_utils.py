@@ -189,6 +189,7 @@ def latest_version(version: str, system, arch, **kwargs) -> str:
         if len(filtered_compat) == 0:
             latest_ver = max(compat_releases, key=lambda x: Version(x[0]))[0]
             print(f'{color.RED}failed to find latest Julia version for "{version}", "{system}" and "{arch}". Trying latest compatible version "{latest_ver}" instead.{color.END}')
+            print(f'{color.RED}you can add `--unstable` flag to also include unstable releases.{color.END}')
             # This is equivalent to:
             # latest_version('', system, arch, stable_only=stable_only)
             return latest_ver

@@ -5,8 +5,6 @@ on:
     branches:
       - master
   pull_request:
-  schedule:
-    - cron: "00 00 1 * *"
 
 jobs:
   unit_test:
@@ -15,8 +13,11 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python: [3.6, 3.8]
+        os: [ubuntu-latest]
+        python: [3.6, 3]
+        include:
+          - os: macos-latest
+            python: 3
 
     steps:
       - uses: actions/checkout@v2

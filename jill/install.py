@@ -301,6 +301,7 @@ def install_julia(version=None, *,
                   symlink_dir=None,
                   upgrade=False,
                   upstream=None,
+                  unstable=False,
                   keep_downloads=False,
                   confirm=False,
                   reinstall=False):
@@ -314,7 +315,7 @@ def install_julia(version=None, *,
     * `stable`: latest stable Julia release. This is the _default_ option.
     * `1`: latest `1.y.z` Julia release.
     * `1.0`: latest `1.0.z` Julia release.
-    * `1.4.0-rc1`: as it is. This is the only way to install unstable release.
+    * `1.4.0-rc1`: as it is.
     * `latest`/`nightly`: the nightly builds from source code.
 
     For Linux/FreeBSD systems, if you run this command with `root` account,
@@ -331,6 +332,11 @@ def install_julia(version=None, *,
       upgrade:
         add `--upgrade` flag also copy the root environment from an older
         Julia version.
+      unstable:
+        add `--unstable` flag to allow installation of unstable releases for auto version
+        query. For example, `jill install --unstable` might give you unstable installation
+        like `1.7.0-beta1`. Note that if you explicitly pass the unstable version, e.g.,
+        `jill install 1.7.0-beta1`, it will still work.
       keep_downloads:
         add `--keep_downloads` flag to not remove downloaded releases.
       confirm: add `--confirm` flag to skip interactive prompt.
@@ -377,7 +383,7 @@ def install_julia(version=None, *,
     wrong_args = False
     try:
         version = latest_version(
-            version, system, arch, upstream=upstream)
+            version, system, arch, upstream=upstream, stable_only=not unstable)
     except ValueError:
         # hide the nested error stack :P
         wrong_args = True

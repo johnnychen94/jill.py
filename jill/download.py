@@ -50,6 +50,7 @@ def _download(url: str, out: str):
 
 def download_package(version=None, sys=None, arch=None, *,
                      upstream=None,
+                     unstable=False,
                      outdir=None,
                      overwrite=False):
     """
@@ -92,6 +93,11 @@ def download_package(version=None, sys=None, arch=None, *,
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
+      unstable:
+        add `--unstable` flag to allow installation of unstable releases for auto version
+        query. For example, `jill download --unstable` might give you unstable installation
+        like `1.7.0-beta1`. Note that if you explicitly pass the unstable version, e.g.,
+        `jill download 1.7.0-beta1`, it will still work.
       outdir:
         where release is downloaded to. By default it's the current folder.
       overwrite:
@@ -117,7 +123,7 @@ def download_package(version=None, sys=None, arch=None, *,
     wrong_args = False
     try:
         version = latest_version(
-            version, system, architecture, upstream=upstream)
+            version, system, architecture, upstream=upstream, stable_only=not unstable)
     except ValueError:
         # hide the nested error stack :P
         wrong_args = True

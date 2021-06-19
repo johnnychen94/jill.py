@@ -41,8 +41,7 @@ _跨平台的 Julia 一键安装脚本_
 
 基本使用:
 
-`jill install [version] [--confirm] [--upstream UPSTREAM] [--reinstall] [--install_dir INSTALL_DIR]
-[--symlink_dir SYMLINK_DIR]`
+`jill install [version] [--confirm] [--upstream UPSTREAM] [--unstable] [--reinstall] [--install_dir INSTALL_DIR] [--symlink_dir SYMLINK_DIR]`
 
 简而言之，`jill install [version]` 能满足你绝大部分要求。对于初次使用 `jill.py` 的用户而言，你可能需要修改 `PATH`
 来让命令行正常找到 Julia.
@@ -54,9 +53,9 @@ _跨平台的 Julia 一键安装脚本_
 
 当你输入 `jill install` 的时候，它其实做了以下几件事:
 
-1. 找到最新的稳定版(目前是`1.4.2`)
+1. 找到最新的稳定版(目前是`1.6.1`)
 2. 下载、验证并安装Julia
-3. 创建一些别名，例如：`julia`, `julia-1`, `julia-1.4`
+3. 创建一些别名，例如：`julia`, `julia-1`, `julia-1.6`
   * 对于每日构建版，别名则只会绑定到 `julia-latest`
 
 其中 `version` 是可选的，支持的语法为：
@@ -66,6 +65,12 @@ _跨平台的 Julia 一键安装脚本_
 - `1.2`: 最新的`1.2.z`稳定版本
 - `1.2.3`/`1.2.3-rc1`: 如其所是
 - `nightly`/`latest`: 每天从源码中构建的版本
+
+目前 "1.6.1" 和 "1.7.0-beta1" 已经发布了， 而 "1.7.0" 还没有。 存在两种方式去安装 `1.7.0-beta1`：
+
+- `jill install 1.7.0-beta1`: 正如你所要求的那样， 会安装 1.7.0-beta1 版本
+- `jill install 1.7 --unstable`: 会安装最新的 "1.7.x" 版本（包括不稳定版本）， 因此在 1.7.0 正式版
+  出来之前都会安装不稳定的 1.7.0 版本. 这个结果随着更多新的版本的发布会随之改变。
 
 除此之外还有一些额外的命令和参数可以使用：
 

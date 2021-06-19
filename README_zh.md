@@ -94,6 +94,22 @@ _跨平台的 Julia 一键安装脚本_
 在你已经提前知道最近的镜像站的情况下， 环境变量 `JILL_UPSTREAM` 可以用来关闭 `jill` 的 “查询最近的上游” 这一功能，
 从而加速整个 `jill` 的下载过程。 （不过 `jill --upstream` 的优先级更高一些）
 
+## The Python API
+
+`jill.py` 同时提供了一套 Python API:
+
+```python
+from jill.install import install_julia
+from jill.download import download_package
+
+# 等价于 `jill install --confirm`
+install_julia(confirm=True)
+# 等价于 `jill download`
+download_package()
+```
+
+你可以查看文档 （例如 `?install_julia`) 来得到更多的使用信息。
+
 ## 案例 -- Cron
 
 通过使用`cron`，`jill` 还能够保证在你的服务器上提供一个最新版本的每日构建版：

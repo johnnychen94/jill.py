@@ -102,6 +102,22 @@ Setting environment variable `JILL_UPSTREAM` will disable the fancy "find-the-ne
 feature of `jill` and give you a faster download experience if you just know which upstream is the
 fastest. (It has lower priorty than `--upstream` flag.)
 
+## The Python API
+
+`jill.py` also provides a set of Python API:
+
+```python
+from jill.install import install_julia
+from jill.download import download_package
+
+# equivalent to `jill install --confirm`
+install_julia(confirm=True)
+# equivalent to `jill download`
+download_package()
+```
+
+You can read its docstring (e.g., `?install_julia`) for more information.
+
 ## Example with cron
 
 If you're tired of seeing `(xx days old master)` in your nightly build version, then `jill` can

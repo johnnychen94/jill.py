@@ -106,7 +106,7 @@ def make_symlinks(src_bin, symlink_dir, version):
         raise(ValueError(f"{src_bin} doesn't exist."))
 
     system = current_system()
-    if symlink_dir not in os.environ["PATH"].split(os.pathsep):
+    if symlink_dir not in map(os.path.normpath, os.environ["PATH"].split(os.pathsep)):
         print(f"add {symlink_dir} to PATH")
         if system == "winnt":
             # FIXME: this alse copies system PATH to user PATH
@@ -351,7 +351,7 @@ def install_julia(version=None, *,
     install_dir = install_dir if install_dir else default_install_dir()
     install_dir = os.path.abspath(install_dir)
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
-    symlink_dir = os.path.abspath(symlink_dir)
+    symlink_dir = os.path.normpath(os.path.abspath(symlink_dir))
     system, arch = current_system(), current_architecture()
     version = str(version) if (version or str(version) == "0") else ''
     version = "latest" if version == "nightly" else version

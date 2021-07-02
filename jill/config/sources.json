@@ -50,6 +50,16 @@
                  ""
              ],
              "versions": "https://mirrors.sjtug.sjtu.edu.cn/julia-releases/bin/versions.json"
+         },
+         "SUSTech": {
+             "name": "Southern University of Science and Technology Open Source Mirrors",
+             "urls": [
+                 "https://mirrors.sustech.edu.cn/julia-releases/bin/$sys/$arch/$minor_version/$filename"
+             ],
+             "latest_urls": [
+                 ""
+             ],
+             "versions": "https://mirrors.sustech.edu.cn/julia-releases/bin/versions.json"
          }
     }
 }

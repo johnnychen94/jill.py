@@ -126,9 +126,16 @@ def make_symlinks(src_bin, symlink_dir, version):
 
     os.makedirs(symlink_dir, exist_ok=True)
 
+    new_ver = Version(get_exec_version(src_bin))
     if version == "latest":
         # issue 11: don't symlink to julia
-        link_list = [f"julia-{f_major_version(version)}"]
+        link_list = ["julia-latest"]
+    elif len(new_ver.prerelease) > 0:
+        # issue #76
+        # - it is usually unwanted to symlink unstable release to `julia` and `julia-x`
+        # - still symlink to `julia-x.y` because otherwise there is no way to access the unstable
+        #   release.
+        link_list = [f"julia-{f_minor_version(version)}"]
     else:
         link_list = [f"julia-{f(version)}" for f in (f_major_version,
                                                      f_minor_version)]
@@ -152,7 +159,6 @@ def make_symlinks(src_bin, symlink_dir, version):
                 continue
 
             old_ver = Version(get_exec_version(linkpath))
-            new_ver = Version(get_exec_version(src_bin))
             if show_verbose():
                 print(f"old symlink version: {old_ver}")
                 print(f"new installation version: {new_ver}")

@@ -20,16 +20,6 @@
             ],
             "versions": "https://mirrors.bfsu.edu.cn/julia-releases/bin/versions.json"
         },
-        "NJU": {
-            "name": "Nanjing University Open Source Mirror Site",
-            "urls": [
-                "https://mirrors.nju.edu.cn/julia-releases/bin/$sys/$arch/$minor_version/$filename"
-            ],
-            "latest_urls": [
-                ""
-            ],
-            "versions": "https://mirrors.nju.edu.cn/julia-releases/bin/versions.json"
-        },
         "TUNA": {
             "name": "Tsinghua University TUNA Association",
             "urls": [

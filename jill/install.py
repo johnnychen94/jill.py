@@ -20,6 +20,10 @@ def default_depot_path():
 
 
 def default_symlink_dir():
+    dir = os.environ.get("JILL_SYMLINK_DIR", None)
+    if dir:
+        return os.path.expanduser(dir)
+
     system = current_system()
     if system == "winnt":
         return os.path.expanduser(r"~\AppData\Local\julias\bin")
@@ -32,6 +36,10 @@ def default_symlink_dir():
 
 
 def default_install_dir():
+    dir = os.environ.get("JILL_INSTALL_DIR", None)
+    if dir:
+        return os.path.expanduser(dir)
+
     system = current_system()
     if system == "mac":
         return "/Applications"

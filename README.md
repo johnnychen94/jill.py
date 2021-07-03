@@ -106,9 +106,18 @@ For Julia (>= 1.5.0) in Linux with `musl` dependency, you can
 - download it by passing `--sys musl` command. In the meantime, `--sys linux` will give you Julia
   binaries built with `glibc` dependency.
 
-Setting environment variable `JILL_UPSTREAM` will disable the fancy "find-the-nearest-upstream"
-feature of `jill` and give you a faster download experience if you just know which upstream is the
-fastest. (It has lower priorty than `--upstream` flag.)
+## JILL environment variables
+
+It can sometimes be annoying passing keywords to `jill` interactively as a convinient tool. There are
+some pre-defined environment variables that you can use to set the default values.
+
+- `JILL_UPSTREAM`: `--upstream`
+- `JILL_SYMLINK_DIR`: `--symlink_dir`
+- `JILL_INSTALL_DIR`: `--install_dir`
+
+Note that the flag version has higher priority than the environment variable version. For example, if
+`JILL_UPSTREAM` is set to `TUNA` and you use `jill install --upstream Official`, you'll use upstream
+`Official` to download the content.
 
 ## The Python API
 

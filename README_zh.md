@@ -96,8 +96,16 @@ _跨平台的 Julia 一键安装脚本_
 - 下载： 用 `--sys musl` 来下载基于`musl`的版本，以及用`--sys linux` 来下载glibc的版本
 
 
-在你已经提前知道最近的镜像站的情况下， 环境变量 `JILL_UPSTREAM` 可以用来关闭 `jill` 的 “查询最近的上游” 这一功能，
-从而加速整个 `jill` 的下载过程。 （不过 `jill --upstream` 的优先级更高一些）
+## JILL 环境变量
+
+作为一个交互式的 Julia 安装工具， 每次都需要输入关键词有时候会显得很繁琐， 因此 `jill` 定义了一些环境变量来控制默认值：
+
+- `JILL_UPSTREAM`: `--upstream`
+- `JILL_SYMLINK_DIR`: `--symlink_dir`
+- `JILL_INSTALL_DIR`: `--install_dir`
+
+需要注意的是， 关键词参数的优先级会更高。 例如： 如果 `JILL_UPSTREAM` 设置为 `TUNA` 然而使用 `jill install --upstream Official`
+的话， 则会使用 Official 上游进行下载。
 
 ## The Python API
 

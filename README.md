@@ -26,7 +26,7 @@ Using Python to install Julia? This is because Python has became one of the main
 available in all platforms; this makes a cross-platform installer for Julia possible.
 
 Is it safe to use this? Yes, `jill.py` use GPG to check every tarballs after downloading. Also, `*.dmg`/`*.pkg` for macOS and
-`.exe` for Windows are already singed.
+`.exe` for Windows are already signed.
 
 ## Features
 

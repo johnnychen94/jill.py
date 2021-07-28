@@ -24,7 +24,7 @@ def current_system():
 
 def current_architecture():
     arch = platform.machine()
-    if arch.lower() == "aarch64":
+    if arch.lower() in ["aarch64", "arm64"]:
         return "aarch64"
     elif arch.lower() == "armv7l":
         return "armv7l"

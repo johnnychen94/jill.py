@@ -10,7 +10,8 @@
     "osarch": {
         "win-i686": "win32",
         "win-x86_64": "win64",
-        "mac-x86_64": "mac64"
+        "mac-x86_64": "mac64",
+        "mac-aarch64": "macaarch64"
     },
     "osbit": {
         "wini686": "win32",

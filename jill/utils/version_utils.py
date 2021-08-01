@@ -100,7 +100,7 @@ def read_remote_versions(upstream, cache=dict()):
             is_valid = False
             print(
                 f'{color.YELLOW} failed to validate versions file, retry with latest schema...')
-            schema = json.load(requests.get(VERSIONS_SCHEMA_URL).text)
+            schema = requests.get(VERSIONS_SCHEMA_URL).json()
         if not is_valid:
             jsonschema.validate(version_list, schema)
 

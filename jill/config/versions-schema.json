@@ -120,7 +120,8 @@
                 "aarch64-linux-gnu",
                 "armv7l-linux-gnueabihf",
                 "x86_64-unknown-freebsd11.1",
-                "x86_64-linux-musl"
+                "x86_64-linux-musl",
+                "aarch64-apple-darwin14"
             ],
             "title": "Triplet"
         }

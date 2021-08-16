@@ -53,10 +53,7 @@ Basic usage:
 
 For the first-time users of `jill.py`, you may need to modify `PATH` accordingly so that your shell can find the executables when you type `julia`.
 
-<details>
-<summary>installation demo</summary>
-<img class="install" src="screenshots/install_demo.png"/>
-</details>
+[![asciicast](https://asciinema.org/a/430677.svg)](https://asciinema.org/a/430677)
 
 When you type `jill install` (the simplest usage), it does the following things:
 

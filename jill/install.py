@@ -1,4 +1,5 @@
-from .utils.filters import f_major_version, f_minor_version, f_patch_version
+from .utils.defaults import default_depot_path, default_install_dir, default_symlink_dir
+from .utils.filters import f_major_version, f_minor_version
 from .utils import query_yes_no
 from .utils import current_architecture, current_system, current_libc
 from .utils import latest_version
@@ -10,48 +11,8 @@ from .download import download_package
 
 import os
 import re
-import getpass
 import shutil
 import subprocess
-
-
-def default_depot_path():
-    return os.environ.get("JULIA_DEPOT_PATH", os.path.expanduser("~/.julia"))
-
-
-def default_symlink_dir():
-    dir = os.environ.get("JILL_SYMLINK_DIR", None)
-    if dir:
-        return os.path.expanduser(dir)
-
-    system = current_system()
-    if system == "winnt":
-        return os.path.expanduser(r"~\AppData\Local\julias\bin")
-    if getpass.getuser() == "root":
-        # available to all users
-        return "/usr/local/bin"
-    else:
-        # exclusive to current user
-        return os.path.expanduser("~/.local/bin")
-
-
-def default_install_dir():
-    dir = os.environ.get("JILL_INSTALL_DIR", None)
-    if dir:
-        return os.path.expanduser(dir)
-
-    system = current_system()
-    if system == "mac":
-        return "/Applications"
-    elif system in ["linux", "freebsd"]:
-        if getpass.getuser() == "root":
-            return "/opt/julias"
-        else:
-            return os.path.expanduser("~/packages/julias")
-    elif system == "winnt":
-        return os.path.expanduser(r"~\AppData\Local\julias")
-    else:
-        raise ValueError(f"Unsupported system: {system}")
 
 
 def is_installed(version, check_symlinks=True):

@@ -3,7 +3,8 @@
         "Official": {
             "name": "Julialang.org",
             "urls": [
-                "https://julialang-s3.julialang.org/bin/$sys/$arch/$minor_version/$filename"
+                "https://julialang-s3.julialang.org/bin/$sys/$arch/$minor_version/$filename",
+                "https://s3.amazonaws.com/julialangnightlies/pretesting/$sys/$arch/$minor_version/julia-$build-$osarch.tar.gz"
             ],
             "latest_urls": [
                 "https://julialangnightlies-s3.julialang.org/bin/$sys/$arch/$latest_filename"

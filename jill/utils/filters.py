@@ -4,6 +4,9 @@ Module `filters` defines placeholders and how names are filtered.
 from .defaults import default_filename_template
 from .defaults import default_latest_filename_template
 from .defaults import load_placeholder, load_alias
+from semantic_version import Version
+import requests
+import json
 
 import re
 from string import Template
@@ -153,6 +156,31 @@ f_Vpatch_version = NameFilter(
 f_version = NameFilter("version", _version, validate=is_version)
 
 
+def _build(ver, cache={}):
+    if ver in SPECIAL_VERSION_NAMES:
+        return ''
+    build = Version(ver).build
+    if not build:
+        return ''
+    build = build[0]
+    if len(build) == 10:
+        return build
+    # If its length is not 10, then we query the github API see what's the actual one
+    # To reduce repeated queries, we store it in a dictionary
+    # Example: https://s3.amazonaws.com/julialangnightlies/pretesting/mac/x64/1.8/julia-9cad1e0af8-mac64.tar.gz
+    if build in cache:
+        return cache[build]
+    try:
+        github_api = f"https://api.github.com/repos/julialang/julia/commits/{build}"
+        data = json.loads(requests.get(github_api).content)
+        cache[build] = data['sha'][0:10]
+        return cache[build]
+    except:
+        return build
+
+
+f_build = NameFilter("build", _build)
+
 f_system = NameFilter("system")
 f_System = NameFilter("system", f=lambda x: f_system(x).capitalize())
 f_SYSTEM = NameFilter("system", f=lambda x: f_system(x).upper())
@@ -236,7 +264,7 @@ def generate_info(plain_version: str,
 
         "bit": f_bit(architecture),
         "extension": f_extension(system),
-
+        "build": f_build(plain_version),
         "version": f_version(plain_version),
         "major_version": f_major_version(plain_version),
         "vmajor_version": f_vmajor_version(plain_version),

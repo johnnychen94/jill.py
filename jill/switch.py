@@ -53,22 +53,20 @@ def get_juliafile_from_version(version):
         return None
 
 
-def switch_julia_target(name: str = 'julia', *,
-                        version=None,
-                        path=None,
+def switch_julia_target(version_or_path, *,
+                        target='julia',
                         symlink_dir=None):
     """
         Switch the julia target version or path.
 
     Arguments:
-      name: (Optional)
-        By default it is 'julia', you can also use other target names (e.g., 'julia-1').
-      path:
-        A path to julia executable.
       version:
-        The format is "<major>" or "<major>.<minor>".
+        A path or version of the new julia executable. For version input format is "<major>" or
+        "<major>.<minor>".
         For ambiguious input such as "1.10", which will be interpreted as float number 1.1,
         you can either do `jill switch '"1.10"'` or `jill switch 1.10.0`.
+      target: (Optional)
+        By default it is 'julia', you can also use other target names (e.g., 'julia-1').
       symlink_dir: (Optional)
         The symlink dir that `jill list` looks at.
     """
@@ -76,7 +74,7 @@ def switch_julia_target(name: str = 'julia', *,
     if not os.path.exists(symlink_dir):
         raise(ValueError(f"symlink dir {symlink_dir} doesn't exist."))
 
-    julia_symlink = os.path.join(symlink_dir, name)
+    julia_symlink = os.path.join(symlink_dir, target)
     if not os.path.exists(julia_symlink):
         print(f"{color.RED}{julia_symlink} doesn't exist.{color.END}")
         return False
@@ -84,16 +82,11 @@ def switch_julia_target(name: str = 'julia', *,
         print(f"{color.RED}Found a suspicious situation: the current {julia_symlink} is not a symlink.{color.END}")
         return False
 
-    if (path and version) or (not path and not version):
-        print(f"{color.RED}Please specify either Julia path {path} or version {version}.")  # nopep8
-        return False
-    if path:
-        if not os.path.exists(path):
-            print(f"{color.RED}Target Julia path {color.UNDERLINE}{path}{color.END} doesn't exist.")  # nopep8
-            return False
-        target_julia = path
+    version_or_path = str(version_or_path)
+    if os.path.exists(version_or_path):
+        target_julia = version_or_path
     else:
-        version = str(version)
+        version = version_or_path
         target_filename = get_juliafile_from_version(version)
         if not target_filename:
             print(f"{color.RED}Unrecognized input {version}{color.END}")
@@ -116,4 +109,4 @@ def switch_julia_target(name: str = 'julia', *,
         return False
 
     create_symlink(julia_symlink, target_julia)
-    print(f"The {color.UNDERLINE}{name}{color.END} target has been changed from {color.UNDERLINE}{cur_version}{color.END} to {color.UNDERLINE}{target_version}{color.END}")  # nopep8
+    print(f"The {color.UNDERLINE}{target}{color.END} target has been changed from {color.UNDERLINE}{cur_version}{color.END} to {color.UNDERLINE}{target_version}{color.END}")  # nopep8

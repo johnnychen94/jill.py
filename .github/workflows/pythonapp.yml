@@ -53,11 +53,11 @@ jobs:
       - name: test list and switch
         run: |
           coverage run -a -m jill list
-          coverage run -a -m jill switch --version 1.0
+          coverage run -a -m jill switch 1.0
           python -m jill list
-          coverage run -a -m jill switch --version 1
+          coverage run -a -m jill switch 1
           python -m jill list
-          coverage run -a -m jill switch julia-1 --version 1.0
+          coverage run -a -m jill switch 1.0 --target julia-1
           python -m jill list
 
       - name: generate covrage report
@@ -163,11 +163,11 @@ jobs:
       - name: test list and switch
         run: |
           python -m jill list
-          python -m jill switch --version 1.0
+          python -m jill switch 1.0
           python -m jill list
-          python -m jill switch --version 1
+          python -m jill switch 1
           python -m jill list
-          python -m jill switch julia-1 --version 1.0
+          python -m jill switch 1.0 --target julia-1
           python -m jill list
 
   arm_job:

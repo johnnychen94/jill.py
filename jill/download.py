@@ -120,12 +120,12 @@ def download_package(version=None, sys=None, arch=None, *,
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)
 
-    m = re.match("(.*)\+(\w+)$", version)
-    if m:
+    match_build = re.match("(.*)\+(\w+)$", version)
+    if match_build:
         # These files are only available in OfficialNightlies upstream and we don't need to spend
         # time on querying other upstreams.
         upstream = "OfficialNightlies"
-        build = m.group(2)
+        build = match_build.group(2)
         print(f"Detected julia build commit {build}, downloading from upstream {upstream}")  # nopep8
 
     if upstream:
@@ -161,7 +161,13 @@ def download_package(version=None, sys=None, arch=None, *,
 
     def query_url(upstream):
         registry = SourceRegistry(upstream=upstream)
-        url = registry.query_download_url(version, system, architecture)
+        if version in ['latest', 'nightly'] or match_build:
+            # It usually takes longer to query from nightlies bucket so please be patient
+            timeout = 20
+        else:
+            timeout = 5
+        url = registry.query_download_url(
+            version, system, architecture, timeout=timeout)
         if url:
             return url
         # if fails to find an valid url in given upstream, falls back to "Official"

@@ -55,7 +55,7 @@ jobs:
           coverage run -a -m jill list
           coverage run -a -m jill switch --version 1.0
           python -m jill list
-          coverage run -a -m jill siwtch --version 1
+          coverage run -a -m jill switch --version 1
           python -m jill list
           coverage run -a -m jill switch julia-1 --version 1.0
           python -m jill list
@@ -165,7 +165,7 @@ jobs:
           python -m jill list
           python -m jill switch --version 1.0
           python -m jill list
-          python -m jill siwtch --version 1
+          python -m jill switch --version 1
           python -m jill list
           python -m jill switch julia-1 --version 1.0
           python -m jill list

@@ -1,5 +1,4 @@
 from .utils import SourceRegistry, verify_upstream
-from .utils import Version
 from .utils import latest_version
 from .utils import is_version_released
 from .utils import is_full_version

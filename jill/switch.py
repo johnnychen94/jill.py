@@ -1,8 +1,6 @@
-from jill.utils.filters import SPECIAL_VERSION_NAMES
 from .utils.defaults import default_symlink_dir
 from .utils import current_system
 from .utils import color
-from .utils import Version
 from .install import get_exec_version
 
 import os
@@ -27,10 +25,6 @@ def create_symlink(symlink_path, target_path):
         if os.path.exists(symlink_path):
             os.remove(symlink_path)
         os.symlink(target_path, symlink_path)
-
-
-def create_symlink_unix(symlink_path, target_path):
-    os.symlink(target_path, symlink_path)
 
 
 def is_symlink(file):
@@ -110,3 +104,4 @@ def switch_julia_target(version_or_path, *,
 
     create_symlink(julia_symlink, target_julia)
     print(f"The {color.UNDERLINE}{target}{color.END} target has been changed from {color.UNDERLINE}{cur_version}{color.END} to {color.UNDERLINE}{target_version}{color.END}")  # nopep8
+    return True

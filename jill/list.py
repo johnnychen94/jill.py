@@ -34,6 +34,34 @@ def get_binversion(path):
     return binversion, build
 
 
+def sorted_display_list(julialist, reverse):
+    # We sort the julia paths in the following order for better display:
+    #   julia
+    #   julia-<major>
+    #   julia-<major>.<minor>
+    #   julia-<special name>
+
+    # I just get lazy to write this up so 🤷‍♂️ as long as it works I'm happy
+    julia = []
+    julia_major = []
+    julia_major_minor = []
+    julia_special = []
+    for x in julialist:
+        if x == 'julia':
+            julia.append(x)
+        elif re.match(r"^julia.\d+$", x):
+            julia_major.append(x)
+        elif re.match(r"^julia.\d+\.\d+$", x):
+            julia_major_minor.append(x)
+        else:
+            julia_special.append(x)
+    julia.sort(reverse=reverse)  # this actually only have 1 element.
+    julia_major.sort(reverse=reverse)
+    julia_major_minor.sort(reverse=reverse)
+    julia_special.sort(reverse=reverse)
+    return [*julia, *julia_major, *julia_major_minor, *julia_special]
+
+
 def list_julia(version=None, *,
                symlink_dir=None):
     """
@@ -55,7 +83,8 @@ def list_julia(version=None, *,
         pattern = f"^julia-{version}"
     else:
         pattern = "^julia"
-    julias = sorted(search_files(symlink_dir, pattern=pattern), reverse=True)
+    julias = search_files(symlink_dir, pattern=pattern)
+    julias = sorted_display_list(julias, reverse=True)
     version_list = [get_binversion(os.path.join(symlink_dir, x)) for x in julias]  # nopep8
 
     print(f"Found {len(julias)} julia(s) in {color.UNDERLINE}{symlink_dir}{color.END}:")  # nopep8

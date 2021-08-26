@@ -163,8 +163,8 @@ def _build(ver, cache={}):
     if not build:
         return ''
     build = build[0]
-    if len(build) == 10:
-        return build
+    if len(build) >= 10:
+        return build[0:10]
     # If its length is not 10, then we query the github API see what's the actual one
     # To reduce repeated queries, we store it in a dictionary
     # Example: https://s3.amazonaws.com/julialangnightlies/pretesting/mac/x64/1.8/julia-9cad1e0af8-mac64.tar.gz

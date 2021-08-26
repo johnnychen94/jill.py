@@ -125,8 +125,7 @@ def download_package(version=None, sys=None, arch=None, *,
         # These files are only available in OfficialNightlies upstream and we don't need to spend
         # time on querying other upstreams.
         upstream = "OfficialNightlies"
-        build = {m.group(2)[0:10]}
-        version = f"{m.group(1)}+{build}"
+        build = m.group(2)
         print(f"Detected julia build commit {build}, downloading from upstream {upstream}")  # nopep8
 
     if upstream:

@@ -50,6 +50,10 @@ jobs:
           coverage run -a -m jill update
           coverage run -a -m jill update --upstream Official
 
+      - name: test list
+        run: |
+          coverage run -a -m jill list
+
       - name: generate covrage report
         run: |
           coverage report
@@ -150,6 +154,9 @@ jobs:
           & julia -e 'using InteractiveUtils; versioninfo()'
           & julia-1.0 -e 'using InteractiveUtils; versioninfo()'
           & julia-latest -e 'using InteractiveUtils; versioninfo()'
+      - name: test list
+        run: |
+          python -m jill list
 
   arm_job:
     runs-on: ubuntu-18.04

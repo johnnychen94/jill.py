@@ -65,7 +65,7 @@ jobs:
           # SHA=$(git ls-remote https://github.com/julialang/julia master | head -n1 | cut -d$'\t' -f1)
           # VERSION=$(curl https://raw.githubusercontent.com/JuliaLang/julia/master/VERSION)
           # coverage run -a -m jill install ${VERSION}+${SHA} --confirm --upstream Official
-          coverage run -a -m jill insdtall 1.8.0-DEV+f7506aa --confirm
+          coverage run -a -m jill install 1.8.0-DEV+f7506aa --confirm
           echo "Expected version: 1.8.0-DEV+f7506aa"
           julia-dev -e 'using InteractiveUtils; versioninfo()'
         shell: bash
@@ -181,11 +181,8 @@ jobs:
           python -m jill list
       - name: Test installation by commit
         run: |
-          # SHA=$(git ls-remote https://github.com/julialang/julia master | head -n1 | cut -d$'\t' -f1)
-          SHA='f7506aa'
-          VERSION=$(curl https://raw.githubusercontent.com/JuliaLang/julia/master/VERSION)
-          python -m jill install ${VERSION}+${SHA} --confirm --upstream Official
-          echo "Expected version: ${VERSION}+${SHA}"
+          python -m jill install 1.8.0-DEV+f7506aa --confirm
+          echo "Expected version: 1.8.0-DEV+f7506aa"
           julia-dev -e 'using InteractiveUtils; versioninfo()'
 
   arm_job:

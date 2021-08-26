@@ -3,6 +3,7 @@ from .install import install_julia
 from .utils import show_upstream
 from .mirror import mirror
 from .list import list_julia
+from .switch import switch_julia_target
 import fire
 import logging
 import os
@@ -18,6 +19,7 @@ def main():
         'upstream': show_upstream,
         'mirror': mirror,
         'list': list_julia,
+        'switch': switch_julia_target,
     }, name="jill")
 
 

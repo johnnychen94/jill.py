@@ -117,9 +117,6 @@ def download_package(version=None, sys=None, arch=None, *,
         system = "musl"
     architecture = arch if canonicalize_arch(arch) else current_architecture()
 
-    # allow downloading unregistered releases, e.g., 1.4.0-rc1
-    do_release_check = not is_full_version(version)
-
     match_build = re.match("(.*)\+(\w+)$", version)
     if match_build:
         # These files are only available in OfficialNightlies upstream and we don't need to spend
@@ -127,6 +124,9 @@ def download_package(version=None, sys=None, arch=None, *,
         upstream = "OfficialNightlies"
         build = match_build.group(2)
         print(f"Detected julia build commit {build}, downloading from upstream {upstream}")  # nopep8
+
+    # allow downloading unregistered releases, e.g., 1.4.0-rc1
+    do_release_check = not (is_full_version(version) or match_build)
 
     if upstream:
         verify_upstream(upstream)
@@ -159,13 +159,15 @@ def download_package(version=None, sys=None, arch=None, *,
     logging.info(msg)
     print(msg)
 
-    def query_url(upstream):
+    if version in ['latest', 'nightly'] or match_build:
+        # It usually takes longer to query from nightlies bucket so please be patient
+        timeout = 30
+        print(f"Set timeout {timeout} seconds")
+    else:
+        timeout = 5
+
+    def query_url(upstream, timeout=timeout):
         registry = SourceRegistry(upstream=upstream)
-        if version in ['latest', 'nightly'] or match_build:
-            # It usually takes longer to query from nightlies bucket so please be patient
-            timeout = 20
-        else:
-            timeout = 5
         url = registry.query_download_url(
             version, system, architecture, timeout=timeout)
         if url:

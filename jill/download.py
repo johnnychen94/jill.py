@@ -8,6 +8,7 @@ from .utils import verify_gpg
 from .utils import color
 from .utils.filters import canonicalize_sys, canonicalize_arch
 
+import re
 import wget
 import os
 import shutil
@@ -119,11 +120,14 @@ def download_package(version=None, sys=None, arch=None, *,
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not is_full_version(version)
 
-    if Version(version).build:
+    m = re.match("(.*)\+(\w+)$", version)
+    if m:
         # These files are only available in OfficialNightlies upstream and we don't need to spend
         # time on querying other upstreams.
         upstream = "OfficialNightlies"
-        print(f"Detected julia build commit {Version(version).build[0]}, downloading from upstream {upstream}")  # nopep8
+        build = {m.group(2)[0:10]}
+        version = f"{m.group(1)}+{build}"
+        print(f"Detected julia build commit {build}, downloading from upstream {upstream}")  # nopep8
 
     if upstream:
         verify_upstream(upstream)

@@ -34,11 +34,15 @@ def get_binversion(path):
     return binversion, build
 
 
-def list_julia(*, symlink_dir=None):
+def list_julia(version=None, *,
+               symlink_dir=None):
     """
         List all Julia executable versions in symlink dir
 
     Arguments:
+      version: (Optional)
+        The specific version prefix that you are interested in. For example, `jill list 1` checks
+        every symlink that matches the name pattern `^julia-1`. (`julia` is excluded in this case.)
       symlink_dir: (Optional)
         The symlink dir that `jill list` looks at.
     """
@@ -46,8 +50,14 @@ def list_julia(*, symlink_dir=None):
     if not os.path.exists(symlink_dir):
         raise(ValueError(f"symlink dir {symlink_dir} doesn't exist!"))
 
-    julias = sorted(search_files(symlink_dir, pattern='^julia'), reverse=True)  # nopep8
+    version = str(version) if version else ''
+    if version:
+        pattern = f"^julia-{version}"
+    else:
+        pattern = "^julia"
+    julias = sorted(search_files(symlink_dir, pattern=pattern), reverse=True)
     version_list = [get_binversion(os.path.join(symlink_dir, x)) for x in julias]  # nopep8
+
     print(f"Found {len(julias)} julia(s) in {color.UNDERLINE}{symlink_dir}{color.END}:")  # nopep8
     for binname, (binversion, build) in zip(julias, version_list):
         build_msg = f"+{build}" if build else ""

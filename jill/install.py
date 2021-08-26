@@ -381,21 +381,14 @@ def install_julia(version=None, *,
     if not package_path:
         return False
 
-    if system == "mac":
-        if package_path.endswith(".dmg"):
-            installer = install_julia_dmg
-        elif package_path.endswith(".tar.gz"):
-            installer = install_julia_tarball
-        else:
-            raise ValueError(f"Unsupported file for macOS: {package_path}")
-    elif system in ["linux", "freebsd", "musl"] and package_path.endswith(".tar.gz"):
-        # technically it's tarball installer
+    if package_path.endswith(".dmg"):
+        installer = install_julia_dmg
+    elif package_path.endswith(".tar.gz"):
         installer = install_julia_tarball
-    elif system == "winnt" and package_path.endswith((".exe")):
+    elif package_path.endswith(".exe"):
         installer = install_julia_exe
     else:
-        os.remove(package_path)
-        raise ValueError(f"Unsupported system: {system}")
+        print(f"{color.RED}Unsupported file format for {package_path}{color.END}.")
 
     print(f"{color.BOLD}----- Install Julia -----{color.END}")
     installer(package_path, install_dir, symlink_dir, version, upgrade)

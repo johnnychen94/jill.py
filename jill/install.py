@@ -182,10 +182,16 @@ def install_julia_tarball(package_path,
                           upgrade):
     check_installer(package_path, ".tar.gz")
 
-    mver = f_minor_version(version)
+    if re.match("(.*)\+(\w+)$", version):
+        # We want a different folder name for commit builds so that we can have
+        # julia-dev and julia-latest points to two different julia versions
+        suffix = 'dev'
+    else:
+        suffix = f_minor_version(version)
+
     with TarMounter(package_path) as root:
         src_path = root
-        dest_path = os.path.join(install_dir, f"julia-{mver}")
+        dest_path = os.path.join(install_dir, f"julia-{suffix}")
         if os.path.exists(dest_path):
             shutil.rmtree(dest_path)
             msg = f"{color.YELLOW}remove previous Julia installation:"

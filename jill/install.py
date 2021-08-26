@@ -197,6 +197,8 @@ def install_julia_tarball(package_path,
         print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     os.chmod(dest_path, 0o755)  # issue 12
     bin_path = os.path.join(dest_path, "bin", "julia")
+    if current_system() == 'winnt':
+        bin_path += '.exe'
     make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
         copy_root_project(version)

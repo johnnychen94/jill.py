@@ -165,7 +165,7 @@ def download_package(version=None, sys=None, arch=None, *,
         if url:
             return url
         # if fails to find an valid url in given upstream, falls back to "Official"
-        if upstream == "Official" or upstream is None:
+        if upstream in ["Official", "OfficialNightlies"] or upstream is None:
             # if "Official" is already tried, then there's no need to retry
             return None
         else:

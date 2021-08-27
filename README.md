@@ -47,7 +47,7 @@ For common Julia users:
 
 * Get the latest stable release: `jill install`
 * Get the latest 1.x release: `jill install 1`
-* Get the latest 1.6.z release: `jill install 1.6`
+* Get the latest 1.6.x release: `jill install 1.6`
 * Get the specific version: `jill install 1.6.2`, `jill install 1.7.0-beta3`
 * Get the latest release (including unstable ones): `jill install --unstable`
 
@@ -74,7 +74,7 @@ Stable releases:
 
 * `julia` points to the latest Julia release.
 * `julia-1` points to the latest 1.x Julia release.
-* `julia-1.6` points to the latest 1.6.z Julia release.
+* `julia-1.6` points to the latest 1.6.x Julia release.
 
 For unstable releases such as `1.7.0-beta3`, installing it via `jill install 1.7 --unstable` or
 `jill install 1.7.0-beta3`  will only give you `julia-1.7`; it won't make symlinks for `julia` or
@@ -83,7 +83,7 @@ For unstable releases such as `1.7.0-beta3`, installing it via `jill install 1.7
 To dance on edge:
 
 * `julia-latest` points to the nightly build from `jill install latest`
-* `julia-dev` points to the julia CI build artificats from `jill install 1.8+cc4be25c`.
+* `julia-dev` points to the julia CI build artifacts from, for example, `jill install 1.8+cc4be25c`.
 
 ### List symlinks and their target versions
 
@@ -97,7 +97,7 @@ To dance on edge:
 
 ## About downloading upstreams
 
-By default, JILL try to be smart and will download contents from the _nearest_ upstream.
+By default, JILL tries to be smart and will download contents from the _nearest_ upstream.
 You can get the information of all upstreams via `jill upstream`.
 
 To temporarily disable this feature, you can use flag `--upstream <server_name>`. For instance,
@@ -157,7 +157,7 @@ make your nightly build always the latest version using `cron`:
 PATH=/usr/local/bin:/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # install a fresh nightly build every day
-* 0 * * * root jill install latest --confirm --confirm Official
+* 0 * * * root jill install latest --confirm --upstream Official
 ```
 
 ## Advanced: Registering a new public releases upstream
@@ -179,13 +179,16 @@ upstream entry.
 Please check [the `sources.json` format](sources_format.md) for more detailed information on the
 format.
 
-## Advanced: mirror the Julia releases
+## Advanced: make a Julia release mirror
 
 There are two ways to do so:
 
 * use `aws s3 sync`, this should be the easiest way to do so I highly recommend this.
-* (Deprecated) use `jill mirror` command with [mirror config example](mirror.example.json). I didn't
-  know about the `aws s3 sync` stuff when I implemented this.
+* **(Deprecated)** use `jill mirror` command with [mirror config example](mirror.example.json). I
+  didn't know about the `aws s3 sync` stuff when I implemented this.
+
+The Julia release mirror does not contain Julia package contents, to mirror all the Julia packages
+and artifacts (which requires >1.5Tb storage), you can use [StorageMirrorServer.jl].
 
 ## Advanced: The Python API
 
@@ -216,43 +219,42 @@ anything magical, but just makes such operation even stupid.
 
 At first I found myself needing a simple tool to download and install Julia on my macbook and
 servers in our lab, I made my own shell scripts and I'd like to share it with others. Then I found
-[jill.sh][JILL-sh] project, Abel knows a lot shell so I decide to contribute my mac installer there.
+the [jill.sh][JILL-sh] project, Abel knows a lot shell so I decide to contribute my macOS Julia
+installer to `jill.sh`.
 
-There are three main reaons for why I decided to start my Python fork:
+There are three main reasons for why I decided to start my Python fork:
 
-* I live in China and downloading resources from GitHub and AWS s3 buckets is a painful experience.
-  Thus I want to support downloading from mirror servers. Adding mirror server support to jill.sh
-  is quite complicated and can easily become a maintenance nightmare.
+* I live in China. Downloading resources from GitHub and AWS s3 buckets is a painful experience.
+  Thus I want to support downloading from mirror servers. Adding mirror server support to jill.sh is
+  quite complicated and can easily become a maintenance nightmare.
 * I want to make a cross platform installer that everyone can use, not just Linux/macOS users. Shell
-  scripts doesn't allow this as far as I can tell. In contrast, Python allows.
-* Most importantly, I know very little shell, I know nothing about C/C++/Rust/Go and whatever you
-  think a good solution. And I happen to know a few Python.
+  scripts doesn't allow this as far as I can tell. In contrast, Python allows this.
+* Most importantly, back to when I start this project, I knew very little shell, I knew nothing
+  about C/C++/Rust/Go and whatever you think a good solution is. I happen to knew a few Python.
 
 For some "obvious" reason, Julia People don't like Python and I understand it. (I also don't like
-Python after being advanced Julia user for more than 3 years) But actually, revisiting this project,
-I find using Python is one of the best-made decision. Here is the reason: no matter how you enjoy
-Julia (or C++, Rust), Python is one of the best successful programming language for sever
-maintenance purpose. Users can easily found tons of solutions on "how to install xxx package" and
-it's easy to write, deploy, and ship to all over the world via Pypi.
+Python after being advanced Julia user for more than 3 years) But to be honest, revisiting this
+project, I find using Python is one of the best-made decision during the entire project. Here is the
+reason: no matter how you enjoy Julia (or C++, Rust), Python is one of the best successful
+programming language for sever maintenance purpose. Users can easily found tons of "how-to"
+solutions about Python and it's easy to write, deploy, and ship Python codes to the world via PyPI.
 
-And again, I live in China so I want to rely on services that are easily accessible in China, Pypi
+And again, I live in China so I want to rely on services that are easily accessible in China, PyPI
 is, GitHub and AWS S3 bucket aren't. A recent Julia installer project [juliaup] written in Rust
 solves the Python dependency problem very well, but the tradeoff is that `juliaup` needs its own
 distributing system (currently GitHub and S3 bucket) to make sure it can be reliably downloaded to
-user machine. And for this it just won't be as good as Pypi in the foreseeable future.
+user machine. And for this it just won't be as good as PyPI in the foreseeable future.
 
 ### Is it safe to use `jill.py`?
 
 Yes, `jill.py` use GPG to check every tarballs after downloading. Also, `*.dmg`/`*.pkg` for macOS
 and `.exe` for Windows are already signed.
 
-One exception for this is `jill install 1.8+
-
 ### What's the difference between `jill.sh` and `jill.py`
 
 [`jill.sh`][JILL-sh] is a shell script that works quite well on Linux x86/x64 machines. `jill.py` is
-a python package that focus on Julia installation and version management, and brings a unified user
-experience on all platforms.
+an enhanced python package that focus on Julia installation and version management, and brings a
+unified user experience on all platforms.
 
 ### Why `julia` fails to start
 
@@ -266,7 +268,7 @@ Generally, you should not care about patch version differences so `jill.py` make
 only one of 1.6.x can exist. If you insist to have multiple patch versions, you could use `jill
 install --install_dir <some_other_folder>` to install Julia in other folder, and then manually make
 a symlink back. As I just said, in most cases, common users should not care about this patch version
-difference and just using the latest patch release would be fine.
+difference and should just use the latest patch release.
 
 ### How to only download contents without installation?
 
@@ -279,9 +281,13 @@ For Julia (>= 1.5.0) in Linux with musl libc, you can just do `jill install` and
 right Julia binary. To download the musl libc binary using `jill download`, you will need to pass
 `--sys musl` flag.
 
+### MacOS with Apple silicon (M1)
+
+Yes it's supported. But I don't have access to M1 machine so I can't test it.
 
 <!-- URLS -->
 
 [Julia Repository]: https://github.com/JuliaLang/julia
 [JILL-sh]: https://github.com/abelsiqueira/jill
 [juliaup]: https://github.com/JuliaLang/juliaup
+[StorageMirrorServer.jl]: https://github.com/johnnychen94/StorageMirrorServer.jl

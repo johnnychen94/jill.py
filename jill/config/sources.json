@@ -10,6 +10,19 @@
             ],
             "versions": "https://julialang-s3.julialang.org/bin/versions.json"
         },
+        "OfficialNightlies": {
+            "name": "Julialang.org",
+            "urls": [
+                "https://s3.amazonaws.com/julialangnightlies/bin/$sys/$arch/$minor_version/julia-$build-$osbit.tar.gz",
+                "https://s3.amazonaws.com/julialangnightlies/assert_bin/$sys/$arch/$minor_version/julia-$build-$osbit.tar.gz",
+                "https://s3.amazonaws.com/julialangnightlies/pretesting/$sys/$arch/$minor_version/julia-$build-$osbit.tar.gz",
+                "https://s3.amazonaws.com/julialangnightlies/assert_pretesting/$sys/$arch/$minor_version/julia-$build-$osbit.tar.gz"
+            ],
+            "latest_urls": [
+                ""
+            ],
+            "versions": "https://julialang-s3.julialang.org/bin/versions.json"
+        },
         "BFSU": {
             "name": "Beijing Foreign Studies University",
             "urls": [

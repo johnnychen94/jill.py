@@ -7,6 +7,7 @@ from .utils import verify_gpg
 from .utils import color
 from .utils.filters import canonicalize_sys, canonicalize_arch
 
+import re
 import wget
 import os
 import shutil
@@ -115,8 +116,16 @@ def download_package(version=None, sys=None, arch=None, *,
         system = "musl"
     architecture = arch if canonicalize_arch(arch) else current_architecture()
 
+    match_build = re.match("(.*)\+(\w+)$", version)
+    if match_build:
+        # These files are only available in OfficialNightlies upstream and we don't need to spend
+        # time on querying other upstreams.
+        upstream = "OfficialNightlies"
+        build = match_build.group(2)
+        print(f"Detected julia build commit {build}, downloading from upstream {upstream}")  # nopep8
+
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
-    do_release_check = not is_full_version(version)
+    do_release_check = not (is_full_version(version) or match_build)
 
     if upstream:
         verify_upstream(upstream)
@@ -149,13 +158,21 @@ def download_package(version=None, sys=None, arch=None, *,
     logging.info(msg)
     print(msg)
 
-    def query_url(upstream):
+    if version in ['latest', 'nightly'] or match_build:
+        # It usually takes longer to query from nightlies bucket so please be patient
+        timeout = 30
+        print(f"Set timeout {timeout} seconds")
+    else:
+        timeout = 5
+
+    def query_url(upstream, timeout=timeout):
         registry = SourceRegistry(upstream=upstream)
-        url = registry.query_download_url(version, system, architecture)
+        url = registry.query_download_url(
+            version, system, architecture, timeout=timeout)
         if url:
             return url
         # if fails to find an valid url in given upstream, falls back to "Official"
-        if upstream == "Official" or upstream is None:
+        if upstream in ["Official", "OfficialNightlies"] or upstream is None:
             # if "Official" is already tried, then there's no need to retry
             return None
         else:

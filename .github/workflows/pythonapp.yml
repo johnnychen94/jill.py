@@ -60,6 +60,16 @@ jobs:
           coverage run -a -m jill switch 1.0 --target julia-1
           python -m jill list
 
+      # - name: Test installation by commit
+      #   run: |
+      #     # SHA=$(git ls-remote https://github.com/julialang/julia master | head -n1 | cut -d$'\t' -f1)
+      #     # VERSION=$(curl https://raw.githubusercontent.com/JuliaLang/julia/master/VERSION)
+      #     # coverage run -a -m jill install ${VERSION}+${SHA} --confirm --upstream Official
+      #     coverage run -a -m jill install 1.8.0-DEV+f7506aa --confirm
+      #     echo "Expected version: 1.8.0-DEV+f7506aa"
+      #     julia-dev -e 'using InteractiveUtils; versioninfo()'
+      #   shell: bash
+
       - name: generate covrage report
         run: |
           coverage report
@@ -169,6 +179,12 @@ jobs:
           python -m jill list
           python -m jill switch 1.0 --target julia-1
           python -m jill list
+
+      # - name: Test installation by commit
+      #   run: |
+      #     python -m jill install 1.8.0-DEV+f7506aa --confirm
+      #     echo "Expected version: 1.8.0-DEV+f7506aa"
+      #     julia-dev -e 'using InteractiveUtils; versioninfo()'
 
   arm_job:
     runs-on: ubuntu-18.04

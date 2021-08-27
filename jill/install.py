@@ -99,6 +99,8 @@ def make_symlinks(src_bin, symlink_dir, version):
     if version == "latest":
         # issue 11: don't symlink to julia
         link_list = ["julia-latest"]
+    elif len(Version(version).build) > 0:
+        link_list = ["julia-dev"]
     elif len(new_ver.prerelease) > 0:
         # issue #76
         # - it is usually unwanted to symlink unstable release to `julia` and `julia-x`
@@ -173,17 +175,23 @@ def copy_root_project(version):
     shutil.copytree(src_path, dest_path)
 
 
-def install_julia_linux(package_path,
-                        install_dir,
-                        symlink_dir,
-                        version,
-                        upgrade):
+def install_julia_tarball(package_path,
+                          install_dir,
+                          symlink_dir,
+                          version,
+                          upgrade):
     check_installer(package_path, ".tar.gz")
 
-    mver = f_minor_version(version)
+    if re.match("(.*)\+(\w+)$", version):
+        # We want a different folder name for commit builds so that we can have
+        # julia-dev and julia-latest points to two different julia versions
+        suffix = 'dev'
+    else:
+        suffix = f_minor_version(version)
+
     with TarMounter(package_path) as root:
         src_path = root
-        dest_path = os.path.join(install_dir, f"julia-{mver}")
+        dest_path = os.path.join(install_dir, f"julia-{suffix}")
         if os.path.exists(dest_path):
             shutil.rmtree(dest_path)
             msg = f"{color.YELLOW}remove previous Julia installation:"
@@ -195,13 +203,15 @@ def install_julia_linux(package_path,
         print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     os.chmod(dest_path, 0o755)  # issue 12
     bin_path = os.path.join(dest_path, "bin", "julia")
+    if current_system() == 'winnt':
+        bin_path += '.exe'
     make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
         copy_root_project(version)
     return True
 
 
-def install_julia_mac(package_path,
+def install_julia_dmg(package_path,
                       install_dir,
                       symlink_dir,
                       version,
@@ -232,11 +242,11 @@ def install_julia_mac(package_path,
     return True
 
 
-def install_julia_windows(package_path,
-                          install_dir,
-                          symlink_dir,
-                          version,
-                          upgrade):
+def install_julia_exe(package_path,
+                      install_dir,
+                      symlink_dir,
+                      version,
+                      upgrade):
     check_installer(package_path, ".exe")
 
     dest_path = os.path.join(install_dir,
@@ -379,16 +389,14 @@ def install_julia(version=None, *,
     if not package_path:
         return False
 
-    if system == "mac":
-        installer = install_julia_mac
-    elif system in ["linux", "freebsd", "musl"]:
-        # technically it's tarball installer
-        installer = install_julia_linux
-    elif system == "winnt":
-        installer = install_julia_windows
+    if package_path.endswith(".dmg"):
+        installer = install_julia_dmg
+    elif package_path.endswith(".tar.gz"):
+        installer = install_julia_tarball
+    elif package_path.endswith(".exe"):
+        installer = install_julia_exe
     else:
-        os.remove(package_path)
-        raise ValueError(f"Unsupported system: {system}")
+        print(f"{color.RED}Unsupported file format for {package_path}{color.END}.")
 
     print(f"{color.BOLD}----- Install Julia -----{color.END}")
     installer(package_path, install_dir, symlink_dir, version, upgrade)

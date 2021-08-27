@@ -1,19 +1,15 @@
-### Register new mirror
-
-If it's an public mirror and you want to share it worldwide. You can add an entry to the
-[public registry](jill/config/sources.json), make a PR, then I will tag a new release for that.
-
-If it's an internal mirror and you don't plan to make it public, you can create a config
-file at `~/.config/jill/sources.json` locally. The contents will be appended to
-the public registry and overwrite already existing items if there are.
+# The sources.json format
 
 In the registry config file, a new mirror is a dictionary in the `upstream` field:
 
-* `name`: a distinguishable mirror name
-* `urls`: URL template to retrive Julia release
-* `latest_urls`: URL template to retrive the nightly build of Julia release
+* `name`: a distinguishable mirror name.
+* `urls`: URL template to retrive Julia release.
+* `latest_urls`: URL template to retrive the nightly build of Julia release. If the server doesn't
+  provide contents for `jill install latest`, then leave this as blank.
+* `versions`: URL to get the `versions.json` file. By default it uses
+  `https://julialang-s3.julialang.org/bin/versions.json`.
 
-### Placeholders
+## Placeholders
 
 Placeholders are used to register new mirrors. For example, the stable release url of
 the "Official" release server provided by [Julialang.org](https://julialang.org/) is

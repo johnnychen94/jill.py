@@ -22,7 +22,7 @@ _The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Jul
 * download Julia releases from the *nearest* mirror server
 * support all platforms and architectures
 * manage multiple julia releases
-* easy to use
+* easy-to-use CLI tool
 
 [![asciicast](https://asciinema.org/a/432654.svg)](https://asciinema.org/a/432654)
 
@@ -103,8 +103,9 @@ provides a simple and unified way to do this:
 
 ## About downloading upstreams
 
-By default, JILL tries to be smart and will download contents from the _nearest_ upstream.
-You can get the information of all upstreams via `jill upstream`.
+By default, JILL tries to be smart and will download contents from the _nearest_ upstream. You can
+get the information of all upstreams via `jill upstream`. Here's what I get in my laptop, I live in
+China so the official upstreams aren't so accessible for me :(
 
 ![upstream](https://user-images.githubusercontent.com/8684355/131207372-03220bc4-bf79-408d-b386-ef9b41524ccd.png)
 

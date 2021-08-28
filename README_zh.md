@@ -28,8 +28,7 @@ _跨平台的 Julia 一键安装脚本_
 
 ## 安装 JILL
 
-首先你要通过 pip 来安装`jill`: `pip install jill --user -U`， 并且需要 `3.6` 以上的 Python 版本。 更
-新 JILL 也可以通过这条命令来得到。
+首先你要通过 pip 来安装`jill`: `pip install jill --user -U`， 并且需要 `3.6` 以上的 Python 版本。 更新 JILL 也可以通过这条命令来得到。
 
 > "我们要用魔法打败魔法" -- 老爹
 
@@ -52,8 +51,7 @@ _跨平台的 Julia 一键安装脚本_
 对 Julia 开发者和维护者来说：
 
 * 安装每日构建版本 (nightly builds)： `jill install latest`。 对应的别名为 `julia-latest`.
-* 安装 Julia 仓库中指定 commit 的 CI 构建: `jill install 1.8.0+cc4be25c`. (遵照
-  `<major>.<minor>.<patch>+<build>` 形式并且提供 HASH 的至少前 7 位。) 对应的别名为 `julia-dev`。
+* 安装 Julia 仓库中指定 commit 的 CI 构建: `jill install 1.8.0+cc4be25c`. (遵照 `<major>.<minor>.<patch>+<build>` 形式并且提供 HASH 的至少前 7 位。) 对应的别名为 `julia-dev`。
 
 一些可能用得到的参数：
 
@@ -64,8 +62,7 @@ _跨平台的 Julia 一键安装脚本_
 
 ## 别名和符号链接
 
-启动 Julia 的话是通过 JILL 创建的别名 (例如 `julia`, `julia-1`) 来启动的， `jill install` 采用下述规
-则来确保你始终在使用最新稳定版本的 Julia。
+启动 Julia 的话是通过 JILL 创建的别名 (例如 `julia`, `julia-1`) 来启动的， `jill install` 采用下述规则来确保你始终在使用最新稳定版本的 Julia。
 
 稳定版：
 
@@ -73,8 +70,7 @@ _跨平台的 Julia 一键安装脚本_
 * `julia-1` 指向最新稳定版 Julia 1.y.z
 * `julia-1.6` 指向最新稳定版 Julia 1.6.z
 
-对于不稳定的测试版 （例如 `1.7.0-beta3`）， 通过 `jill install 1.7 --unstable` 或者 `jill install
-1.7.0-beta3` 来安装的话， 都只会创建 `julia-1.7` 这个别名而不会修改 `julia` 或者 `julia-1`.
+对于不稳定的测试版 （例如 `1.7.0-beta3`）， 通过 `jill install 1.7 --unstable` 或者 `jill install 1.7.0-beta3` 来安装的话， 都只会创建 `julia-1.7` 这个别名而不会修改 `julia` 或者 `julia-1`.
 
 想在每日构建及开发版本疯狂试探？
 
@@ -89,9 +85,7 @@ _跨平台的 Julia 一键安装脚本_
 
 ### 更改别名所指向的版本
 
-对于非 Windows 系统来说， JILL 别名实际上就是符号链接 (symlink)， 所以你完全可以通过 `ln` 命令来修改
-它。 对于 Windows 系统来说， JILL 使用了 `.cmd` 文件作为入口因此需要对对应文件进行调整。 另一方面，
-`jill swtich` 命令提供了一种简单统一的方式来实现这一功能：
+对于非 Windows 系统来说， JILL 别名实际上就是符号链接 (symlink)， 所以你完全可以通过 `ln` 命令来修改它。 对于 Windows 系统来说， JILL 使用了 `.cmd` 文件作为入口因此需要对对应文件进行调整。 另一方面， `jill swtich` 命令提供了一种简单统一的方式来实现这一功能：
 
 * `jill switch 1.6`: 让 `julia` 指向 Julia 1.6.z 版本
 * `jill switch <其他的 Julia 可执行文件路径>`: 让 `julia` 指向其他的可执行文件作为 Julia 的入口。
@@ -103,13 +97,11 @@ _跨平台的 Julia 一键安装脚本_
 
 ![upstream](https://user-images.githubusercontent.com/8684355/131207372-03220bc4-bf79-408d-b386-ef9b41524ccd.png)
 
-如果需要暂时关闭这一功能， 你可以通过 `--upstream <server_name>` 来指定具体的下载源， 例如 `jill
-install --upstream Official` 会确保从官方源下载数据。
+如果需要暂时关闭这一功能， 你可以通过 `--upstream <server_name>` 来指定具体的下载源， 例如 `jill install --upstream Official` 会确保从官方源下载数据。
 
 如果需要永久关闭这一功能的话， 你可以设置环境变量 `JILL_UPSTREAM`.
 
-需要注意的是， `--upstream` 的优先级比环境变量要高。 例如， 如果设置 `JILL_UPSTREAM="TUNA"`， 那么
-`jill install --upstream Official` 依然会从官方源下载数据。
+需要注意的是， `--upstream` 的优先级比环境变量要高。 例如， 如果设置 `JILL_UPSTREAM="TUNA"`， 那么 `jill install --upstream Official` 依然会从官方源下载数据。
 
 ## 关于安装位置及别名的创建位置
 
@@ -121,24 +113,20 @@ install --upstream Official` 会确保从官方源下载数据。
 | Linux/FreeBSD  | `~/packages/julias`       | `~/.local/bin`               |
 | Windows        | `~\AppData\Local\julias`  | `~\AppData\Local\julias\bin` |
 
-例如， 在 Linux 系统上 `jill install 1.6.2` 会创建一个文件夹 `~/packages/julias/julia-1.6` 并且创建
-一些符号链接 `julia`、 `julia-1`、 以及 `julia-1.6` 在 `~/.local/bin` 下面。
+例如， 在 Linux 系统上 `jill install 1.6.2` 会创建一个文件夹 `~/packages/julias/julia-1.6` 并且创建一些符号链接 `julia`、 `julia-1`、 以及 `julia-1.6` 在 `~/.local/bin` 下面。
 
 特别地， 如果你以 `root` 用户的身份在使用 `jill` 的话， 安装好的 Julia 可以被所有用户使用：
 
 * 对于 Linux/FreeBSD 来说， 安装位置为 `/opt/julias`。
 * 对于 Linux/FreeBSD/macOS 来说， 符号链接会创建在 `/usr/local/bin` 下面。
 
-如果想要改变默认的 JILL 安装位置以及符号链接创建的位置， 你可以设置环境变量 `JILL_INSTALL_DIR` 以及
-`JILL_SYMLINK_DIR`.
+如果想要改变默认的 JILL 安装位置以及符号链接创建的位置， 你可以设置环境变量 `JILL_INSTALL_DIR` 以及 `JILL_SYMLINK_DIR`.
 
-**（弃用）** `jill install` 也提供 `--install_dir <dirpath>` 和 `--symlink_dir <dirpath>` 来调整位
-置。 他们比环境变量 `JILL_INSTALL_DIR` 和 `JILL_SYMLINK_DIR` 的优先级要高。
+**（弃用）** `jill install` 也提供 `--install_dir <dirpath>` 和 `--symlink_dir <dirpath>` 来调整位置。 他们比环境变量 `JILL_INSTALL_DIR` 和 `JILL_SYMLINK_DIR` 的优先级要高。
 
 ## JILL 环境变量
 
-`jill` 被设计为一个方便使用的命令行工具， 频繁输入一些特定的参数可能会非常繁琐， 因此 `jill` 预设了
-一些环境变量来改变默认的值：
+`jill` 被设计为一个方便使用的命令行工具， 频繁输入一些特定的参数可能会非常繁琐， 因此 `jill` 预设了一些环境变量来改变默认的值：
 
 * 指定默认的下载源 `JILL_UPSTREAM`: `--upstream`
 * 指定默认的符号链接创建的位置 `JILL_SYMLINK_DIR`： `--symlink_dir`

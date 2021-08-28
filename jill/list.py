@@ -89,7 +89,9 @@ def list_julia(version=None, *,
 
     print(f"Found {len(julias)} julia(s) in {color.UNDERLINE}{symlink_dir}{color.END}:")  # nopep8
     for binname, (binversion, build) in zip(julias, version_list):
-        binname = os.path.splitext(binname)[0]  # Hide .cmd ext for Windows
+        if binname.endswith(".cmd"):
+            # hide .cmd ext for Windows
+            binname = os.path.splitext(binname)[0]
         build_msg = f"+{build}" if build else ""
         binversion_msg = f"{color.RED}Invalid{color.END}" if binversion == '0.0.1' else binversion
         print(f"{color.BOLD}{binname:12}{color.END}\t-->\t{binversion_msg}{build_msg}")

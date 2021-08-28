@@ -46,17 +46,17 @@ When you type `jill install`, it does the following things:
 For common Julia users:
 
 * Get the latest stable release: `jill install`
-* Get the latest 1.x release: `jill install 1`
-* Get the latest 1.6.x release: `jill install 1.6`
+* Get the latest 1.y.z release: `jill install 1`
+* Get the latest 1.6.z release: `jill install 1.6`
 * Get the specific version: `jill install 1.6.2`, `jill install 1.7.0-beta3`
 * Get the latest release (including unstable ones): `jill install --unstable`
 
 For Julia developers and maintainers:
 
 * Get the nightly builds: `jill install latest`. This gives you `julia-latest`.
-* Checkout CI build artifacts of specific commit in the [Julia Repository]:
-  `jill install 1.8+cc4be25c` (`<major>.<minor>+<build>` with at least the first 7 characters of
-  the hash). This gives you `julia-dev`.
+* Checkout CI build artifacts of specific commit in the [Julia Repository]: `jill install
+  1.8.0+cc4be25c` (`<major>.<minor>.<patch>+<build>` with at least the first 7 characters of the
+  hash). This gives you `julia-dev`.
 
 Some flags that can be useful:
 
@@ -67,14 +67,14 @@ Some flags that can be useful:
 
 ## The symlinks
 
-To start Julia, you can use predefined JILL symlinks such as `julia`. The following rule makes sure
+To start Julia, you can use predefined JILL symlinks such as `julia`. `jill install` uses the following rule makes sure
 that you're always using the latest stable release.
 
 Stable releases:
 
 * `julia` points to the latest Julia release.
-* `julia-1` points to the latest 1.x Julia release.
-* `julia-1.6` points to the latest 1.6.x Julia release.
+* `julia-1` points to the latest 1.y.z Julia release.
+* `julia-1.6` points to the latest 1.6.z Julia release.
 
 For unstable releases such as `1.7.0-beta3`, installing it via `jill install 1.7 --unstable` or
 `jill install 1.7.0-beta3`  will only give you `julia-1.7`; it won't make symlinks for `julia` or
@@ -83,13 +83,19 @@ For unstable releases such as `1.7.0-beta3`, installing it via `jill install 1.7
 To dance on edge:
 
 * `julia-latest` points to the nightly build from `jill install latest`
-* `julia-dev` points to the julia CI build artifacts from, for example, `jill install 1.8+cc4be25c`.
+* `julia-dev` points to the julia CI build artifacts from, for example, `jill install 1.8.0+cc4be25c`.
 
 ### List symlinks and their target versions
 
 `jill list [version]` gives you every symlinks and their target Julia versions.
 
+![list](https://user-images.githubusercontent.com/8684355/131207375-8b355e2b-3a67-4b70-8d2d-83623ae1e451.png)
+
 ### Change symlink target
+
+For non-windows system, you are free to use `ln` command to change the symlink targets. For Windows
+it uses an entry `.cmd` file for this so you'll need to copy them. In the meantime, `jill switch`
+provides a simple and unified way to do this:
 
 * `jill switch 1.6`: let `julia` points to the latest julia 1.6.z release.
 * `jill switch <path/to/my/own/julia/executable>`: let `julia` points to custom executables.
@@ -99,6 +105,8 @@ To dance on edge:
 
 By default, JILL tries to be smart and will download contents from the _nearest_ upstream.
 You can get the information of all upstreams via `jill upstream`.
+
+![upstream](https://user-images.githubusercontent.com/8684355/131207372-03220bc4-bf79-408d-b386-ef9b41524ccd.png)
 
 To temporarily disable this feature, you can use flag `--upstream <server_name>`. For instance,
 `jill install --upstream Official` will faithfully download from the official julialang s3 bucket.
@@ -119,10 +127,10 @@ Here's the default JILL installation and symlink directories:
 | Linux/FreeBSD  | `~/packages/julias`       | `~/.local/bin`               |
 | Windows        | `~\AppData\Local\julias`  | `~\AppData\Local\julias\bin` |
 
-For example, `jill install 1.6.2` will have a julia folder in `~/packages/julias/julia-1.6` and
-symlinks `julia`/`julia-1`/`julia-1.6` created in `~/.local/bin`.
+For example, on Linux `jill install 1.6.2` will have a julia folder in `~/packages/julias/julia-1.6`
+and symlinks `julia`/`julia-1`/`julia-1.6` created in `~/.local/bin`.
 
-If you're using `jill` as `root` user, you will do a system-wide installation:
+Particularly, if you're using `jill` as `root` user, you will do a system-wide installation:
 
 * Installation directory will be `/opt/julias` for Linux/FreeBSD.
 * Symlink directory will be `/usr/local/bin` for Linux/FreeBSD/macOS.

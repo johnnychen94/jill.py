@@ -14,6 +14,17 @@ import re
 import shutil
 import subprocess
 
+def get_stable_installation_dir():
+    """
+        return the path to the stable Julia installation, or None if it does not exist.
+    """
+    julias_root = default_install_dir()
+    installed_julia = [x for x in os.listdir(julias_root ) if x.startswith("julia")]
+    # julias = [os.path.join(julias_root , x) for x in os.listdir(julias_root ) if x.startswith("julia")]
+    # stable_version = latest_version("", current_system(), current_architecture()) # e.g. '1.7.0'
+    # stable_version  = '.'.join(stable_version.split('.')[0:2]) # e.g. '1.7'
+    return installed_julia
+
 
 def is_installed(version, check_symlinks=True):
     """

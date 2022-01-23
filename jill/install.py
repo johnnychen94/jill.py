@@ -347,6 +347,12 @@ def install_julia(version=None, *,
         # currently Julia tags musl as a system, e.g.,
         # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
         system = "musl"
+    if system == "mac" and arch == "aarch64":
+        # Until Julia has tier-1 support for the apple silicon, we ship the intel version by default.
+        # https://github.com/johnnychen94/jill.py/issues/102
+        # TODO(johnnychen94): provide a way to install the native version.
+        print(f"{color.YELLOW}Apple silicon is still tier-3 support, installing the Intel version instead.{color.END}")
+        arch = "x86_64"
 
     hello_msg()
     if system == "winnt":

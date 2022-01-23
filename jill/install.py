@@ -282,6 +282,7 @@ def hello_msg():
 
 
 def install_julia(version=None, *,
+                  preferred_arch=None,
                   install_dir=None,
                   symlink_dir=None,
                   upgrade=False,
@@ -311,6 +312,9 @@ def install_julia(version=None, *,
     Arguments:
       version:
         The Julia version you want to install.
+      preferred_arch:
+        (Experimental): add `--preferred-arch arm64` to download the native version for macOS the
+        M-series Processor. For any other platform, this flag is ignored.
       upstream:
         manually choose a download upstream. For example, set it to "Official"
         if you want to download from JuliaComputing's s3 buckets.
@@ -348,11 +352,22 @@ def install_julia(version=None, *,
         # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
         system = "musl"
     if system == "mac" and arch == "aarch64":
-        # Until Julia has tier-1 support for the apple silicon, we ship the intel version by default.
-        # https://github.com/johnnychen94/jill.py/issues/102
-        # TODO(johnnychen94): provide a way to install the native version.
-        print(f"{color.YELLOW}Apple silicon is still tier-3 support, installing the Intel version instead.{color.END}")
-        arch = "x86_64"
+        if preferred_arch:  # preferred architecture for macOS
+            if preferred_arch.lower() in ["aarch64", "arm64"]:
+                arch = "aarch64"
+            elif preferred_arch.lower() in ["x86_64", "x64"]:
+                arch = "x86_64"
+            else:
+                raise ValueError(
+                    "Unrecognized value {preferred_arch} for flag `--preferred-arch`")
+        else:
+            # Until Julia has tier-1 support for the apple silicon, we ship the intel version by default.
+            # https://github.com/johnnychen94/jill.py/issues/102
+            # TODO(johnnychen94): provide a way to install the native version.
+            msg = "Apple silicon is still tier-3 support, installing the Intel version by default."
+            msg += "\nAdd `--preferred-arch arm64` flag to install the native version."
+            print(f"{color.YELLOW}{msg}{color.END}")
+            arch = "x86_64"
 
     hello_msg()
     if system == "winnt":

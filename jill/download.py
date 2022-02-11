@@ -13,12 +13,15 @@ import os
 import shutil
 import tempfile
 import logging
+import traceback
 
 from urllib.parse import urlparse
 
 from typing import Optional
 
 from urllib.error import URLError
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def _download(url: str, out: str):
@@ -40,6 +43,7 @@ def _download(url: str, out: str):
             msg = f"failed to download {outname}"
             logging.info(msg)
             print(f"{color.RED}{msg}{color.END}")
+            traceback.print_exc()
             return False
 
         if not os.path.isdir(outdir):

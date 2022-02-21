@@ -69,6 +69,10 @@ def switch_julia_target(version_or_path, *,
         raise(ValueError(f"symlink dir {symlink_dir} doesn't exist."))
 
     julia_symlink = os.path.join(symlink_dir, target)
+    if current_system() == "winnt":
+        # We use ".cmd" file to mimic symlink in windows.
+        # https://github.com/johnnychen94/jill.py/issues/98
+        julia_symlink = julia_symlink + ".cmd"
     if not os.path.exists(julia_symlink):
         print(f"{color.RED}{julia_symlink} doesn't exist.{color.END}")
         return False

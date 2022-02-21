@@ -11,6 +11,7 @@ import re
 import wget
 import os
 import shutil
+import ssl
 import tempfile
 import logging
 
@@ -21,7 +22,25 @@ from typing import Optional
 from urllib.error import URLError
 
 
-def _download(url: str, out: str):
+class SSLContext:
+    # https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
+    def __init__(self, create_context=None):
+        if create_context:
+            self.prev_create_context = ssl._create_default_https_context
+            self.create_context = create_context
+        else:
+            self.create_context = None
+
+    def __enter__(self):
+        if self.create_context:
+            ssl._create_default_https_context = self.create_context
+
+    def __exit__(self, type, value, tb):
+        if self.create_context:
+            ssl._create_default_https_context = self.prev_create_context
+
+
+def _download(url: str, out: str, *, bypass_ssl: bool = False):
     # always do overwrite
     outpath = os.path.abspath(out)
     outdir, outname = os.path.split(outpath)
@@ -32,7 +51,14 @@ def _download(url: str, out: str):
             msg = f"downloading from {url}"
             logging.info(msg)
             print(msg)
-            wget.download(url, temp_outpath)
+            if bypass_ssl:
+                print(
+                    f"{color.YELLOW}skip SSL certificate validation{color.END}"
+                )
+                with SSLContext(ssl._create_unverified_context):
+                    wget.download(url, temp_outpath)
+            else:
+                wget.download(url, temp_outpath)
             print()  # for format usage
             msg = f"finished downloading {outname}"
             print(f"{color.GREEN}{msg}{color.END}")
@@ -53,7 +79,8 @@ def download_package(version=None, sys=None, arch=None, *,
                      upstream=None,
                      unstable=False,
                      outdir=None,
-                     overwrite=False):
+                     overwrite=False,
+                     bypass_ssl=False):
     """
     download julia release from nearest servers
 
@@ -103,6 +130,8 @@ def download_package(version=None, sys=None, arch=None, *,
         where release is downloaded to. By default it's the current folder.
       overwrite:
         add `--overwrite` flag to overwrite existing releases.
+      bypass_ssl:
+        add `--bypass-ssl` flag to skip SSL certificate validation.
     """
     version = str(version) if (version or str(version) == "0") else ""
     version = "latest" if version == "nightly" else version
@@ -209,7 +238,7 @@ def download_package(version=None, sys=None, arch=None, *,
         print(f"{color.GREEN}{msg}{color.END}")
         return outpath
 
-    package_path = _download(url, outpath)
+    package_path = _download(url, outpath, bypass_ssl=bypass_ssl)
 
     if system in ["winnt", "mac"]:
         # macOS and Windows releases are codesigned with certificates
@@ -221,7 +250,9 @@ def download_package(version=None, sys=None, arch=None, *,
             return package_path
 
         # a mirror should provides both *.tar.gz and *.tar.gz.asc
-        gpg_signature_path = _download(url+".asc", outpath+".asc")
+        gpg_signature_path = _download(url + ".asc",
+                                       outpath + ".asc",
+                                       bypass_ssl=bypass_ssl)
         if not gpg_signature_path:
             msg = f"failed to download GPG signature for {release_str}\n"
             msg += "remove untrusted/broken file"

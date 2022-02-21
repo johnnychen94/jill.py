@@ -289,7 +289,8 @@ def install_julia(version=None, *,
                   unstable=False,
                   keep_downloads=False,
                   confirm=False,
-                  reinstall=False):
+                  reinstall=False,
+                  bypass_ssl=False):
     """
     Install the Julia programming language for your current system
 
@@ -332,6 +333,8 @@ def install_julia(version=None, *,
         where you want julia packages installed.
       symlink_dir:
         where you want symlinks(e.g., `julia`, `julia-1`) placed.
+      bypass_ssl:
+        add `--bypass-ssl` flag to skip SSL certificate validation.
     """
     install_dir = install_dir if install_dir else default_install_dir()
     install_dir = os.path.abspath(install_dir)
@@ -383,9 +386,12 @@ def install_julia(version=None, *,
 
     overwrite = True if version == "latest" else False
     print(f"{color.BOLD}----- Download Julia -----{color.END}")
-    package_path = download_package(version, system, arch,
+    package_path = download_package(version,
+                                    system,
+                                    arch,
                                     upstream=upstream,
-                                    overwrite=overwrite)
+                                    overwrite=overwrite,
+                                    bypass_ssl=bypass_ssl)
     if not package_path:
         return False
 

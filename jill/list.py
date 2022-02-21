@@ -76,7 +76,8 @@ def list_julia(version=None, *,
     """
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     if not os.path.exists(symlink_dir):
-        raise(ValueError(f"symlink dir {symlink_dir} doesn't exist!"))
+        print(
+            f"Found 0 julia(s) in {color.UNDERLINE}{symlink_dir}{color.END}:")
 
     version = str(version) if version else ''
     if version:

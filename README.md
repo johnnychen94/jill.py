@@ -292,7 +292,13 @@ right Julia binary. To download the musl libc binary using `jill download`, you 
 
 ### MacOS with Apple silicon (M1)
 
-Yes it's supported. But I don't have access to M1 machine so I can't test it.
+Yes it's supported. Because macOS ARM version is still of tier-3 support, jill.py will by default
+install the x86_64 version. If you want to use the ARM version, you can install it via `jill install
+--preferred-arch arm64`.
+
+### CERTIFICATE_VERIFY_FAILED error
+
+If you're confident, try `jill install --bypass-ssl`.
 
 <!-- URLS -->
 

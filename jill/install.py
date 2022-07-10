@@ -179,7 +179,8 @@ def install_julia_tarball(package_path,
                           install_dir,
                           symlink_dir,
                           version,
-                          upgrade):
+                          upgrade,
+                          skip_symlinks):
     check_installer(package_path, ".tar.gz")
 
     if re.match("(.*)\+(\w+)$", version):
@@ -205,7 +206,8 @@ def install_julia_tarball(package_path,
     bin_path = os.path.join(dest_path, "bin", "julia")
     if current_system() == 'winnt':
         bin_path += '.exe'
-    make_symlinks(bin_path, symlink_dir, version)
+    if not skip_symlinks:
+        make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
         copy_root_project(version)
     return True
@@ -215,7 +217,8 @@ def install_julia_dmg(package_path,
                       install_dir,
                       symlink_dir,
                       version,
-                      upgrade):
+                      upgrade,
+                      skip_symlinks):
     check_installer(package_path, ".dmg")
 
     with DmgMounter(package_path) as root:
@@ -236,7 +239,8 @@ def install_julia_dmg(package_path,
         print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     bin_path = os.path.join(dest_path,
                             "Contents", "Resources", "julia", "bin", "julia")
-    make_symlinks(bin_path, symlink_dir, version)
+    if not skip_symlinks:
+        make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
         copy_root_project(version)
     return True
@@ -246,7 +250,8 @@ def install_julia_exe(package_path,
                       install_dir,
                       symlink_dir,
                       version,
-                      upgrade):
+                      upgrade,
+                      skip_symlinks):
     check_installer(package_path, ".exe")
 
     dest_path = os.path.join(install_dir,
@@ -269,7 +274,8 @@ def install_julia_exe(package_path,
                                  f'/DIR={dest_path}'])
     print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     bin_path = os.path.join(dest_path, "bin", "julia.exe")
-    make_symlinks(bin_path, symlink_dir, version)
+    if not skip_symlinks:
+        make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
         copy_root_project(version)
     return True
@@ -291,7 +297,8 @@ def install_julia(version=None, *,
                   keep_downloads=False,
                   confirm=False,
                   reinstall=False,
-                  bypass_ssl=False):
+                  bypass_ssl=False,
+                  skip_symlinks=False):
     """
     Install the Julia programming language for your current system
 
@@ -339,6 +346,8 @@ def install_julia(version=None, *,
         where you want symlinks(e.g., `julia`, `julia-1`) placed.
       bypass_ssl:
         add `--bypass-ssl` flag to skip SSL certificate validation.
+      skip_symlinks:
+        add `--skip-symlinks` flag to skip symbolic links generation.
     """
     install_dir = install_dir if install_dir else default_install_dir()
     install_dir = os.path.abspath(install_dir)
@@ -380,8 +389,9 @@ def install_julia(version=None, *,
         question = "jill will:\n"
         question += f"  1) install Julia {version_str} for {system}-{arch}"
         question += f" into {color.UNDERLINE}{install_dir}{color.END}\n"
-        question += f"  2) make symlinks in {color.UNDERLINE}{symlink_dir}{color.END}\n"
-        question += f"You may need to manually add {color.UNDERLINE}{symlink_dir}{color.END} to PATH\n"
+        if not skip_symlinks:
+            question += f"  2) make symlinks in {color.UNDERLINE}{symlink_dir}{color.END}\n"
+            question += f"You may need to manually add {color.UNDERLINE}{symlink_dir}{color.END} to PATH\n"
         question += "Continue installation?"
         to_continue = query_yes_no(question)
         if not to_continue:
@@ -426,7 +436,7 @@ def install_julia(version=None, *,
         print(f"{color.RED}Unsupported file format for {package_path}{color.END}.")
 
     print(f"{color.BOLD}----- Install Julia -----{color.END}")
-    installer(package_path, install_dir, symlink_dir, version, upgrade)
+    installer(package_path, install_dir, symlink_dir, version, upgrade, skip_symlinks)
 
     if not keep_downloads:
         print(f"{color.BOLD}----- Post Installation -----{color.END}")

@@ -300,6 +300,10 @@ install the x86_64 version. If you want to use the ARM version, you can install 
 
 If you're confident, try `jill install --bypass-ssl`.
 
+### Skip symbolic links generation
+
+If for some reason you prefer to download julia without generating symbolic links `jill install --skip-symlinks`
+
 <!-- URLS -->
 
 [Julia Repository]: https://github.com/JuliaLang/julia

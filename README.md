@@ -14,6 +14,7 @@ _The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Jul
 [![Actions Status](https://github.com/johnnychen94/jill.py/workflows/Unit%20test/badge.svg
 )](https://github.com/johnnychen94/jill.py/actions)
 [![codecov](https://codecov.io/gh/johnnychen94/jill.py/branch/master/graph/badge.svg)](https://codecov.io/gh/johnnychen94/jill.py)
+[![OSCS](https://www.oscs1024.com/platform/badge/johnnychen94/jill.py.svg)](https://www.oscs1024.com/cd/1530582571103264768)
 [![release-date](https://img.shields.io/github/release-date/johnnychen94/jill.py)](https://github.com/johnnychen94/jill.py/releases)
 [![中文README](https://img.shields.io/badge/README-%E4%B8%AD%E6%96%87-blue)](README_zh.md)
 

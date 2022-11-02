@@ -78,9 +78,9 @@ def make_symlinks(src_bin, symlink_dir, version):
     if symlink_dir not in map(os.path.normpath, os.environ["PATH"].split(os.pathsep)):
         print(f"add {symlink_dir} to PATH")
         if system == "winnt":
-            # FIXME: this alse copies system PATH to user PATH
-            subprocess.run(["powershell.exe",
-                            "setx", "PATH", f'"$env:PATH;{symlink_dir}"'])
+            # TODO(chenjiuning): add symlink_dir to PATH
+            msg = f"Please add {symlink_dir} to PATH manually."
+            print(msg)
         else:
             msg = "~/.bashrc will be modified"
             msg += "\nif you're not using BASH, then you'll need manually"

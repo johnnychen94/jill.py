@@ -164,6 +164,9 @@ def latest_version(version: str, system, arch, **kwargs) -> str:
     Directly returns `version` if it's already a complete version string (without checking that it's
     a valid one).
     """
+    if version == "latest":
+        return version
+
     system, arch = canonicalize_sys(system), canonicalize_arch(arch)
     # supporting legacy versions is really of low priority
     if version and Version(version) < Version("0.6.0"):

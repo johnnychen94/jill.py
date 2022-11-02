@@ -65,10 +65,14 @@
                 },
                 "asc": {
                     "type": "string"
+                },
+                "extension": {
+                    "$ref": "#/definitions/FileExtension"
                 }
             },
             "required": [
                 "arch",
+                "extension",
                 "kind",
                 "os",
                 "sha256",
@@ -124,6 +128,16 @@
                 "aarch64-apple-darwin14"
             ],
             "title": "Triplet"
+        },
+        "FileExtension": {
+            "type": "string",
+            "enum": [
+                "dmg",
+                "exe",
+                "tar.gz",
+                "zip"
+            ],
+            "title": "FileExtension"
         }
     }
 }

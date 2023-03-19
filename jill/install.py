@@ -371,15 +371,24 @@ def install_julia(version=None, *,
                 arch = "x86_64"
             else:
                 raise ValueError(
-                    "Unrecognized value {preferred_arch} for flag `--preferred-arch`")
+                    "Unrecognized value {preferred_arch} for flag `--preferred-arch`"
+                )
         else:
-            # Until Julia has tier-1 support for the apple silicon, we ship the intel version by default.
-            # https://github.com/johnnychen94/jill.py/issues/102
-            # TODO(johnnychen94): provide a way to install the native version.
-            msg = "Apple silicon is still tier-3 support, installing the Intel version by default."
-            msg += "\nAdd `--preferred-arch arm64` flag to install the native version."
-            print(f"{color.YELLOW}{msg}{color.END}")
-            arch = "x86_64"
+            if version.startswith("1.7") or version.startswith("1.8"):
+                # Until Julia has tier-1 support for the apple silicon, we ship the intel version by default.
+                # https://github.com/johnnychen94/jill.py/issues/102
+                # TODO(johnnychen94): provide a way to install the native version.
+                msg = "Apple silicon is still tier-3 support, installing the Intel version by default."
+                msg += "\nAdd `--preferred-arch arm64` flag to install the native version."
+                print(f"{color.YELLOW}{msg}{color.END}")
+                arch = "x86_64"
+            else:
+                # Since Julia 1.9, we ship the native version by default as it's stable enough to use
+                # in practice.
+                msg = "Apple silicon is moved to tier-2 support, installing the native version by default."
+                msg += "\nAdd `--preferred-arch x86_64` flag to install the Intel version."
+                print(f"{color.GREEN}{msg}{color.END}")
+                arch = "aarch64"
 
     hello_msg()
     if system == "winnt":

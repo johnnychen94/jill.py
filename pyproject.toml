@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "jill"
+version = "0.11.3"
+description = "JILL -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light"
+authors = ["johnnychen94 <johnnychen94@hotmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/johnnychen94/jill.py"
+keywords = ["julia", "installer"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+packages = [
+    { include = "jill" },
+]
+exclude = [
+    "jill/tests"
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+wget = "^3.2"
+requests = "^2.28.2"
+fire = "^0.5.0"
+semantic-version = "^2.10.0"
+python-gnupg = "^0.5.0"
+requests-futures = "^1.0.0"
+jsonschema = "^4.17.3"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.1.1"
+yapf = "^0.32.0"
+
+[tool.poetry.scripts]
+jill = 'jill.__main__:main'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

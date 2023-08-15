@@ -89,6 +89,7 @@ def switch_julia_target(version_or_path, *,
             msg = f"The fire argparser recognizes the input as jill switch {version_or_path}. This can be either 1.1 or 1.10\n"
             msg += "JILL interprets it as 1.10 and I believe you're not going to use Julia 1.1 as default julia anymore\n"
             print(f"{color.GREEN}{msg}{color.END}")
+            version = "1.10"
 
         target_filename = get_juliafile_from_version(version)
         if not target_filename:

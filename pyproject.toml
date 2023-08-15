@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jill"
-version = "0.11.3"
+version = "0.11.4"
 description = "JILL -- Julia Installer for Linux (MacOS, Windows and FreeBSD) -- Light"
 authors = ["johnnychen94 <johnnychen94@hotmail.com>"]
 license = "MIT"

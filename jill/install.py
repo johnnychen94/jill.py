@@ -395,6 +395,11 @@ def install_julia(version=None, *,
         install_dir = install_dir.replace("\\\\", "\\").strip('\'"')
     if not confirm:
         version_str = version if version else "latest stable release"
+        if version_str == "1.1":
+            msg = f"The fire argparser recognizes the input as jill install {version_str}.\n"
+            msg += f"You need to explicitly call {color.UNDERLINE}jill install '\"1.10\"'{color.END}{color.YELLOW} if you meant Julia 1.10.\n"
+            msg += f"Or you can be more specific, e.g., {color.UNDERLINE}jill install 1.10.0{color.END} and that still works."
+            print(f"{color.YELLOW}{msg}{color.END}")
         question = "jill will:\n"
         question += f"  1) install Julia {version_str} for {system}-{arch}"
         question += f" into {color.UNDERLINE}{install_dir}{color.END}\n"

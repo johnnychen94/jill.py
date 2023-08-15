@@ -52,6 +52,9 @@ For common Julia users:
 * Get the specific version: `jill install 1.6.2`, `jill install 1.7.0-beta3`
 * Get the latest release (including unstable ones): `jill install --unstable`
 
+Note that for Julia 1.10, you'll have to install it with `jill install '"1.10"'` because of the
+[python-fire limit](https://google.github.io/python-fire/guide/#argument-parsing).
+
 For Julia developers and maintainers:
 
 * Get the nightly builds: `jill install latest`. This gives you `julia-latest`.

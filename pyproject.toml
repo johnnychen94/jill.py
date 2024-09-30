@@ -23,7 +23,7 @@ exclude = [
 python = "^3.7"
 wget = "^3.2"
 requests = "^2.28.2"
-fire = "^0.5.0"
+fire = ">=0.5,<0.7"
 semantic-version = "^2.10.0"
 python-gnupg = "^0.5.0"
 requests-futures = "^1.0.0"

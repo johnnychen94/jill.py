@@ -47,20 +47,13 @@ def get_juliafile_from_version(version):
         return None
 
 
-def switch_julia_target(version_or_path, *, target="julia", symlink_dir=None):
-    """
-        Switch the julia target version or path.
+def switch_julia_target(version_or_path, target="julia", symlink_dir=None):
+    """Switch the Julia target version or path.
 
-    Arguments:
-      version:
-        A path or version of the new julia executable. For version input format is "<major>" or
-        "<major>.<minor>".
-        For ambiguious input such as "1.10", which will be interpreted as float number 1.1,
-        you can either do `jill switch '"1.10"'` or `jill switch 1.10.0`.
-      target: (Optional)
-        By default it is 'julia', you can also use other target names (e.g., 'julia-1').
-      symlink_dir: (Optional)
-        The symlink dir that `jill list` looks at.
+    Args:
+        version_or_path: Path or version of the new Julia executable
+        target: Target name (default: 'julia')
+        symlink_dir: Symlink directory
     """
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     if not os.path.exists(symlink_dir):

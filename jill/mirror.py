@@ -177,57 +177,35 @@ class Mirror:
 
 def mirror(
     outdir="julia_pkg",
-    *,
     period=0,
     upstream=None,
     logfile="mirror.log",
     config="mirror.json",
 ):
+    """Download/sync all Julia releases.
+
+    Args:
+        outdir: Output directory (default: 'julia_pkg')
+        period: Time between sync operations in seconds (0 for sync once)
+        upstream: Custom upstream URL
+        logfile: Log file path
+        config: Mirror configuration file path
     """
-    Download/sync all Julia releases
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
-    1. checks if there're new julia releases
-    2. downloads all releases Julia releases into `outdir` (default `./julia_pkg`)
-    3. (Optional): with flag `--period PERIOD`, it will repeat step 1 and 2 every `PERIOD` seconds
+    logging.basicConfig(
+        filename=logfile,
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
 
-    If you want to modify the default mirror configuration, then provide a `mirror.json` file and
-    pass the path to `config`. By default it's at the current directory.
-    Arguments:
-      outdir: default 'julia_pkg'.
-      period: the time between two sync operation. 0(default) to sync once.
-      upstream:
-        manually choose a download upstream. For example, set it to "Official"
-        if you want to download from JuliaComputing's s3 buckets.
-      config:
-        path to mirror config file
-      logfile:
-        path to mirror log file
-    """
-    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    period = int(period)
-    upstream = None if upstream == "None" else upstream
+    mirror_config = MirrorConfig(config, outdir, upstream=upstream)
+    mirror_config.logging()
 
-    logger = logging.getLogger("")
-    fh = logging.FileHandler(logfile)
-    fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(log_format)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    # TODO: filter out urllib3 debug logs
-
-    m = Mirror(MirrorConfig(config, outdir=outdir, upstream=upstream))
-    m.config.logging()
+    mirror = Mirror(mirror_config)
     while True:
-        logging.info("START: pull Julia releases")
-        m.pull_releases()
-        logging.info("END: pulling Julia releases")
-
+        mirror.pull_releases()
         if period == 0:
-            return True
-        else:
-            time.sleep(period)
-
-        # refresh configuration at each re-pull
-        logging.info("reload configure file")
-        m.config = MirrorConfig(config, outdir=outdir)
-        m.config.logging()
+            break
+        time.sleep(period)

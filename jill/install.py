@@ -273,7 +273,6 @@ def hello_msg():
 
 def install_julia(
     version=None,
-    *,
     preferred_arch=None,
     install_dir=None,
     symlink_dir=None,
@@ -286,55 +285,21 @@ def install_julia(
     bypass_ssl=False,
     skip_symlinks=False,
 ):
-    """
-    Install the Julia programming language for your current system
+    """Install Julia.
 
-    `jill install [version]` would satisfy most of your use cases, try it first
-    and then read description of other arguments. `version` is optional, valid
-    version syntax for it is:
-
-    * `stable`: latest stable Julia release. This is the _default_ option.
-    * `1`: latest `1.y.z` Julia release.
-    * `1.0`: latest `1.0.z` Julia release.
-    * `1.4.0-rc1`: as it is.
-    * `latest`/`nightly`: the nightly builds from source code.
-
-    For Linux/FreeBSD systems, if you run this command with `root` account,
-    then it will install Julia system-widely.
-
-    To download from a private mirror, please check `jill download -h`.
-
-    Arguments:
-      version:
-        The Julia version you want to install.
-      preferred_arch:
-        (Experimental): add `--preferred-arch arm64` to download the native version for macOS the
-        M-series Processor. For any other platform, this flag is ignored.
-      upstream:
-        manually choose a download upstream. For example, set it to "Official"
-        if you want to download from JuliaComputing's s3 buckets.
-      upgrade:
-        add `--upgrade` flag also copy the root environment from an older
-        Julia version.
-      unstable:
-        add `--unstable` flag to allow installation of unstable releases for auto version
-        query. For example, `jill install --unstable` might give you unstable installation
-        like `1.7.0-beta1`. Note that if you explicitly pass the unstable version, e.g.,
-        `jill install 1.7.0-beta1`, it will still work.
-      keep_downloads:
-        add `--keep_downloads` flag to not remove downloaded releases.
-      confirm: add `--confirm` flag to skip interactive prompt.
-      reinstall:
-        jill will skip the installation if the required Julia version already exists,
-        add `--reinstall` flag to force the reinstallation.
-      install_dir:
-        where you want julia packages installed.
-      symlink_dir:
-        where you want symlinks(e.g., `julia`, `julia-1`) placed.
-      bypass_ssl:
-        add `--bypass-ssl` flag to skip SSL certificate validation.
-      skip_symlinks:
-        add `--skip-symlinks` flag to skip symbolic links generation.
+    Args:
+        version: Julia version to install
+        preferred_arch: Preferred architecture
+        install_dir: Installation directory
+        symlink_dir: Symlink directory
+        upgrade: Upgrade existing installation
+        upstream: Custom upstream URL
+        unstable: Install unstable version
+        keep_downloads: Keep downloaded files
+        confirm: Skip confirmation
+        reinstall: Force reinstall
+        bypass_ssl: Bypass SSL verification
+        skip_symlinks: Skip creating symlinks
     """
     install_dir = install_dir if install_dir else default_install_dir()
     install_dir = os.path.abspath(install_dir)

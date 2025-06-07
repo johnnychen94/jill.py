@@ -66,16 +66,14 @@ def sorted_display_list(julialist, reverse):
     return [*julia, *julia_major, *julia_major_minor, *julia_special]
 
 
-def list_julia(version=None, *, symlink_dir=None):
-    """
-        List all Julia executable versions in symlink dir
+def list_julia(version=None, symlink_dir=None, upstream=None, unstable=False):
+    """List all Julia executable versions in symlink dir.
 
-    Arguments:
-      version: (Optional)
-        The specific version prefix that you are interested in. For example, `jill list 1` checks
-        every symlink that matches the name pattern `^julia-1`. (`julia` is excluded in this case.)
-      symlink_dir: (Optional)
-        The symlink dir that `jill list` looks at.
+    Args:
+        version: The specific version prefix to filter by
+        symlink_dir: The symlink directory to look in
+        upstream: Custom upstream URL
+        unstable: Show unstable versions
     """
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     if not os.path.exists(symlink_dir):

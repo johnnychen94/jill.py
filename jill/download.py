@@ -71,64 +71,23 @@ def download_package(
     version=None,
     sys=None,
     arch=None,
-    *,
     upstream=None,
     unstable=False,
     outdir=None,
     overwrite=False,
     bypass_ssl=False,
 ):
-    """
-    download julia release from nearest servers
+    """Download Julia release from nearest servers.
 
-    `jill download [version] [sys] [arch]` downloads a Julia release
-    in your current folder. If you don't specify any argument, then
-    it will download the latest stable version for your current platform.
-
-    The syntax for `version` is:
-
-    * `stable`: latest stable Julia release. This is the _default_ option.
-    * `1`: latest `1.y.z` Julia release.
-    * `1.0`: latest `1.0.z` Julia release.
-    * `1.4.0-rc1`: as it is. This is the only way to install unstable release.
-    * `latest`/`nightly`: the nightly builds from source code.
-
-    For whatever reason, if you only want to download release from
-    a specific upstream (e.g., from JuliaComputing), then you can use
-    `--upstream` flag (e.g., `jill download --upstream Official`).
-
-    To see a full list of upstream servers, please use `jill upstream`.
-
-    If you're interested in downloading from an unregistered private
-    mirror, you can provide a `sources.json` file to CONFIG_PATH and use
-    `jill upstream` to check if your mirror is added. A config template
-    can be found at [1].
-
-    CONFIG_PATH:
-      * windows: `~\\AppData\\Local\\julias\\sources.json`
-      * other: `~/.config/jill/sources.json`
-
-    [1]: https://github.com/johnnychen94/jill.py/blob/master/jill/config/sources.json # nopep8
-
-    Arguments:
-      version:
-        The Julia version you want to install. See also `jill install`
-      sys: Options are: "linux", "musl", "macos", "freebsd", "windows"/"winnt"/"win"
-      arch: Options are: "i686"/"x86", "x86_64"/"x64", "ARMv7"/"armv7l", "ARMv8"/"aarch64"
-      upstream:
-        manually choose a download upstream. For example, set it to "Official"
-        if you want to download from JuliaComputing's s3 buckets.
-      unstable:
-        add `--unstable` flag to allow installation of unstable releases for auto version
-        query. For example, `jill download --unstable` might give you unstable installation
-        like `1.7.0-beta1`. Note that if you explicitly pass the unstable version, e.g.,
-        `jill download 1.7.0-beta1`, it will still work.
-      outdir:
-        where release is downloaded to. By default it's the current folder.
-      overwrite:
-        add `--overwrite` flag to overwrite existing releases.
-      bypass_ssl:
-        add `--bypass-ssl` flag to skip SSL certificate validation.
+    Args:
+        version: Julia version to download
+        sys: Target system (linux, musl, macos, freebsd, windows)
+        arch: Target architecture (i686, x86_64, ARMv7, ARMv8)
+        upstream: Custom upstream URL
+        unstable: Allow unstable versions
+        outdir: Output directory
+        overwrite: Overwrite existing files
+        bypass_ssl: Skip SSL verification
     """
     version = str(version) if (version or str(version) == "0") else ""
     version = "latest" if version == "nightly" else version

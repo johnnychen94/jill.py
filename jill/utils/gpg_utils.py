@@ -1,7 +1,20 @@
 from .defaults import GPG_PUBLIC_KEY_PATH
+from .sys_utils import current_system
 
 from gnupg import GPG
 from tempfile import TemporaryDirectory
+import warnings
+import shutil
+
+
+def _check_gnupg_installed():
+    """Check if gnupg is installed in the system."""
+    if current_system() == "linux":
+        if shutil.which("gpg") is None:
+            warnings.warn(
+                "gnupg is not installed in the system. GPG verification will not work.",
+                RuntimeWarning,
+            )
 
 
 def _verify_gpg(gpg: GPG, datafile, signature_file):
@@ -14,6 +27,8 @@ def verify_gpg(datafile, signature_file=None) -> bool:
     """
     verify Julia releases using GPG
     """
+    _check_gnupg_installed()
+
     if signature_file is None:
         signature_file = datafile + ".asc"
 

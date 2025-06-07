@@ -6,7 +6,6 @@ from ipaddress import ip_address
 import httpx
 import socket
 import time
-import sys
 from pathlib import Path
 
 from typing import Optional

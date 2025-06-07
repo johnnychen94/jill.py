@@ -103,7 +103,7 @@ class NameFilter:
             # TODO: add error handler
             msg = f"validation on {self.name} fails:\n"
             msg += f"  - args: {args}\n  - kwargs: {kwargs}\n"
-            msg += f"Please check if you have passed the right parameters"
+            msg += "Please check if you have passed the right parameters"
             raise ValueError(msg)
         # directly return rst if there're no special filter rules
         rst = self.f(*args, **kwargs)
@@ -178,7 +178,7 @@ def _build(ver, cache={}):
         data = json.loads(requests.get(github_api).content)
         cache[build] = data["sha"][0:10]
         return cache[build]
-    except:
+    except (KeyError, IndexError, TypeError):
         return build
 
 

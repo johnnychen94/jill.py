@@ -8,11 +8,9 @@ from .defaults import SOURCE_CONFIGFILE
 from .net_utils import query_ip
 from .net_utils import port_response_time
 from .net_utils import first_response
-from .sys_utils import show_verbose
 from .filters import generate_info
 from .interactive_utils import color
 
-from itertools import chain, repeat
 from urllib.parse import urlparse
 from string import Template
 

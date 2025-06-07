@@ -14,10 +14,7 @@ import shutil
 import ssl
 import tempfile
 import logging
-
 from urllib.parse import urlparse
-
-from typing import Optional
 
 from urllib.error import URLError
 
@@ -169,11 +166,11 @@ def download_package(
         # hide the nested error stack :P
         wrong_args = True
     if wrong_args:
-        msg = f"something wrong for the platform argument you passed:\n"
+        msg = "something wrong for the platform argument you passed:\n"
         msg += f"  - version(>= 0.6.0): {version}\n"
         msg += f"  - system: {system}\n"
         msg += f"  - archtecture: {architecture}\n"
-        msg += f"example: `jill download 1 linux x86_64`"
+        msg += "example: `jill download 1 linux x86_64`"
         raise (ValueError(msg))
 
     release_str = f"{version}-{system}-{architecture}"
@@ -227,7 +224,9 @@ def download_package(
     if current_system() == "winnt":
         outdir = outdir.replace("\\\\", "\\")
 
-    outname = str(url).split("/")[-1]
+    # Convert URL to string before parsing
+    url_str = str(url)
+    outname = os.path.basename(urlparse(url_str).path)
     outpath = os.path.join(outdir, outname)
 
     skip_download = False

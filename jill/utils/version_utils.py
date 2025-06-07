@@ -8,7 +8,6 @@ from .interactive_utils import color
 import semantic_version
 
 import httpx
-import json
 import jsonschema
 
 from jsonschema.exceptions import ValidationError
@@ -134,10 +133,9 @@ def read_releases(
         if not stable_only or is_stable:
             # minimal_version works only when is_stable=True
             try:
-                # TODO: a cleaner solution
                 if Version(ver) < Version(minimal_version):
                     continue
-            except:
+            except (ValueError, TypeError):
                 continue
 
             files = item[1]["files"]

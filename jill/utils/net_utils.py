@@ -6,7 +6,6 @@ from ipaddress import ip_address
 import httpx
 import socket
 import time
-import logging
 
 from typing import Optional
 
@@ -63,7 +62,7 @@ def port_response_time(host, port, timeout=2):
     start = time.time()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)
-    result = sock.connect_ex((host, port))
+    sock.connect_ex((host, port))  # We only care if it connects, not the result
     roundtrip = time.time() - start
     return min(roundtrip, timeout)
 

@@ -39,7 +39,7 @@ def get_exec_version(path):
         # outputs: "julia version 1.4.0-rc1"
         version = subprocess.check_output(ver_cmd).decode("utf-8")
         version = version.lower().split("version")[-1].strip()
-    except:  # nopep8
+    except (subprocess.SubprocessError, UnicodeDecodeError):  # nopep8
         # in case it fails in any situation: invalid target or command(.cmd)
         # issue: https://github.com/abelsiqueira/jill/issues/25
         version = "0.0.1"
@@ -91,7 +91,7 @@ def make_symlinks(src_bin, symlink_dir, version):
             with open(rc_file, "a") as file:
                 file.writelines("\n# added by jill\n")
                 file.writelines(f"export PATH={symlink_dir}:$PATH\n")
-        print(f"you need to restart your current shell to update PATH")
+        print("you need to restart your current shell to update PATH")
 
     os.makedirs(symlink_dir, exist_ok=True)
 
@@ -416,7 +416,7 @@ def install_julia(
         wrong_args = True
     if wrong_args:
         msg = f"wrong version(>= 0.6.0) argument: {version}\n"
-        msg += f"Example: `jill install 1`"
+        msg += "Example: `jill install 1`"
         raise (ValueError(msg))
 
     if not reinstall and is_installed(version):

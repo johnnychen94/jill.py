@@ -124,7 +124,7 @@ class MirrorConfig:
         return read_releases(stable_only=self.stable_only, upstream=self.upstream)
 
     def logging(self):
-        logging.info(f"mirror configuration:")
+        logging.info("mirror configuration:")
         logging.info(f"    - configfile: {self.configfile}")
         logging.info(f"    - outdir: {self.outdir}")
         logging.info(f"    - path: {self.path_template.template}")

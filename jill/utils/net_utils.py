@@ -6,6 +6,8 @@ from ipaddress import ip_address
 import httpx
 import socket
 import time
+import sys
+from pathlib import Path
 
 from typing import Optional
 
@@ -127,9 +129,6 @@ def download(url, outpath, *, bypass_ssl=False):
     Download a file from `url` to `outpath` using httpx.
     Automatically follows redirects (including 301) to get the final file.
     """
-    import httpx
-    import sys
-    from pathlib import Path
 
     verify = not bypass_ssl
     with httpx.Client(verify=verify, follow_redirects=True) as client:
@@ -146,8 +145,12 @@ def download(url, outpath, *, bypass_ssl=False):
                         downloaded += len(chunk)
                         if total_size:
                             percent = downloaded * 100 / total_size
+                            # Use \r to return to start of line and overwrite with spaces to clear
+                            sys.stdout.write("\r" + " " * 80)  # Clear line with spaces
                             sys.stdout.write(
                                 f"\r{filename}: {percent:.1f}% [{downloaded}/{total_size} bytes]"
                             )
                             sys.stdout.flush()
-                print()  # New line after progress bar
+                # Clear the final progress line
+                sys.stdout.write("\r" + " " * 80 + "\r")
+                print(f"Downloaded {filename} successfully")

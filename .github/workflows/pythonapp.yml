@@ -184,7 +184,7 @@ jobs:
       #     julia-dev -e 'using InteractiveUtils; versioninfo()'
 
   arm_job:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         architecture: [aarch64, armv7]

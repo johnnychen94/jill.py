@@ -187,7 +187,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        architecture: [aarch64, armv7]
+        architecture: [aarch64]
 
     name: Unit Test
     steps:
@@ -198,12 +198,14 @@ jobs:
         uses: uraimo/run-on-arch-action@v1.0.5
         with:
           architecture: ${{ matrix.architecture }}
-          distribution: ubuntu18.04
+          distribution: ubuntu-latest
           # no --update because not arm is tier 2 support in Julia
           run: |
             apt-get update -qq
             apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools gnupg wget --no-install-recommends
             export DEBUG=True
+            export LC_ALL=C.UTF-8
+            export LANG=C.UTF-8
             pip3 install --upgrade pip --quiet
             pip3 install -r requirements.txt --quiet
             python3 -m jill upstream

@@ -33,6 +33,10 @@ mypy = "^1.1.1"
 [tool.poetry.scripts]
 jill = 'jill.__main__:main'
 
+[tool.ruff.format]
+# Use `\n` line endings for all files
+line-ending = "lf"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

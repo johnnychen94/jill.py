@@ -194,19 +194,26 @@ jobs:
         with:
           arch: ${{ matrix.architecture }}
           distro: ubuntu24.04
-          # no --update because not arm is tier 2 support in Julia
           run: |
             apt-get update -qq
-            apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools gnupg wget --no-install-recommends
+            apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools python3-venv gnupg wget --no-install-recommends
             export DEBUG=True
             export LC_ALL=C.UTF-8
             export LANG=C.UTF-8
-            pip3 install --upgrade pip --quiet
-            pip3 install -r requirements.txt --quiet
-            python3 -m jill upstream
-            python3 -m jill install --confirm --upstream Official
+
+            # Create and activate virtual environment
+            python3 -m venv /opt/venv
+            . /opt/venv/bin/activate
+
+            # Install dependencies in virtual environment
+            pip install --upgrade pip --quiet
+            pip install -r requirements.txt --quiet
+
+            # Run jill commands
+            python -m jill upstream
+            python -m jill install --confirm --upstream Official
             julia -e 'using InteractiveUtils; versioninfo()'
-            python3 -m jill install 1.0 --confirm --upstream Official
+            python -m jill install 1.0 --confirm --upstream Official
             julia -e 'using InteractiveUtils; versioninfo()'
             julia-1 -e 'using InteractiveUtils; versioninfo()'
             julia-1.0 -e 'using InteractiveUtils; versioninfo()'

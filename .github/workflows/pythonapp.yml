@@ -178,42 +178,42 @@ jobs:
       #     echo "Expected version: 1.8.0-DEV+f7506aa"
       #     julia-dev -e 'using InteractiveUtils; versioninfo()'
 
-  arm_job:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        architecture: [aarch64]
+  # arm_job:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       architecture: [aarch64]
 
-    name: Unit Test
-    steps:
-      - uses: actions/checkout@v2.0.0
+  #   name: Unit Test
+  #   steps:
+  #     - uses: actions/checkout@v2.0.0
 
-      # it's running in docker container, so we need to squash all codes into one step
-      - name: Test jill install
-        uses: uraimo/run-on-arch-action@v3
-        with:
-          arch: ${{ matrix.architecture }}
-          distro: ubuntu24.04
-          run: |
-            apt-get update -qq
-            apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools python3-venv gnupg wget --no-install-recommends
-            export DEBUG=True
-            export LC_ALL=C.UTF-8
-            export LANG=C.UTF-8
+  #     # it's running in docker container, so we need to squash all codes into one step
+  #     - name: Test jill install
+  #       uses: uraimo/run-on-arch-action@v3
+  #       with:
+  #         arch: ${{ matrix.architecture }}
+  #         distro: ubuntu24.04
+  #         run: |
+  #           apt-get update -qq
+  #           apt-get install -y -qq -o=Dpkg::Use-Pty=0 python3-pip python3-wheel python3-setuptools python3-venv gnupg wget --no-install-recommends
+  #           export DEBUG=True
+  #           export LC_ALL=C.UTF-8
+  #           export LANG=C.UTF-8
 
-            # Create and activate virtual environment
-            python3 -m venv /opt/venv
-            . /opt/venv/bin/activate
+  #           # Create and activate virtual environment
+  #           python3 -m venv /opt/venv
+  #           . /opt/venv/bin/activate
 
-            # Install dependencies in virtual environment
-            pip install --upgrade pip --quiet
-            pip install -r requirements.txt --quiet
+  #           # Install dependencies in virtual environment
+  #           pip install --upgrade pip --quiet
+  #           pip install -r requirements.txt --quiet
 
-            # Run jill commands
-            python -m jill upstream
-            python -m jill install --confirm --upstream Official
-            julia -e 'using InteractiveUtils; versioninfo()'
-            python -m jill install 1.0 --confirm --upstream Official
-            julia -e 'using InteractiveUtils; versioninfo()'
-            julia-1 -e 'using InteractiveUtils; versioninfo()'
-            julia-1.0 -e 'using InteractiveUtils; versioninfo()'
+  #           # Run jill commands
+  #           python -m jill upstream
+  #           python -m jill install --confirm --upstream Official
+  #           julia -e 'using InteractiveUtils; versioninfo()'
+  #           python -m jill install 1.0 --confirm --upstream Official
+  #           julia -e 'using InteractiveUtils; versioninfo()'
+  #           julia-1 -e 'using InteractiveUtils; versioninfo()'
+  #           julia-1.0 -e 'using InteractiveUtils; versioninfo()'

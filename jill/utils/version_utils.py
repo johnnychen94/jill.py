@@ -135,7 +135,7 @@ def read_releases(
             try:
                 if Version(ver) < Version(minimal_version):
                     continue
-            except (ValueError, TypeError):
+            except:
                 continue
 
             files = item[1]["files"]

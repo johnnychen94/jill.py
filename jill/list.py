@@ -24,7 +24,7 @@ def get_julia_build(path):
         build = subprocess.check_output(ver_cmd).decode("utf-8")
         ver, build = build.lower().split(",")
         return ver.strip(), build.strip()
-    except (ValueError, AttributeError):
+    except:
         return "", ""
 
 

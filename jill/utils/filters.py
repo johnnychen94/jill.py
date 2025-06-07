@@ -179,7 +179,7 @@ def _build(ver, cache={}):
             data = json.loads(client.get(github_api).content)
         cache[build] = data["sha"][0:10]
         return cache[build]
-    except (KeyError, IndexError, TypeError):
+    except:
         return build
 
 

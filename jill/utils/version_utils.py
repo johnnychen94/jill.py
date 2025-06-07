@@ -7,7 +7,7 @@ from .source_utils import read_registry
 from .interactive_utils import color
 import semantic_version
 
-import requests
+import httpx
 import json
 import jsonschema
 
@@ -67,7 +67,7 @@ class Version(semantic_version.Version):
 
 def read_remote_versions(upstream, cache=dict()):
     """
-        If not cached, download and read json content from remote URL `url`.
+    If not cached, download and read json content from remote URL `url`.
     """
     if not cache:
         registry = read_registry()
@@ -83,8 +83,13 @@ def read_remote_versions(upstream, cache=dict()):
             versions_url = first_response(versions_url_list, timeout=0.5)
             versions_url = versions_url if versions_url else DEFAULT_VERSIONS_URL
         print(
-            f'{color.GREEN}querying release information from {versions_url}{color.END}')
-        version_list = json.loads(requests.get(versions_url).text)
+            f"{color.GREEN}querying release information from {versions_url}{color.END}"
+        )
+
+        with httpx.Client() as client:
+            response = client.get(versions_url)
+            response.raise_for_status()
+            version_list = response.json()
 
         # Validate the downloaded content with `versions_schema.json`.
         # This file is unlikely to be outdated so we keep a copy
@@ -99,8 +104,12 @@ def read_remote_versions(upstream, cache=dict()):
         except ValidationError:
             is_valid = False
             print(
-                f'{color.YELLOW} failed to validate versions file, retry with latest schema...')
-            schema = requests.get(VERSIONS_SCHEMA_URL).json()
+                f"{color.YELLOW} failed to validate versions file, retry with latest schema..."
+            )
+            with httpx.Client() as client:
+                response = client.get(VERSIONS_SCHEMA_URL)
+                response.raise_for_status()
+                schema = response.json()
         if not is_valid:
             jsonschema.validate(version_list, schema)
 
@@ -108,7 +117,9 @@ def read_remote_versions(upstream, cache=dict()):
     return cache
 
 
-def read_releases(minimal_version='0.6.0', stable_only=False, upstream=None) -> List[Tuple[str, str, str]]:
+def read_releases(
+    minimal_version="0.6.0", stable_only=False, upstream=None
+) -> List[Tuple[str, str, str]]:
     """
     read release info from versions.json.
     The content will be cached so will only download the data once.
@@ -119,7 +130,7 @@ def read_releases(minimal_version='0.6.0', stable_only=False, upstream=None) -> 
     releases = []
     for item in v.items():
         ver = item[0]
-        is_stable = item[1]['stable']
+        is_stable = item[1]["stable"]
         if not stable_only or is_stable:
 
             # minimal_version works only when is_stable=True
@@ -130,22 +141,22 @@ def read_releases(minimal_version='0.6.0', stable_only=False, upstream=None) -> 
             except:
                 continue
 
-            files = item[1]['files']
+            files = item[1]["files"]
             for file in files:
-                os = file['os']
-                libc = file['triplet'].split('-')[2]
+                os = file["os"]
+                libc = file["triplet"].split("-")[2]
                 if libc == "musl":
                     # currently Julia tags musl as a system, e.g.,
                     # https://julialang-s3.julialang.org/bin/musl/x64/1.5/julia-1.5.1-musl-x86_64.tar.gz
                     os = "musl"
-                releases.append((ver, os, file['arch']))
+                releases.append((ver, os, file["arch"]))
     return releases
 
 
 def is_version_released(version, system, arch, **kwargs):
     """
-        Checks if the given version number is released for the given system and architecture.
-        Note: returns True for version="latest" if system and architecture are valid.
+    Checks if the given version number is released for the given system and architecture.
+    Note: returns True for version="latest" if system and architecture are valid.
     """
     # special case version="latest"
     if version == "latest":
@@ -155,7 +166,7 @@ def is_version_released(version, system, arch, **kwargs):
 
     version_list = read_releases(**kwargs)
     item = str(version), canonicalize_sys(system), canonicalize_arch(arch)
-    return (item in version_list)
+    return item in version_list
 
 
 def latest_version(version: str, system, arch, **kwargs) -> str:
@@ -170,7 +181,7 @@ def latest_version(version: str, system, arch, **kwargs) -> str:
     system, arch = canonicalize_sys(system), canonicalize_arch(arch)
     # supporting legacy versions is really of low priority
     if version and Version(version) < Version("0.6.0"):
-        raise(ValueError('Julia < v"0.6.0" is not supported.'))
+        raise (ValueError('Julia < v"0.6.0" is not supported.'))
 
     # Download whatever the user requests; ignores `stable_only`.
     if is_full_version(version):
@@ -180,19 +191,29 @@ def latest_version(version: str, system, arch, **kwargs) -> str:
     releases = read_releases(**kwargs)
     compat_releases = [x for x in releases if x[1] == system and x[2] == arch]
     if len(compat_releases) == 0:
-        raise(ValueError(
-            f'Julia release for system {system} and architecture {arch} is not available.'))
+        raise (
+            ValueError(
+                f"Julia release for system {system} and architecture {arch} is not available."
+            )
+        )
 
     if len(version.strip()) == 0:
         # version is an empty string => try to find latest compatible release
         return max(compat_releases, key=lambda x: Version(x[0]))[0]
     else:
         filtered_compat = [
-            x for x in compat_releases if Version(x[0]).minor_version == Version(version).minor_version]
+            x
+            for x in compat_releases
+            if Version(x[0]).minor_version == Version(version).minor_version
+        ]
         if len(filtered_compat) == 0:
             latest_ver = max(compat_releases, key=lambda x: Version(x[0]))[0]
-            print(f'{color.RED}failed to find latest Julia version for "{version}", "{system}" and "{arch}". Trying latest compatible version "{latest_ver}" instead.{color.END}')
-            print(f'{color.RED}you can add `--unstable` flag to also include unstable releases.{color.END}')  # nopep8
+            print(
+                f'{color.RED}failed to find latest Julia version for "{version}", "{system}" and "{arch}". Trying latest compatible version "{latest_ver}" instead.{color.END}'
+            )
+            print(
+                f"{color.RED}you can add `--unstable` flag to also include unstable releases.{color.END}"
+            )  # nopep8
             # This is equivalent to:
             # latest_version('', system, arch, stable_only=stable_only)
             return latest_ver

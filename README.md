@@ -32,8 +32,7 @@ _The enhanced Python fork of [JILL](https://github.com/abelsiqueira/jill) -- Jul
 For the first time users of `jill`, you will need to install it using `pip`: `pip install jill
 --user -U`. Also use this to upgrade JILL version.
 
-`Python >= 3.6` is required. For base docker images, you also need to make sure `wget` and `gnupg`
-are installed.
+`Python >= 3.8` is required. For base docker images, you also need to make sure `gnupg` is installed.
 
 
 ## Installing Julias

@@ -166,12 +166,23 @@ def is_version_released(version, system, arch, **kwargs):
     return item in version_list
 
 
+def canonicalize_version(version: str) -> str:
+    # previously, we could use '"1.10"' instead of '1.10'
+    # now we need to strip the quotes if there are any
+    if version.startswith('"') and version.endswith('"'):
+        return version[1:-1]
+    if version.startswith("'") and version.endswith("'"):
+        return version[1:-1]
+    return version
+
+
 def latest_version(version: str, system, arch, **kwargs) -> str:
     """
     Autocompletes a partial semantic version string to the latest compatible full version string.
     Directly returns `version` if it's already a complete version string (without checking that it's
     a valid one).
     """
+    version = canonicalize_version(version)
     if version == "latest":
         return version
 

@@ -21,40 +21,58 @@ def cli():
 @cli.command()
 @click.argument("version", required=False)
 @click.option(
-    "--preferred-arch", help="Preferred architecture (e.g., arm64 for M-series Macs)"
+    "--preferred-arch",
+    "--preferred_arch",
+    help="Preferred architecture (e.g., arm64 for M-series Macs)",
 )
-@click.option("--install-dir", help="Installation directory")
-@click.option("--symlink-dir", help="Symlink directory")
+@click.option("--install-dir", "--install_dir", help="Installation directory")
+@click.option("--symlink-dir", "--symlink_dir", help="Symlink directory")
 @click.option(
     "--upgrade/--no-upgrade",
+    "--upgrade/--no_upgrade",
     default=False,
     help="Upgrade existing installation and copy root environment from older version",
 )
 @click.option(
     "--upstream",
+    "--upstream",
     help='Custom upstream URL (e.g., "Official" for JuliaComputing\'s s3 buckets)',
 )
 @click.option(
     "--unstable/--no-unstable",
+    "--unstable/--no_unstable",
     default=False,
     help="Allow installation of unstable releases (e.g., 1.7.0-beta1)",
 )
 @click.option(
-    "--keep-downloads/--no-keep-downloads", default=False, help="Keep downloaded files"
+    "--keep-downloads/--no-keep-downloads",
+    "--keep_downloads/--no_keep_downloads",
+    default=False,
+    help="Keep downloaded files",
 )
-@click.option("--confirm/--no-confirm", default=False, help="Skip interactive prompt")
+@click.option(
+    "--confirm/--no-confirm",
+    "--confirm/--no_confirm",
+    default=False,
+    help="Skip interactive prompt",
+)
 @click.option(
     "--reinstall/--no-reinstall",
+    "--reinstall/--no_reinstall",
     default=False,
     help="Force reinstallation even if version exists",
 )
 @click.option(
     "--bypass-ssl/--no-bypass-ssl",
+    "--bypass_ssl/--no_bypass_ssl",
     default=False,
     help="Skip SSL certificate validation",
 )
 @click.option(
-    "--skip-symlinks/--no-skip-symlinks", default=False, help="Skip creating symlinks"
+    "--skip-symlinks/--no-skip-symlinks",
+    "--skip_symlinks/--no_skip_symlinks",
+    default=False,
+    help="Skip creating symlinks",
 )
 def install(**kwargs):
     """Install Julia programming language.
@@ -76,8 +94,13 @@ def install(**kwargs):
 
 @cli.command()
 @click.argument("version", required=False)
-@click.option("--upstream", help="Custom upstream URL")
-@click.option("--unstable/--no-unstable", default=False, help="Show unstable versions")
+@click.option("--upstream", "--upstream", help="Custom upstream URL")
+@click.option(
+    "--unstable/--no-unstable",
+    "--unstable/--no_unstable",
+    default=False,
+    help="Show unstable versions",
+)
 def list(**kwargs):
     """List installed Julia versions.
 
@@ -91,27 +114,38 @@ def list(**kwargs):
 @cli.command()
 @click.argument("version", required=False)
 @click.option(
-    "--sys", help="Target system (linux, musl, macos, freebsd, windows/winnt/win)"
+    "--sys",
+    "--sys",
+    help="Target system (linux, musl, macos, freebsd, windows/winnt/win)",
 )
 @click.option(
+    "--arch",
     "--arch",
     help="Target architecture (i686/x86, x86_64/x64, ARMv7/armv7l, ARMv8/aarch64)",
 )
 @click.option(
     "--upstream",
+    "--upstream",
     help='Custom upstream URL (e.g., "Official" for JuliaComputing\'s s3 buckets)',
 )
 @click.option(
     "--unstable/--no-unstable",
+    "--unstable/--no_unstable",
     default=False,
     help="Allow downloading unstable releases",
 )
-@click.option("--outdir", help="Output directory (default: current directory)")
 @click.option(
-    "--overwrite/--no-overwrite", default=False, help="Overwrite existing files"
+    "--outdir", "--outdir", help="Output directory (default: current directory)"
+)
+@click.option(
+    "--overwrite/--no-overwrite",
+    "--overwrite/--no_overwrite",
+    default=False,
+    help="Overwrite existing files",
 )
 @click.option(
     "--bypass-ssl/--no-bypass-ssl",
+    "--bypass_ssl/--no_bypass_ssl",
     default=False,
     help="Skip SSL certificate validation",
 )
@@ -146,8 +180,10 @@ def download(**kwargs):
 
 @cli.command()
 @click.argument("version_or_path", required=True)
-@click.option("--target", default="julia", help="Target name (default: julia)")
-@click.option("--symlink-dir", help="Symlink directory")
+@click.option(
+    "--target", "--target", default="julia", help="Target name (default: julia)"
+)
+@click.option("--symlink-dir", "--symlink_dir", help="Symlink directory")
 def switch(**kwargs):
     """Switch Julia target version or path.
 
@@ -173,16 +209,22 @@ def upstream():
 @cli.command()
 @click.argument("upstream", required=True)
 @click.option(
-    "--outdir", default="julia_pkg", help="Output directory (default: julia_pkg)"
+    "--outdir",
+    "--outdir",
+    default="julia_pkg",
+    help="Output directory (default: julia_pkg)",
 )
 @click.option(
+    "--period",
     "--period",
     type=int,
     default=0,
     help="Time between sync operations in seconds (0 for sync once)",
 )
-@click.option("--logfile", default="mirror.log", help="Log file path")
-@click.option("--config", default="mirror.json", help="Mirror configuration file path")
+@click.option("--logfile", "--logfile", default="mirror.log", help="Log file path")
+@click.option(
+    "--config", "--config", default="mirror.json", help="Mirror configuration file path"
+)
 def mirror(**kwargs):
     """Download/sync all Julia releases.
 

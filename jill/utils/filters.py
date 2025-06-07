@@ -6,7 +6,7 @@ from .defaults import default_filename_template
 from .defaults import default_latest_filename_template
 from .defaults import load_placeholder, load_alias
 from semantic_version import Version
-import requests
+import httpx
 import json
 
 import re
@@ -175,7 +175,8 @@ def _build(ver, cache={}):
         return cache[build]
     try:
         github_api = f"https://api.github.com/repos/julialang/julia/commits/{build}"
-        data = json.loads(requests.get(github_api).content)
+        with httpx.Client() as client:
+            data = json.loads(client.get(github_api).content)
         cache[build] = data["sha"][0:10]
         return cache[build]
     except (KeyError, IndexError, TypeError):

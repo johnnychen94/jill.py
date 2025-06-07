@@ -13,11 +13,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        python: [3.7, 3]
-        include:
-          - os: macos-latest
-            python: 3
+        os: [ubuntu-latest, macos-latest]
+        python: [3]
 
     steps:
       - uses: actions/checkout@v2
@@ -87,7 +84,7 @@ jobs:
     strategy:
       matrix:
         sys: [linux-musl]
-        python: [3.7]
+        python: [3]
     steps:
       - uses: actions/checkout@v2
       - name: add symlink dir to PATH
@@ -132,7 +129,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3
 
       - name: Install dependencies
         run: |

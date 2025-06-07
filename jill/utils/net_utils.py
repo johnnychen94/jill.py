@@ -76,7 +76,7 @@ def first_response(url_lists, timeout):
     async def _query(url):
         if show_verbose():
             print(f"send GET request to {url}")
-        with httpx.Client(timeout=timeout) as client:
+        with httpx.Client(timeout=timeout, follow_redirects=True) as client:
             with client.stream("GET", url) as r:
                 for chunk in r.iter_bytes():
                     if chunk:
@@ -125,13 +125,14 @@ def first_response(url_lists, timeout):
 def download(url, outpath, *, bypass_ssl=False):
     """
     Download a file from `url` to `outpath` using httpx.
+    Automatically follows redirects (including 301) to get the final file.
     """
     import httpx
     import sys
     from pathlib import Path
 
     verify = not bypass_ssl
-    with httpx.Client(verify=verify) as client:
+    with httpx.Client(verify=verify, follow_redirects=True) as client:
         with client.stream("GET", url) as response:
             response.raise_for_status()
             total_size = int(response.headers.get("content-length", 0))

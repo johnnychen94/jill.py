@@ -195,10 +195,10 @@ jobs:
 
       # it's running in docker container, so we need to squash all codes into one step
       - name: Test jill install
-        uses: uraimo/run-on-arch-action@v1.0.5
+        uses: uraimo/run-on-arch-action@v3
         with:
-          architecture: ${{ matrix.architecture }}
-          distribution: ubuntu-latest
+          arch: ${{ matrix.architecture }}
+          distro: ubuntu24.04
           # no --update because not arm is tier 2 support in Julia
           run: |
             apt-get update -qq

@@ -1,7 +1,5 @@
-wget
-requests
-fire
 semantic_version
 python-gnupg
-requests_futures
 jsonschema
+click
+httpx

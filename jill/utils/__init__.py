@@ -17,32 +17,27 @@ from .source_utils import verify_upstream
 __all__ = [
     # filters
     "generate_info",
-
     # gpg_utils
     "verify_gpg",
-
     # interactive_utils
     "query_yes_no",
     "color",
-
     # mount_utils
-    "TarMounter", "DmgMounter",
-
+    "TarMounter",
+    "DmgMounter",
     # sys_utils
     "current_architecture",
     "current_system",
     "current_libc",
     "show_verbose",
-
     # version_utils
     "Version",
     "is_full_version",
     "latest_version",
     "is_version_released",
     "read_releases",
-
     # source_utils
     "SourceRegistry",
     "show_upstream",
-    "verify_upstream"
+    "verify_upstream",
 ]

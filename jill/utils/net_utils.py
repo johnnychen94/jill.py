@@ -3,13 +3,10 @@ from .sys_utils import show_verbose
 from urllib.parse import urlparse
 from ipaddress import ip_address
 
-from requests_futures.sessions import FuturesSession
+import httpx
 import socket
-import requests
 import time
-import logging
-
-from requests.exceptions import RequestException
+from pathlib import Path
 
 from typing import Optional
 
@@ -22,11 +19,14 @@ def query_external_ip(cache=[], timeout=5):
     # try to use external ip address, if it fails, use the local ip address
     # failures could be due to several reasons, e.g., enterprise gateway
     try:
-        ip = requests.get('https://api.ipify.org', timeout=5).text
-        # store external ip because the query takes time
-        cache.append(ip)
-        return ip
-    except RequestException:
+        with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+            response = client.get("https://api.ipify.org")
+            response.raise_for_status()
+            ip = response.text
+            # store external ip because the query takes time
+            cache.append(ip)
+            return ip
+    except httpx.HTTPError:
         return socket.gethostbyname(socket.gethostname())
 
 
@@ -46,7 +46,7 @@ def query_ip(url: Optional[str] = None):
     try:
         ip_address(ip)
     except ValueError:
-        ip = '0.0.0.0'
+        ip = "0.0.0.0"
     return ip
 
 
@@ -57,42 +57,86 @@ def port_response_time(host, port, timeout=2):
 
     If host is '0.0.0.0' then directly return a number larger than timeout.
     """
-    if host == '0.0.0.0':
-        return 10*timeout
+    if host == "0.0.0.0":
+        return 10 * timeout
 
     start = time.time()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)
-    result = sock.connect_ex((host, port))
+    sock.connect_ex((host, port))  # We only care if it connects, not the result
     roundtrip = time.time() - start
     return min(roundtrip, timeout)
 
 
 def first_response(url_lists, timeout):
     """
-    send HEAD request to each url, return the first url that responses and skip drop all other urls.
+    send GET request to each url, return the first url that responses and skip drop all other urls.
+    The connection is closed after receiving the first few bytes to optimize performance.
     """
-    def _query(url):
+
+    async def _query(url):
         if show_verbose():
-            print(f"send HEAD request to {url}")
-        return session.head(url, timeout=timeout, allow_redirects=True)
+            print(f"send GET request to {url}")
+        with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+            with client.stream("GET", url) as r:
+                for chunk in r.iter_bytes():
+                    if chunk:
+                        return r
+        return None
 
     if show_verbose():
-        print(f"HEAD request timeout: {timeout}")
+        print(f"GET request timeout: {timeout}")
 
-    with FuturesSession(max_workers=5) as session:
-        futures = [_query(url) for url in url_lists]
+    # Use asyncio for concurrent requests
+    import asyncio
 
-        while True:
-            time.sleep(0.1)
+    async def _async_query(url):
+        try:
+            response = await _query(url)
+            if show_verbose():
+                print(f"response {url} with status code {response.status_code}")
+            if response.status_code == 200:
+                return url
+        except httpx.HTTPError as e:
+            if show_verbose():
+                print(f"HTTPError: {url} {e}")
+            pass
+        return None
 
-            status = [x.running() for x in futures]
-            for future in futures:
-                try:
-                    if future.done() and future.result().status_code == 200:
-                        return future.result().url
-                except RequestException:
-                    continue
+    async def _main():
+        tasks = []
+        for url in url_lists:
+            task = asyncio.create_task(_async_query(url))
+            tasks.append(task)
+            try:
+                result = await task
+                if result:
+                    # Cancel all remaining tasks when we get a successful response
+                    for t in tasks:
+                        if not t.done():
+                            t.cancel()
+                    return result
+            except asyncio.CancelledError:
+                continue
+        return None
 
-            if not any(status):
-                return None
+    return asyncio.run(_main())
+
+
+def download(url, outpath, *, bypass_ssl=False):
+    """
+    Download a file from `url` to `outpath` using httpx.
+    Automatically follows redirects (including 301) to get the final file.
+    """
+
+    verify = not bypass_ssl
+    with httpx.Client(verify=verify, follow_redirects=True) as client:
+        with client.stream("GET", url) as response:
+            response.raise_for_status()
+            filename = Path(outpath).name
+
+            with open(outpath, "wb") as f:
+                for chunk in response.iter_bytes():
+                    if chunk:
+                        f.write(chunk)
+                print(f"Downloaded {filename} successfully")

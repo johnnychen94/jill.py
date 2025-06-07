@@ -17,14 +17,15 @@ import subprocess
 
 def is_installed(version, check_symlinks=True):
     """
-        check if the required version is already installed.
+    check if the required version is already installed.
     """
     check_list = ["julia"]
     if version == "latest":
         check_list.append("julia-latest")
     if version != "latest" and check_symlinks:
-        check_list.extend([f"julia-{f_major_version(version)}",
-                           f"julia-{f_minor_version(version)}"])
+        check_list.extend(
+            [f"julia-{f_major_version(version)}", f"julia-{f_minor_version(version)}"]
+        )
 
     for path in check_list:
         if Version(get_exec_version(shutil.which(path))) != Version(version):
@@ -58,12 +59,11 @@ def last_julia_version(version=None):
         return float(ver.lstrip("v"))
 
     version = float(f_minor_version(version)) if version else 999.999
-    proj_versions = os.listdir(os.path.join(default_depot_path(),
-                                            "environments"))
+    proj_versions = os.listdir(os.path.join(default_depot_path(), "environments"))
     proj_versions = [x for x in proj_versions if re.fullmatch(r"v\d+\.\d+", x)]
-    proj_versions = sorted(filter(lambda ver: sort_key(ver) < version,
-                                  proj_versions),
-                           key=sort_key)
+    proj_versions = sorted(
+        filter(lambda ver: sort_key(ver) < version, proj_versions), key=sort_key
+    )
     if proj_versions:
         return proj_versions[-1]
     else:
@@ -72,7 +72,7 @@ def last_julia_version(version=None):
 
 def make_symlinks(src_bin, symlink_dir, version):
     if not os.path.isfile(src_bin):
-        raise(ValueError(f"{src_bin} doesn't exist."))
+        raise (ValueError(f"{src_bin} doesn't exist."))
 
     system = current_system()
     if symlink_dir not in map(os.path.normpath, os.environ["PATH"].split(os.pathsep)):
@@ -91,7 +91,7 @@ def make_symlinks(src_bin, symlink_dir, version):
             with open(rc_file, "a") as file:
                 file.writelines("\n# added by jill\n")
                 file.writelines(f"export PATH={symlink_dir}:$PATH\n")
-        print(f"you need to restart your current shell to update PATH")
+        print("you need to restart your current shell to update PATH")
 
     os.makedirs(symlink_dir, exist_ok=True)
 
@@ -108,8 +108,7 @@ def make_symlinks(src_bin, symlink_dir, version):
         #   release.
         link_list = [f"julia-{f_minor_version(version)}"]
     else:
-        link_list = [f"julia-{f(version)}" for f in (f_major_version,
-                                                     f_minor_version)]
+        link_list = [f"julia-{f(version)}" for f in (f_major_version, f_minor_version)]
         link_list.append("julia")
 
     for linkname in link_list:
@@ -124,8 +123,7 @@ def make_symlinks(src_bin, symlink_dir, version):
         #   - julia-1.0  --> latest stable 1.0.Z
         #   - don't make symlink to patch level
         if os.path.exists(linkpath) or os.path.islink(linkpath):
-            if (os.path.islink(linkpath) and
-                    os.readlink(linkpath) == src_bin):
+            if os.path.islink(linkpath) and os.readlink(linkpath) == src_bin:
                 # happens when installing a new patch version
                 continue
 
@@ -143,9 +141,9 @@ def make_symlinks(src_bin, symlink_dir, version):
             os.remove(linkpath)
         print(f"{color.GREEN}make new symlink {linkpath}{color.END}")
         if current_system() == "winnt":
-            with open(linkpath, 'w') as f:
+            with open(linkpath, "w") as f:
                 # create a cmd file to mimic how we do symlinks in linux
-                f.writelines(['@echo off\n', f'"{src_bin}" %*'])
+                f.writelines(["@echo off\n", f'"{src_bin}" %*'])
         else:
             os.symlink(src_bin, linkpath)
 
@@ -154,8 +152,7 @@ def copy_root_project(version):
     mver = f_minor_version(version)
     old_ver = last_julia_version(version)
     if old_ver is None:
-        print(
-            f"Can't find available old root project for version {version}")
+        print(f"Can't find available old root project for version {version}")
         return None
 
     env_path = os.path.join(default_depot_path(), "environments")
@@ -175,18 +172,15 @@ def copy_root_project(version):
     shutil.copytree(src_path, dest_path)
 
 
-def install_julia_tarball(package_path,
-                          install_dir,
-                          symlink_dir,
-                          version,
-                          upgrade,
-                          skip_symlinks):
+def install_julia_tarball(
+    package_path, install_dir, symlink_dir, version, upgrade, skip_symlinks
+):
     check_installer(package_path, ".tar.gz")
 
     if re.match("(.*)\+(\w+)$", version):
         # We want a different folder name for commit builds so that we can have
         # julia-dev and julia-latest points to two different julia versions
-        suffix = 'dev'
+        suffix = "dev"
     else:
         suffix = f_minor_version(version)
 
@@ -204,8 +198,8 @@ def install_julia_tarball(package_path,
         print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     os.chmod(dest_path, 0o755)  # issue 12
     bin_path = os.path.join(dest_path, "bin", "julia")
-    if current_system() == 'winnt':
-        bin_path += '.exe'
+    if current_system() == "winnt":
+        bin_path += ".exe"
     if not skip_symlinks:
         make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
@@ -213,19 +207,17 @@ def install_julia_tarball(package_path,
     return True
 
 
-def install_julia_dmg(package_path,
-                      install_dir,
-                      symlink_dir,
-                      version,
-                      upgrade,
-                      skip_symlinks):
+def install_julia_dmg(
+    package_path, install_dir, symlink_dir, version, upgrade, skip_symlinks
+):
     check_installer(package_path, ".dmg")
 
     with DmgMounter(package_path) as root:
         # mounted image contents:
         #   ['.VolumeIcon.icns', 'Applications', 'Julia-1.3.app']
-        appname = next(filter(lambda x: x.lower().startswith('julia'),
-                              os.listdir(root)))
+        appname = next(
+            filter(lambda x: x.lower().startswith("julia"), os.listdir(root))
+        )
         src_path = os.path.join(root, appname)
         dest_path = os.path.join(install_dir, appname)
         if os.path.exists(dest_path):
@@ -237,8 +229,7 @@ def install_julia_dmg(package_path,
         # see also: https://github.com/JuliaGPU/CUDA.jl/issues/249
         shutil.copytree(src_path, dest_path, symlinks=True)
         print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
-    bin_path = os.path.join(dest_path,
-                            "Contents", "Resources", "julia", "bin", "julia")
+    bin_path = os.path.join(dest_path, "Contents", "Resources", "julia", "bin", "julia")
     if not skip_symlinks:
         make_symlinks(bin_path, symlink_dir, version)
     if upgrade:
@@ -246,16 +237,12 @@ def install_julia_dmg(package_path,
     return True
 
 
-def install_julia_exe(package_path,
-                      install_dir,
-                      symlink_dir,
-                      version,
-                      upgrade,
-                      skip_symlinks):
+def install_julia_exe(
+    package_path, install_dir, symlink_dir, version, upgrade, skip_symlinks
+):
     check_installer(package_path, ".exe")
 
-    dest_path = os.path.join(install_dir,
-                             f"julia-{f_minor_version(version)}")
+    dest_path = os.path.join(install_dir, f"julia-{f_minor_version(version)}")
     if os.path.exists(dest_path):
         shutil.rmtree(dest_path, ignore_errors=True)
         msg = f"{color.YELLOW}remove previous Julia installation:"
@@ -266,12 +253,9 @@ def install_julia_exe(package_path,
     # https://github.com/JuliaLang/julia/blob/release-1.4/NEWS.md#build-system-changes
     if Version(version).next_patch() < Version("1.4.0"):
         # it's always false if version == "latest"
-        subprocess.check_output([f'{package_path}',
-                                 '/S', f'/D={dest_path}'])
+        subprocess.check_output([f"{package_path}", "/S", f"/D={dest_path}"])
     else:
-        subprocess.check_output([f'{package_path}',
-                                 '/VERYSILENT',
-                                 f'/DIR={dest_path}'])
+        subprocess.check_output([f"{package_path}", "/VERYSILENT", f"/DIR={dest_path}"])
     print(f"{color.GREEN}install Julia to {dest_path}{color.END}")
     bin_path = os.path.join(dest_path, "bin", "julia.exe")
     if not skip_symlinks:
@@ -287,74 +271,42 @@ def hello_msg():
     print(msg)
 
 
-def install_julia(version=None, *,
-                  preferred_arch=None,
-                  install_dir=None,
-                  symlink_dir=None,
-                  upgrade=False,
-                  upstream=None,
-                  unstable=False,
-                  keep_downloads=False,
-                  confirm=False,
-                  reinstall=False,
-                  bypass_ssl=False,
-                  skip_symlinks=False):
-    """
-    Install the Julia programming language for your current system
+def install_julia(
+    version=None,
+    preferred_arch=None,
+    install_dir=None,
+    symlink_dir=None,
+    upgrade=False,
+    upstream=None,
+    unstable=False,
+    keep_downloads=False,
+    confirm=False,
+    reinstall=False,
+    bypass_ssl=False,
+    skip_symlinks=False,
+):
+    """Install Julia.
 
-    `jill install [version]` would satisfy most of your use cases, try it first
-    and then read description of other arguments. `version` is optional, valid
-    version syntax for it is:
-
-    * `stable`: latest stable Julia release. This is the _default_ option.
-    * `1`: latest `1.y.z` Julia release.
-    * `1.0`: latest `1.0.z` Julia release.
-    * `1.4.0-rc1`: as it is.
-    * `latest`/`nightly`: the nightly builds from source code.
-
-    For Linux/FreeBSD systems, if you run this command with `root` account,
-    then it will install Julia system-widely.
-
-    To download from a private mirror, please check `jill download -h`.
-
-    Arguments:
-      version:
-        The Julia version you want to install.
-      preferred_arch:
-        (Experimental): add `--preferred-arch arm64` to download the native version for macOS the
-        M-series Processor. For any other platform, this flag is ignored.
-      upstream:
-        manually choose a download upstream. For example, set it to "Official"
-        if you want to download from JuliaComputing's s3 buckets.
-      upgrade:
-        add `--upgrade` flag also copy the root environment from an older
-        Julia version.
-      unstable:
-        add `--unstable` flag to allow installation of unstable releases for auto version
-        query. For example, `jill install --unstable` might give you unstable installation
-        like `1.7.0-beta1`. Note that if you explicitly pass the unstable version, e.g.,
-        `jill install 1.7.0-beta1`, it will still work.
-      keep_downloads:
-        add `--keep_downloads` flag to not remove downloaded releases.
-      confirm: add `--confirm` flag to skip interactive prompt.
-      reinstall:
-        jill will skip the installation if the required Julia version already exists,
-        add `--reinstall` flag to force the reinstallation.
-      install_dir:
-        where you want julia packages installed.
-      symlink_dir:
-        where you want symlinks(e.g., `julia`, `julia-1`) placed.
-      bypass_ssl:
-        add `--bypass-ssl` flag to skip SSL certificate validation.
-      skip_symlinks:
-        add `--skip-symlinks` flag to skip symbolic links generation.
+    Args:
+        version: Julia version to install
+        preferred_arch: Preferred architecture
+        install_dir: Installation directory
+        symlink_dir: Symlink directory
+        upgrade: Upgrade existing installation
+        upstream: Custom upstream URL
+        unstable: Install unstable version
+        keep_downloads: Keep downloaded files
+        confirm: Skip confirmation
+        reinstall: Force reinstall
+        bypass_ssl: Bypass SSL verification
+        skip_symlinks: Skip creating symlinks
     """
     install_dir = install_dir if install_dir else default_install_dir()
     install_dir = os.path.abspath(install_dir)
     symlink_dir = symlink_dir if symlink_dir else default_symlink_dir()
     symlink_dir = os.path.normpath(os.path.abspath(symlink_dir))
     system, arch = current_system(), current_architecture()
-    version = str(version) if (version or str(version) == "0") else ''
+    version = str(version) if (version or str(version) == "0") else ""
     version = "latest" if version == "nightly" else version
     version = "" if version == "stable" else version
     upstream = upstream if upstream else os.environ.get("JILL_UPSTREAM", None)
@@ -379,20 +331,24 @@ def install_julia(version=None, *,
                 # https://github.com/johnnychen94/jill.py/issues/102
                 # TODO(johnnychen94): provide a way to install the native version.
                 msg = "Apple silicon is still tier-3 support, installing the Intel version by default."
-                msg += "\nAdd `--preferred-arch arm64` flag to install the native version."
+                msg += (
+                    "\nAdd `--preferred-arch arm64` flag to install the native version."
+                )
                 print(f"{color.YELLOW}{msg}{color.END}")
                 arch = "x86_64"
             else:
                 # Since Julia 1.9, we ship the native version by default as it's stable enough to use
                 # in practice.
                 msg = "Apple silicon is moved to tier-2 support, installing the native version by default."
-                msg += "\nAdd `--preferred-arch x86_64` flag to install the Intel version."
+                msg += (
+                    "\nAdd `--preferred-arch x86_64` flag to install the Intel version."
+                )
                 print(f"{color.GREEN}{msg}{color.END}")
                 arch = "aarch64"
 
     hello_msg()
     if system == "winnt":
-        install_dir = install_dir.replace("\\\\", "\\").strip('\'"')
+        install_dir = install_dir.replace("\\\\", "\\").strip("'\"")
     if not confirm:
         version_str = version if version else "latest stable release"
         if version_str == "1.1":
@@ -404,7 +360,9 @@ def install_julia(version=None, *,
         question += f"  1) install Julia {version_str} for {system}-{arch}"
         question += f" into {color.UNDERLINE}{install_dir}{color.END}\n"
         if not skip_symlinks:
-            question += f"  2) make symlinks in {color.UNDERLINE}{symlink_dir}{color.END}\n"
+            question += (
+                f"  2) make symlinks in {color.UNDERLINE}{symlink_dir}{color.END}\n"
+            )
             question += f"You may need to manually add {color.UNDERLINE}{symlink_dir}{color.END} to PATH\n"
         question += "Continue installation?"
         to_continue = query_yes_no(question)
@@ -416,14 +374,15 @@ def install_julia(version=None, *,
     wrong_args = False
     try:
         version = latest_version(
-            version, system, arch, upstream=upstream, stable_only=not unstable)
+            version, system, arch, upstream=upstream, stable_only=not unstable
+        )
     except ValueError:
         # hide the nested error stack :P
         wrong_args = True
     if wrong_args:
         msg = f"wrong version(>= 0.6.0) argument: {version}\n"
-        msg += f"Example: `jill install 1`"
-        raise(ValueError(msg))
+        msg += "Example: `jill install 1`"
+        raise (ValueError(msg))
 
     if not reinstall and is_installed(version):
         print(f"julia {version} already installed.")
@@ -431,12 +390,14 @@ def install_julia(version=None, *,
 
     overwrite = True if version == "latest" else False
     print(f"{color.BOLD}----- Download Julia -----{color.END}")
-    package_path = download_package(version,
-                                    system,
-                                    arch,
-                                    upstream=upstream,
-                                    overwrite=overwrite,
-                                    bypass_ssl=bypass_ssl)
+    package_path = download_package(
+        version,
+        system,
+        arch,
+        upstream=upstream,
+        overwrite=overwrite,
+        bypass_ssl=bypass_ssl,
+    )
     if not package_path:
         return False
 

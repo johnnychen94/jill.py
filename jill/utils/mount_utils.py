@@ -48,8 +48,7 @@ class DmgMounter(Mounter):
 
     def __enter__(self):
         assert sys.platform == "darwin"
-        args = ["hdiutil", "attach", self.src_path,
-                "-mountpoint", self.mount_point]
+        args = ["hdiutil", "attach", self.src_path, "-mountpoint", self.mount_point]
         args.extend(self.extra_args)
         DmgMounter.umount(self.mount_point)
 

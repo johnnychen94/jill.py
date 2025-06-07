@@ -1,11 +1,12 @@
 """
 Module `filters` defines placeholders and how names are filtered.
 """
+
 from .defaults import default_filename_template
 from .defaults import default_latest_filename_template
 from .defaults import load_placeholder, load_alias
 from semantic_version import Version
-import requests
+import httpx
 import json
 
 import re
@@ -14,7 +15,8 @@ from string import Template
 from typing import Mapping, Optional, Callable
 
 VERSION_REGEX = re.compile(
-    r'v?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(-(?P<status>\w+))?')
+    r"v?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(-(?P<status>\w+))?"
+)
 SPECIAL_VERSION_NAMES = ["latest", "nightly", "stable"]
 
 
@@ -27,15 +29,15 @@ def is_version(version):
 
 def canonicalize_arch(arch: Optional[str]):
     """
-        Canonicalize arch names to arch names defined by Julia schema.
+    Canonicalize arch names to arch names defined by Julia schema.
 
-        For example, `--sys=win` is allowed in jill but this is
-        not listed in Julia's `versions-schema.json`. This function
-        maps these alias into the legal names defined by
-        `versions-schema.json`.
+    For example, `--sys=win` is allowed in jill but this is
+    not listed in Julia's `versions-schema.json`. This function
+    maps these alias into the legal names defined by
+    `versions-schema.json`.
 
-        The canonicalize rule is defined in `jill/config/alias.json`, for
-        names not in that list, it's an identity map.
+    The canonicalize rule is defined in `jill/config/alias.json`, for
+    names not in that list, it's an identity map.
     """
     if arch is not None:
         return load_alias()["Arch"].get(arch.lower(), arch.lower())
@@ -43,15 +45,15 @@ def canonicalize_arch(arch: Optional[str]):
 
 def canonicalize_sys(os: Optional[str]):
     """
-        Canonicalize sys names to OS names defined by Julia schema.
+    Canonicalize sys names to OS names defined by Julia schema.
 
-        For example, `--sys=win` is allowed in jill but this is
-        not listed in Julia's `versions-schema.json`. This function
-        maps these alias into the legal names defined by
-        `versions-schema.json`.
+    For example, `--sys=win` is allowed in jill but this is
+    not listed in Julia's `versions-schema.json`. This function
+    maps these alias into the legal names defined by
+    `versions-schema.json`.
 
-        The canonicalize rule is defined in `jill/config/alias.json`, for
-        names not in that list, it's an identity map.
+    The canonicalize rule is defined in `jill/config/alias.json`, for
+    names not in that list, it's an identity map.
     """
     if os is not None:
         return load_alias()["OS"].get(os.lower(), os.lower())
@@ -68,23 +70,25 @@ def no_validate(*args, **kwargs):
 def _Osarch(os, arch):
     if os in ["win", "mac"]:
         return f_osarch(os, arch).capitalize()
-    os, arch = f_osarch(os, arch).split('-')
-    return os.capitalize() + '-' + arch
+    os, arch = f_osarch(os, arch).split("-")
+    return os.capitalize() + "-" + arch
 
 
 def _OSarch(os, arch):
     if os in ["win", "mac"]:
         return f_osarch(os, arch).upper()
-    os, arch = f_osarch(os, arch).split('-')
-    return os.upper() + '-' + arch
+    os, arch = f_osarch(os, arch).split("-")
+    return os.upper() + "-" + arch
 
 
 class NameFilter:
-    def __init__(self,
-                 name: str,
-                 f: Callable = identity,
-                 rules: Optional[Mapping] = None,
-                 validate: Callable = no_validate):
+    def __init__(
+        self,
+        name: str,
+        f: Callable = identity,
+        rules: Optional[Mapping] = None,
+        validate: Callable = no_validate,
+    ):
         self.f = f
         self.name = name
         if rules:
@@ -99,69 +103,68 @@ class NameFilter:
             # TODO: add error handler
             msg = f"validation on {self.name} fails:\n"
             msg += f"  - args: {args}\n  - kwargs: {kwargs}\n"
-            msg += f"Please check if you have passed the right parameters"
+            msg += "Please check if you have passed the right parameters"
             raise ValueError(msg)
         # directly return rst if there're no special filter rules
         rst = self.f(*args, **kwargs)
         return self.rules.get(rst, rst)
 
 
-f_major_version = NameFilter("version", lambda x: x.lstrip('v').split('.')[0],
-                             validate=is_version)
-f_minor_version = NameFilter("version", lambda x: '.'.join(x.lstrip('v').
-                                                           split('.')[0:2]),
-                             validate=is_version)
-f_patch_version = NameFilter("version", lambda x: x.lstrip('v').split('-')[0],
-                             validate=is_version)
+f_major_version = NameFilter(
+    "version", lambda x: x.lstrip("v").split(".")[0], validate=is_version
+)
+f_minor_version = NameFilter(
+    "version", lambda x: ".".join(x.lstrip("v").split(".")[0:2]), validate=is_version
+)
+f_patch_version = NameFilter(
+    "version", lambda x: x.lstrip("v").split("-")[0], validate=is_version
+)
 
 
 def _vmajor_version(ver):
     if ver in SPECIAL_VERSION_NAMES:
         return ver
     else:
-        return 'v'+f_major_version(ver)
+        return "v" + f_major_version(ver)
 
 
 def _vminor_version(ver):
     if ver in SPECIAL_VERSION_NAMES:
         return ver
     else:
-        return 'v'+f_minor_version(ver)
+        return "v" + f_minor_version(ver)
 
 
 def _vpatch_version(ver):
     if ver in SPECIAL_VERSION_NAMES:
         return ver
     else:
-        return 'v'+f_patch_version(ver)
+        return "v" + f_patch_version(ver)
 
 
 def _version(ver):
     if ver in SPECIAL_VERSION_NAMES:
         return ver
     else:
-        return ver.lstrip('v')
+        return ver.lstrip("v")
 
 
 f_vmajor_version = NameFilter("version", _vmajor_version)
-f_Vmajor_version = NameFilter(
-    "version", lambda x: f_vmajor_version(x).capitalize())
+f_Vmajor_version = NameFilter("version", lambda x: f_vmajor_version(x).capitalize())
 f_vminor_version = NameFilter("version", _vminor_version)
-f_Vminor_version = NameFilter(
-    "version", lambda x: f_vminor_version(x).capitalize())
+f_Vminor_version = NameFilter("version", lambda x: f_vminor_version(x).capitalize())
 f_vpatch_version = NameFilter("version", _vpatch_version)
-f_Vpatch_version = NameFilter(
-    "version", lambda x: f_vpatch_version(x).capitalize())
+f_Vpatch_version = NameFilter("version", lambda x: f_vpatch_version(x).capitalize())
 
 f_version = NameFilter("version", _version, validate=is_version)
 
 
 def _build(ver, cache={}):
     if ver in SPECIAL_VERSION_NAMES:
-        return ''
+        return ""
     build = Version(ver).build
     if not build:
-        return ''
+        return ""
     build = build[0]
     if len(build) >= 10:
         return build[0:10]
@@ -172,8 +175,9 @@ def _build(ver, cache={}):
         return cache[build]
     try:
         github_api = f"https://api.github.com/repos/julialang/julia/commits/{build}"
-        data = json.loads(requests.get(github_api).content)
-        cache[build] = data['sha'][0:10]
+        with httpx.Client(follow_redirects=True) as client:
+            data = json.loads(client.get(github_api).content)
+        cache[build] = data["sha"][0:10]
         return cache[build]
     except:
         return build
@@ -224,10 +228,7 @@ f_filename = NameFilter("filename", _filename)
 f_latest_filename = NameFilter("filename", _latest_filename)
 
 
-def generate_info(plain_version: str,
-                  system: str,
-                  architecture: str,
-                  **kwargs):
+def generate_info(plain_version: str, system: str, architecture: str, **kwargs):
     system = canonicalize_sys(system)
     architecture = canonicalize_arch(architecture)
 
@@ -237,46 +238,43 @@ def generate_info(plain_version: str,
     configs = {}
     configs.update(kwargs)
 
-    configs.update({
-        "system": system,
-        "System": f_System(system),
-        "SYSTEM": f_SYSTEM(system),
+    configs.update(
+        {
+            "system": system,
+            "System": f_System(system),
+            "SYSTEM": f_SYSTEM(system),
+            "sys": f_sys(system),
+            "Sys": f_Sys(system),
+            "SYS": f_SYS(system),
+            "os": os,
+            "Os": f_Os(system),
+            "OS": f_OS(system),
+            "architecture": architecture,
+            "Arch": f_Arch(architecture),
+            "arch": arch,
+            "ARCH": f_ARCH(architecture),
+            "osarch": f_osarch(os, architecture),
+            "Osarch": f_Osarch(os, architecture),
+            "OSarch": f_OSarch(os, architecture),
+            "osbit": f_osbit(os, architecture),
+            "bit": f_bit(architecture),
+            "extension": f_extension(system),
+            "build": f_build(plain_version),
+            "version": f_version(plain_version),
+            "major_version": f_major_version(plain_version),
+            "vmajor_version": f_vmajor_version(plain_version),
+            "minor_version": f_minor_version(plain_version),
+            "vminor_version": f_vminor_version(plain_version),
+            "patch_version": f_patch_version(plain_version),
+            "vpatch_version": f_vpatch_version(plain_version),
+        }
+    )
 
-        "sys": f_sys(system),
-        "Sys": f_Sys(system),
-        "SYS": f_SYS(system),
-
-        "os": os,
-        "Os": f_Os(system),
-        "OS": f_OS(system),
-
-        "architecture": architecture,
-
-        "Arch": f_Arch(architecture),
-        "arch": arch,
-        "ARCH": f_ARCH(architecture),
-
-        "osarch": f_osarch(os, architecture),
-        "Osarch": f_Osarch(os, architecture),
-        "OSarch": f_OSarch(os, architecture),
-
-        "osbit": f_osbit(os, architecture),
-
-        "bit": f_bit(architecture),
-        "extension": f_extension(system),
-        "build": f_build(plain_version),
-        "version": f_version(plain_version),
-        "major_version": f_major_version(plain_version),
-        "vmajor_version": f_vmajor_version(plain_version),
-        "minor_version": f_minor_version(plain_version),
-        "vminor_version": f_vminor_version(plain_version),
-        "patch_version": f_patch_version(plain_version),
-        "vpatch_version": f_vpatch_version(plain_version)
-    })
-
-    configs.update({
-        "filename": f_filename(**configs),
-        "latest_filename": f_latest_filename(**configs)
-    })
+    configs.update(
+        {
+            "filename": f_filename(**configs),
+            "latest_filename": f_latest_filename(**configs),
+        }
+    )
 
     return configs

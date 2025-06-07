@@ -6,18 +6,15 @@ from .utils import current_system, current_architecture, current_libc
 from .utils import verify_gpg
 from .utils import color
 from .utils.filters import canonicalize_sys, canonicalize_arch
+from .utils.net_utils import download
 
 import re
-import wget
 import os
 import shutil
 import ssl
 import tempfile
 import logging
-
 from urllib.parse import urlparse
-
-from typing import Optional
 
 from urllib.error import URLError
 
@@ -52,18 +49,13 @@ def _download(url: str, out: str, *, bypass_ssl: bool = False):
             logging.info(msg)
             print(msg)
             if bypass_ssl:
-                print(
-                    f"{color.YELLOW}skip SSL certificate validation{color.END}"
-                )
-                with SSLContext(ssl._create_unverified_context):
-                    wget.download(url, temp_outpath)
-            else:
-                wget.download(url, temp_outpath)
+                print(f"{color.YELLOW}skip SSL certificate validation{color.END}")
+            download(url, temp_outpath, bypass_ssl=bypass_ssl)
             print()  # for format usage
             msg = f"finished downloading {outname}"
             print(f"{color.GREEN}{msg}{color.END}")
-        except (URLError, ConnectionError):
-            msg = f"failed to download {outname}"
+        except (URLError, ConnectionError, Exception) as e:
+            msg = f"failed to download {outname}: {str(e)}"
             logging.info(msg)
             print(f"{color.RED}{msg}{color.END}")
             return False
@@ -75,63 +67,27 @@ def _download(url: str, out: str, *, bypass_ssl: bool = False):
     return outpath
 
 
-def download_package(version=None, sys=None, arch=None, *,
-                     upstream=None,
-                     unstable=False,
-                     outdir=None,
-                     overwrite=False,
-                     bypass_ssl=False):
-    """
-    download julia release from nearest servers
+def download_package(
+    version=None,
+    sys=None,
+    arch=None,
+    upstream=None,
+    unstable=False,
+    outdir=None,
+    overwrite=False,
+    bypass_ssl=False,
+):
+    """Download Julia release from nearest servers.
 
-    `jill download [version] [sys] [arch]` downloads a Julia release
-    in your current folder. If you don't specify any argument, then
-    it will download the latest stable version for your current platform.
-
-    The syntax for `version` is:
-
-    * `stable`: latest stable Julia release. This is the _default_ option.
-    * `1`: latest `1.y.z` Julia release.
-    * `1.0`: latest `1.0.z` Julia release.
-    * `1.4.0-rc1`: as it is. This is the only way to install unstable release.
-    * `latest`/`nightly`: the nightly builds from source code.
-
-    For whatever reason, if you only want to download release from
-    a specific upstream (e.g., from JuliaComputing), then you can use
-    `--upstream` flag (e.g., `jill download --upstream Official`).
-
-    To see a full list of upstream servers, please use `jill upstream`.
-
-    If you're interested in downloading from an unregistered private
-    mirror, you can provide a `sources.json` file to CONFIG_PATH and use
-    `jill upstream` to check if your mirror is added. A config template
-    can be found at [1].
-
-    CONFIG_PATH:
-      * windows: `~\\AppData\\Local\\julias\\sources.json`
-      * other: `~/.config/jill/sources.json`
-
-    [1]: https://github.com/johnnychen94/jill.py/blob/master/jill/config/sources.json # nopep8
-
-    Arguments:
-      version:
-        The Julia version you want to install. See also `jill install`
-      sys: Options are: "linux", "musl", "macos", "freebsd", "windows"/"winnt"/"win"
-      arch: Options are: "i686"/"x86", "x86_64"/"x64", "ARMv7"/"armv7l", "ARMv8"/"aarch64"
-      upstream:
-        manually choose a download upstream. For example, set it to "Official"
-        if you want to download from JuliaComputing's s3 buckets.
-      unstable:
-        add `--unstable` flag to allow installation of unstable releases for auto version
-        query. For example, `jill download --unstable` might give you unstable installation
-        like `1.7.0-beta1`. Note that if you explicitly pass the unstable version, e.g.,
-        `jill download 1.7.0-beta1`, it will still work.
-      outdir:
-        where release is downloaded to. By default it's the current folder.
-      overwrite:
-        add `--overwrite` flag to overwrite existing releases.
-      bypass_ssl:
-        add `--bypass-ssl` flag to skip SSL certificate validation.
+    Args:
+        version: Julia version to download
+        sys: Target system (linux, musl, macos, freebsd, windows)
+        arch: Target architecture (i686, x86_64, ARMv7, ARMv8)
+        upstream: Custom upstream URL
+        unstable: Allow unstable versions
+        outdir: Output directory
+        overwrite: Overwrite existing files
+        bypass_ssl: Skip SSL verification
     """
     version = str(version) if (version or str(version) == "0") else ""
     version = "latest" if version == "nightly" else version
@@ -151,7 +107,9 @@ def download_package(version=None, sys=None, arch=None, *,
         # time on querying other upstreams.
         upstream = "OfficialNightlies"
         build = match_build.group(2)
-        print(f"Detected julia build commit {build}, downloading from upstream {upstream}")  # nopep8
+        print(
+            f"Detected julia build commit {build}, downloading from upstream {upstream}"
+        )  # nopep8
 
     # allow downloading unregistered releases, e.g., 1.4.0-rc1
     do_release_check = not (is_full_version(version) or match_build)
@@ -161,22 +119,22 @@ def download_package(version=None, sys=None, arch=None, *,
     wrong_args = False
     try:
         version = latest_version(
-            version, system, architecture, upstream=upstream, stable_only=not unstable)
+            version, system, architecture, upstream=upstream, stable_only=not unstable
+        )
     except ValueError:
         # hide the nested error stack :P
         wrong_args = True
     if wrong_args:
-        msg = f"something wrong for the platform argument you passed:\n"
+        msg = "something wrong for the platform argument you passed:\n"
         msg += f"  - version(>= 0.6.0): {version}\n"
         msg += f"  - system: {system}\n"
         msg += f"  - archtecture: {architecture}\n"
-        msg += f"example: `jill download 1 linux x86_64`"
-        raise(ValueError(msg))
+        msg += "example: `jill download 1 linux x86_64`"
+        raise (ValueError(msg))
 
     release_str = f"{version}-{system}-{architecture}"
     if do_release_check:
-        rst = is_version_released(
-            version, system, architecture, upstream=upstream)
+        rst = is_version_released(version, system, architecture, upstream=upstream)
         if not rst:
             msg = f"failed to find {release_str} in available upstream. Please try it later."
             logging.info(msg)
@@ -187,7 +145,7 @@ def download_package(version=None, sys=None, arch=None, *,
     logging.info(msg)
     print(msg)
 
-    if version in ['latest', 'nightly'] or match_build:
+    if version in ["latest", "nightly"] or match_build:
         # It usually takes longer to query from nightlies bucket so please be patient
         timeout = 30
         print(f"Set timeout {timeout} seconds")
@@ -197,7 +155,8 @@ def download_package(version=None, sys=None, arch=None, *,
     def query_url(upstream, timeout=timeout):
         registry = SourceRegistry(upstream=upstream)
         url = registry.query_download_url(
-            version, system, architecture, timeout=timeout)
+            version, system, architecture, timeout=timeout
+        )
         if url:
             return url
         # if fails to find an valid url in given upstream, falls back to "Official"
@@ -209,25 +168,33 @@ def download_package(version=None, sys=None, arch=None, *,
             logging.warning(msg)
             print(f"{color.RED}{msg}{color.END}")
             return query_url("Official")  # fallback to Official
+
     url = query_url(upstream)
     if not url:
-        msg = f"failed to find {release_str} in available upstreams. Please try it later."
+        msg = (
+            f"failed to find {release_str} in available upstreams. Please try it later."
+        )
         logging.error(msg)
         print(f"{color.RED}{msg}{color.END}")
         return None
 
-    outdir = outdir if outdir else '.'
+    outdir = outdir if outdir else "."
     outdir = os.path.abspath(outdir)
     if current_system() == "winnt":
         outdir = outdir.replace("\\\\", "\\")
 
-    outname = os.path.split(urlparse(url).path)[1]
+    # Convert URL to string before parsing
+    url_str = str(url)
+    outname = os.path.basename(urlparse(url_str).path)
     outpath = os.path.join(outdir, outname)
 
     skip_download = False
     if system in ["linux", "freebsd"]:
-        if (os.path.isfile(outpath) and os.path.isfile(outpath+".asc")
-                and not overwrite):
+        if (
+            os.path.isfile(outpath)
+            and os.path.isfile(outpath + ".asc")
+            and not overwrite
+        ):
             skip_download = True
     else:
         if os.path.isfile(outpath) and not overwrite:
@@ -250,9 +217,9 @@ def download_package(version=None, sys=None, arch=None, *,
             return package_path
 
         # a mirror should provides both *.tar.gz and *.tar.gz.asc
-        gpg_signature_path = _download(url + ".asc",
-                                       outpath + ".asc",
-                                       bypass_ssl=bypass_ssl)
+        gpg_signature_path = _download(
+            url + ".asc", outpath + ".asc", bypass_ssl=bypass_ssl
+        )
         if not gpg_signature_path:
             msg = f"failed to download GPG signature for {release_str}\n"
             msg += "remove untrusted/broken file"

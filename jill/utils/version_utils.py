@@ -132,7 +132,6 @@ def read_releases(
         ver = item[0]
         is_stable = item[1]["stable"]
         if not stable_only or is_stable:
-
             # minimal_version works only when is_stable=True
             try:
                 # TODO: a cleaner solution

@@ -21,7 +21,6 @@ import unittest
 
 
 class TestFilters(unittest.TestCase):
-
     def test_major_version(self):
         self.assertEqual(f_major_version("1.2.3"), "1")
         self.assertEqual(f_major_version("1.2.3-pre"), "1")
@@ -203,52 +202,38 @@ class TestFilters(unittest.TestCase):
 
     def test_latest_filename(self):
         info = generate_info("latest", "linux", "i686")
-        self.assertEqual(info["latest_filename"],
-                         "julia-latest-linux32.tar.gz")
+        self.assertEqual(info["latest_filename"], "julia-latest-linux32.tar.gz")
         info = generate_info("latest", "linux", "x86_64")
-        self.assertEqual(info["latest_filename"],
-                         "julia-latest-linux64.tar.gz")
+        self.assertEqual(info["latest_filename"], "julia-latest-linux64.tar.gz")
 
         info = generate_info("latest", "linux", "aarch64")
-        self.assertEqual(info["latest_filename"],
-                         "julia-latest-linuxaarch64.tar.gz")
+        self.assertEqual(info["latest_filename"], "julia-latest-linuxaarch64.tar.gz")
 
         info = generate_info("latest", "winnt", "i686")
-        self.assertEqual(info["latest_filename"],
-                         "julia-latest-win32.exe")
+        self.assertEqual(info["latest_filename"], "julia-latest-win32.exe")
         info = generate_info("latest", "winnt", "x86_64")
-        self.assertEqual(info["latest_filename"],
-                         "julia-latest-win64.exe")
+        self.assertEqual(info["latest_filename"], "julia-latest-win64.exe")
 
         info = generate_info("latest", "mac", "x86_64")
-        self.assertEqual(info["latest_filename"],
-                         "julia-latest-mac64.dmg")
+        self.assertEqual(info["latest_filename"], "julia-latest-mac64.dmg")
 
     def test_filename(self):
         info = generate_info("1.3.0", "linux", "i686")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-linux-i686.tar.gz")
+        self.assertEqual(info["filename"], "julia-1.3.0-linux-i686.tar.gz")
         info = generate_info("1.3.0", "linux", "x86_64")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-linux-x86_64.tar.gz")
+        self.assertEqual(info["filename"], "julia-1.3.0-linux-x86_64.tar.gz")
         info = generate_info("1.3.0", "linux", "armv7l")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-linux-armv7l.tar.gz")
+        self.assertEqual(info["filename"], "julia-1.3.0-linux-armv7l.tar.gz")
         info = generate_info("1.3.0", "linux", "aarch64")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-linux-aarch64.tar.gz")
+        self.assertEqual(info["filename"], "julia-1.3.0-linux-aarch64.tar.gz")
 
         info = generate_info("1.3.0", "winnt", "i686")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-win32.exe")
+        self.assertEqual(info["filename"], "julia-1.3.0-win32.exe")
         info = generate_info("1.3.0", "winnt", "x86_64")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-win64.exe")
+        self.assertEqual(info["filename"], "julia-1.3.0-win64.exe")
 
         info = generate_info("1.3.0", "mac", "x86_64")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-mac64.dmg")
+        self.assertEqual(info["filename"], "julia-1.3.0-mac64.dmg")
 
         info = generate_info("1.3.0", "freebsd", "x86_64")
-        self.assertEqual(info["filename"],
-                         "julia-1.3.0-freebsd-x86_64.tar.gz")
+        self.assertEqual(info["filename"], "julia-1.3.0-freebsd-x86_64.tar.gz")

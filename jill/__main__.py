@@ -10,17 +10,19 @@ import os
 
 
 def main():
-    logging.basicConfig(filename=os.devnull,
-                        level=logging.DEBUG)
+    logging.basicConfig(filename=os.devnull, level=logging.DEBUG)
 
-    fire.Fire({
-        'download': download_package,
-        'install': install_julia,
-        'upstream': show_upstream,
-        'mirror': mirror,
-        'list': list_julia,
-        'switch': switch_julia_target,
-    }, name="jill")
+    fire.Fire(
+        {
+            "download": download_package,
+            "install": install_julia,
+            "upstream": show_upstream,
+            "mirror": mirror,
+            "list": list_julia,
+            "switch": switch_julia_target,
+        },
+        name="jill",
+    )
 
 
 if __name__ == "__main__":

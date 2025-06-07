@@ -2,6 +2,7 @@
 This module provides tools to read information about upstream mirror, e.g.,
 if it has a specific julia download.
 """
+
 from .defaults import default_scheme_ports
 from .defaults import SOURCE_CONFIGFILE
 from .net_utils import query_ip
@@ -22,12 +23,14 @@ from typing import List
 
 
 class ReleaseSource:
-    def __init__(self,
-                 name: str,
-                 urls: List[str],
-                 latest_urls: List[str],
-                 versions: str = None,
-                 timeout=2.0):
+    def __init__(
+        self,
+        name: str,
+        urls: List[str],
+        latest_urls: List[str],
+        versions: str = None,
+        timeout=2.0,
+    ):
         # seperate stable and nightly versions because:
         #   * JuliaComputing stores them in two different s3 buckets
         #   * not all mirror servers need/want to serve nightly releases
@@ -68,17 +71,20 @@ class ReleaseSource:
 
             # hosts might point to the same ip address
             host_ip_records = {host: query_ip(host) for host in host_list}
-            ip_port_records = {host_ip_records[urlparse(url).netloc]:
-                               default_scheme_ports[urlparse(url).scheme]
-                               for url in url_list}
+            ip_port_records = {
+                host_ip_records[urlparse(url).netloc]: default_scheme_ports[
+                    urlparse(url).scheme
+                ]
+                for url in url_list
+            }
 
             latency_records = dict()
             # TODO: use threads
             for ip, port in ip_port_records.items():
-                latency_records[ip] = port_response_time(ip, port,
-                                                         self.timeout)
-            self._latencies = {host: latency_records[host_ip_records[host]]
-                               for host in host_list}
+                latency_records[ip] = port_response_time(ip, port, self.timeout)
+            self._latencies = {
+                host: latency_records[host_ip_records[host]] for host in host_list
+            }
         return self._latencies
 
     def __repr__(self):
@@ -96,8 +102,7 @@ class ReleaseSource:
             template_lists = self.url_templates
         configs = generate_info(plain_version, system, architecture)
         url_list = [t.substitute(**configs) for t in template_lists]
-        url_list.sort(key=lambda url:
-                      self.latencies[urlparse(url).netloc])
+        url_list.sort(key=lambda url: self.latencies[urlparse(url).netloc])
         return url_list if url_list else ""
 
 
@@ -106,10 +111,9 @@ def read_registry():
     for cfg_file in reversed(SOURCE_CONFIGFILE):
         if not os.path.isfile(cfg_file):
             continue
-        with open(cfg_file, 'r') as f:
+        with open(cfg_file, "r") as f:
             upstream_records = json.load(f).get("upstream", {})
-            temp_registry = {k: ReleaseSource(**v)
-                             for k, v in upstream_records.items()}
+            temp_registry = {k: ReleaseSource(**v) for k, v in upstream_records.items()}
         registry.update(temp_registry)
     return registry
 
@@ -144,11 +148,11 @@ class SourceRegistry:
         if self.upstream:
             # users limit themselves to only one download source
             if self.upstream in self.__inner_registry.registry:
-                return {self.upstream:
-                        self.__inner_registry.registry[self.upstream]}
+                return {self.upstream: self.__inner_registry.registry[self.upstream]}
             else:
-                msg = "valid sources are:" + \
-                    ', '.join(self.__inner_registry.registry.keys())
+                msg = "valid sources are:" + ", ".join(
+                    self.__inner_registry.registry.keys()
+                )
                 raise ValueError(msg)
         return self.__inner_registry.registry
 
@@ -185,13 +189,10 @@ class SourceRegistry:
         for src in self.registry.values():
             url_list.extend(src.get_url(plain_version, system, architecture))
         url_list = [url for url in url_list if url]
-        url_list.sort(key=lambda url:
-                      self.latencies[urlparse(url).netloc])
+        url_list.sort(key=lambda url: self.latencies[urlparse(url).netloc])
         return url_list
 
-    def query_download_url(self,
-                           version, system, arch, *,
-                           timeout=3):
+    def query_download_url(self, version, system, arch, *, timeout=3):
         """
         return a valid download url to nearest mirror server. If there isn't
         such version then return None.
@@ -210,5 +211,4 @@ def verify_upstream(registry_name):
     registry = SourceRegistry()
     if registry_name not in registry.registry:
         available_names = '"' + '", "'.join(registry.registry.keys()) + '"'
-        raise(ValueError(
-            f'registry "{registry_name}" not in {available_names}'))
+        raise (ValueError(f'registry "{registry_name}" not in {available_names}'))

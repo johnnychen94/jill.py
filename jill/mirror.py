@@ -30,7 +30,7 @@ class MirrorConfig:
     def config(self):
         if not os.path.isfile(self.configfile):
             return {}
-        with open(self.configfile, 'r') as f:
+        with open(self.configfile, "r") as f:
             return json.load(f)
 
     @property
@@ -44,8 +44,7 @@ class MirrorConfig:
         elif require_latest in ["True", "true"]:
             require_latest = True
         else:
-            raise(ValueError(
-                f"Unrecognized require_latest value: {require_latest}"))
+            raise (ValueError(f"Unrecognized require_latest value: {require_latest}"))
         return require_latest
 
     @property
@@ -59,7 +58,7 @@ class MirrorConfig:
         elif stable_only in ["True", "true"]:
             stable_only = True
         else:
-            raise(ValueError(f"Unrecognized stable_only value: {stable_only}"))
+            raise (ValueError(f"Unrecognized stable_only value: {stable_only}"))
         return stable_only
 
     @property
@@ -76,7 +75,7 @@ class MirrorConfig:
         elif overwrite in ["True", "true"]:
             overwrite = True
         else:
-            raise(ValueError(f"Unrecognized overwrite value: {overwrite}"))
+            raise (ValueError(f"Unrecognized overwrite value: {overwrite}"))
         return overwrite
 
     @property
@@ -92,13 +91,20 @@ class MirrorConfig:
     @property
     def latest_filename_template(self):
         """filename template for nightly builds"""
-        return Template(self.config.get("latest_filename",
-                                        default_latest_filename_template))
+        return Template(
+            self.config.get("latest_filename", default_latest_filename_template)
+        )
 
     @property
     def version(self):
-        versions = list(set(map(lambda x: x[0],
-                                read_releases(stable_only=True, upstream=self.upstream))))
+        versions = list(
+            set(
+                map(
+                    lambda x: x[0],
+                    read_releases(stable_only=True, upstream=self.upstream),
+                )
+            )
+        )
         # not using our extended Version
         versions.sort(key=lambda ver: semantic_version.Version(ver))
         if self.require_latest:
@@ -140,7 +146,7 @@ class MirrorConfig:
 
 
 class Mirror:
-    def __init__(self,  config, **kwargs):
+    def __init__(self, config, **kwargs):
         if not isinstance(config, MirrorConfig):
             config = MirrorConfig(config, **kwargs)
         self.config = config
@@ -153,29 +159,30 @@ class Mirror:
 
             logging.info(f"start to pull {filepath}")
             overwrite = self.config.overwrite
-            download_package(*item,
-                             outdir=outdir,
-                             upstream=self.config.upstream,
-                             overwrite=overwrite)
+            download_package(
+                *item, outdir=outdir, upstream=self.config.upstream, overwrite=overwrite
+            )
         if self.config.require_latest:
-            for (system, arch) in product(self.config.system, self.config.architecture):
+            for system, arch in product(self.config.system, self.config.architecture):
                 item = "latest", system, arch
                 filepath = self.config.get_outpath(*item)
                 outpath = os.path.join(self.config.outdir, filepath)
                 outdir, filename = os.path.split(outpath)
 
                 logging.info(f"start to pull {filepath}")
-                download_package(*item,
-                                 outdir=outdir,
-                                 upstream=self.config.upstream,
-                                 overwrite=True)
+                download_package(
+                    *item, outdir=outdir, upstream=self.config.upstream, overwrite=True
+                )
 
 
-def mirror(outdir="julia_pkg", *,
-           period=0,
-           upstream=None,
-           logfile="mirror.log",
-           config="mirror.json"):
+def mirror(
+    outdir="julia_pkg",
+    *,
+    period=0,
+    upstream=None,
+    logfile="mirror.log",
+    config="mirror.json",
+):
     """
     Download/sync all Julia releases
 
@@ -196,11 +203,11 @@ def mirror(outdir="julia_pkg", *,
       logfile:
         path to mirror log file
     """
-    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     period = int(period)
     upstream = None if upstream == "None" else upstream
 
-    logger = logging.getLogger('')
+    logger = logging.getLogger("")
     fh = logging.FileHandler(logfile)
     fh.setLevel(logging.DEBUG)
     formatter = logging.Formatter(log_format)

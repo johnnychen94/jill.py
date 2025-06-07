@@ -7,8 +7,7 @@ from typing import Dict
 
 # this file isn't really a python script
 # just some configuration constants
-PKG_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                        ".."))
+PKG_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
 def get_configfiles(filename):
@@ -17,13 +16,11 @@ def get_configfiles(filename):
     sys = current_system()
     if sys in ["mac", "freebsd", "linux"]:
         configfile_list.append(
-            os.path.join(os.path.expanduser("~"),
-                         ".config", "jill", filename)
+            os.path.join(os.path.expanduser("~"), ".config", "jill", filename)
         )
     elif sys == "winnt":
         configfile_list.append(
-            os.path.join(os.path.expanduser(r"~\AppData\Local\julias"),
-                         filename)
+            os.path.join(os.path.expanduser(r"~\AppData\Local\julias"), filename)
         )
 
     # fallback config
@@ -81,9 +78,9 @@ def default_install_dir():
 
 def load_versions_schema(download=False, cache=dict()) -> Dict:
     """
-        Load the schema configs.
+    Load the schema configs.
 
-        The schema is used to validate if the downloaded `versions.json` are valid.
+    The schema is used to validate if the downloaded `versions.json` are valid.
     """
     configfile = os.path.join(PKG_ROOT, "config", "versions-schema.json")
     # Avoid unnecessary IO reads by caching the content into memeory
@@ -96,9 +93,9 @@ def load_versions_schema(download=False, cache=dict()) -> Dict:
 
 def load_alias(cache=dict()) -> Dict:
     """
-        Load the alias configs.
+    Load the alias configs.
 
-        For better user experiences, jill allows alias for some os/arch, e.g., `windows`->`winnt`.
+    For better user experiences, jill allows alias for some os/arch, e.g., `windows`->`winnt`.
     """
     configfile = os.path.join(PKG_ROOT, "config", "alias.json")
     # Avoid unnecessary IO reads by caching the content into memeory
@@ -109,13 +106,12 @@ def load_alias(cache=dict()) -> Dict:
     return cache
 
 
-def load_placeholder(
-        cache=dict()) -> Dict:
+def load_placeholder(cache=dict()) -> Dict:
     """
-        Load the placeholder configs.
+    Load the placeholder configs.
 
-        Placeholders are used to generate URLs from given template, see also "sources.json"
-        for an example.
+    Placeholders are used to generate URLs from given template, see also "sources.json"
+    for an example.
     """
     # Avoid unnecessary IO reads by caching the content into memeory
     configfile = os.path.join(PKG_ROOT, "config", "placeholders.json")

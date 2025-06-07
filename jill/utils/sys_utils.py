@@ -2,6 +2,7 @@
 tools to detect current system and architecture so that things work with tools
 in the `filters` module
 """
+
 import subprocess
 import os
 import platform
@@ -49,19 +50,20 @@ def current_libc():
             # in case glibc is not detected, we manually check the result of `ldd --version`
             # Reference:
             # https://unix.stackexchange.com/questions/120380/what-c-library-version-does-my-system-use
-            ldd_call = subprocess.run(
-                ["ldd", "--version"], capture_output=True)
+            ldd_call = subprocess.run(["ldd", "--version"], capture_output=True)
             # musl `ldd --version` exits with 1
-            version_string = ldd_call.stdout if ldd_call.returncode == 0 else ldd_call.stderr
-            version_string = version_string.decode(
-                "utf-8").splitlines()[0].lower()
+            version_string = (
+                ldd_call.stdout if ldd_call.returncode == 0 else ldd_call.stderr
+            )
+            version_string = version_string.decode("utf-8").splitlines()[0].lower()
             if "musl" in version_string:
                 libc = "musl"
             elif "glibc" in version_string:
                 libc = "glibc"
             else:
                 warnings.warn(
-                    f"failed to read libc version from {version_string}, use glibc as fallback")
+                    f"failed to read libc version from {version_string}, use glibc as fallback"
+                )
                 libc = "glibc"
         return libc
     else:

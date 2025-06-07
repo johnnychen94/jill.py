@@ -191,16 +191,6 @@ upstream entry.
 Please check [the `sources.json` format](sources_format.md) for more detailed information on the
 format.
 
-## Advanced: make a Julia release mirror
-
-There are two ways to do so:
-
-* use `aws s3 sync`, this should be the easiest way to do so I highly recommend this.
-* **(Deprecated)** use `jill mirror` command with [mirror config example](mirror.example.json). I
-  didn't know about the `aws s3 sync` stuff when I implemented this.
-
-The Julia release mirror does not contain Julia package contents, to mirror all the Julia packages
-and artifacts (which requires >1.5Tb storage), you can use [StorageMirrorServer.jl].
 
 ## Advanced: The Python API
 
@@ -312,4 +302,3 @@ If for some reason you prefer to download julia without generating symbolic link
 [Julia Repository]: https://github.com/JuliaLang/julia
 [JILL-sh]: https://github.com/abelsiqueira/jill
 [juliaup]: https://github.com/JuliaLang/juliaup
-[StorageMirrorServer.jl]: https://github.com/johnnychen94/StorageMirrorServer.jl

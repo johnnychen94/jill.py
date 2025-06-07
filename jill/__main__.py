@@ -1,7 +1,6 @@
 from .download import download_package
 from .install import install_julia
 from .utils import show_upstream
-from .mirror import mirror as mirror_releases
 from .list import list_julia
 from .switch import switch_julia_target
 import click
@@ -214,32 +213,6 @@ def upstream():
     and mirrors that can be used for downloading Julia releases.
     """
     show_upstream()
-
-
-@cli.command()
-@click.argument("upstream", required=True)
-@click.option(
-    "--outdir", default="julia_pkg", help="Output directory (default: julia_pkg)"
-)
-@click.option(
-    "--period",
-    type=int,
-    default=0,
-    help="Time between sync operations in seconds (0 for sync once)",
-)
-@click.option("--logfile", default="mirror.log", help="Log file path")
-@click.option("--config", default="mirror.json", help="Mirror configuration file path")
-def mirror(**kwargs):
-    """Download/sync all Julia releases.
-
-    1. Checks if there are new Julia releases
-    2. Downloads all releases into OUTDIR (default: ./julia_pkg)
-    3. (Optional): With --period PERIOD, repeats steps 1 and 2 every PERIOD seconds
-
-    If you want to modify the default mirror configuration, provide a mirror.json file
-    and pass the path to --config. By default it's at the current directory.
-    """
-    mirror_releases(**kwargs)
 
 
 def main():

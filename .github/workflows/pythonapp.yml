@@ -42,11 +42,6 @@ jobs:
         run: |
           coverage run -a -m jill upstream
 
-      - name: Test jill update
-        run: |
-          coverage run -a -m jill update
-          coverage run -a -m jill update --upstream Official
-
       - name: test list and switch
         run: |
           coverage run -a -m jill list

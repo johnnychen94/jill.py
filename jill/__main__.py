@@ -36,7 +36,6 @@ def cli():
 )
 @click.option(
     "--upgrade/--no-upgrade",
-    "--upgrade/--no_upgrade",
     default=False,
     help="Upgrade existing installation and copy root environment from older version",
 )
@@ -46,7 +45,6 @@ def cli():
 )
 @click.option(
     "--unstable/--no-unstable",
-    "--unstable/--no_unstable",
     default=False,
     help="Allow installation of unstable releases (e.g., 1.7.0-beta1)",
 )
@@ -58,13 +56,11 @@ def cli():
 )
 @click.option(
     "--confirm/--no-confirm",
-    "--confirm/--no_confirm",
     default=False,
     help="Skip interactive prompt",
 )
 @click.option(
     "--reinstall/--no-reinstall",
-    "--reinstall/--no_reinstall",
     default=False,
     help="Force reinstallation even if version exists",
 )
@@ -106,7 +102,6 @@ def install(**kwargs):
 )
 @click.option(
     "--unstable/--no-unstable",
-    "--unstable/--no_unstable",
     default=False,
     help="Show unstable versions",
 )
@@ -136,14 +131,12 @@ def list(**kwargs):
 )
 @click.option(
     "--unstable/--no-unstable",
-    "--unstable/--no_unstable",
     default=False,
     help="Allow downloading unstable releases",
 )
 @click.option("--outdir", help="Output directory (default: current directory)")
 @click.option(
     "--overwrite/--no-overwrite",
-    "--overwrite/--no_overwrite",
     default=False,
     help="Overwrite existing files",
 )

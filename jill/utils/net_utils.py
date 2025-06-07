@@ -93,11 +93,9 @@ def first_response(url_lists, timeout):
         try:
             response = await _query(url)
             if show_verbose():
-                print(
-                    f"response {response.url} with status code {response.status_code}"
-                )
+                print(f"response {url} with status code {response.status_code}")
             if response.status_code == 200:
-                return response.url
+                return url
         except httpx.HTTPError as e:
             if show_verbose():
                 print(f"HTTPError: {url} {e}")

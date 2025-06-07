@@ -85,7 +85,7 @@ def read_remote_versions(upstream, cache=dict()):
             f"{color.GREEN}querying release information from {versions_url}{color.END}"
         )
 
-        with httpx.Client() as client:
+        with httpx.Client(follow_redirects=True) as client:
             response = client.get(versions_url)
             response.raise_for_status()
             version_list = response.json()
@@ -105,7 +105,7 @@ def read_remote_versions(upstream, cache=dict()):
             print(
                 f"{color.YELLOW} failed to validate versions file, retry with latest schema..."
             )
-            with httpx.Client() as client:
+            with httpx.Client(follow_redirects=True) as client:
                 response = client.get(VERSIONS_SCHEMA_URL)
                 response.raise_for_status()
                 schema = response.json()

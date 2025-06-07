@@ -175,7 +175,7 @@ def _build(ver, cache={}):
         return cache[build]
     try:
         github_api = f"https://api.github.com/repos/julialang/julia/commits/{build}"
-        with httpx.Client() as client:
+        with httpx.Client(follow_redirects=True) as client:
             data = json.loads(client.get(github_api).content)
         cache[build] = data["sha"][0:10]
         return cache[build]

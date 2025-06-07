@@ -20,7 +20,7 @@ def query_external_ip(cache=[], timeout=5):
     # try to use external ip address, if it fails, use the local ip address
     # failures could be due to several reasons, e.g., enterprise gateway
     try:
-        with httpx.Client(timeout=timeout) as client:
+        with httpx.Client(timeout=timeout, follow_redirects=True) as client:
             response = client.get("https://api.ipify.org")
             response.raise_for_status()
             ip = response.text

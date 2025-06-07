@@ -23,65 +23,62 @@ def cli():
     "--preferred-arch",
     "--preferred_arch",
     help="Preferred architecture (e.g., arm64 for M-series Macs)",
-    multiple=True,
 )
 @click.option(
-    "--install-dir", "--install_dir", help="Installation directory", multiple=True
+    "--install-dir",
+    "--install_dir",
+    help="Installation directory",
 )
-@click.option("--symlink-dir", "--symlink_dir", help="Symlink directory", multiple=True)
+@click.option(
+    "--symlink-dir",
+    "--symlink_dir",
+    help="Symlink directory",
+)
 @click.option(
     "--upgrade/--no-upgrade",
     "--upgrade/--no_upgrade",
     default=False,
     help="Upgrade existing installation and copy root environment from older version",
-    multiple=True,
 )
 @click.option(
     "--upstream",
     help='Custom upstream URL (e.g., "Official" for JuliaComputing\'s s3 buckets)',
-    multiple=True,
 )
 @click.option(
     "--unstable/--no-unstable",
     "--unstable/--no_unstable",
     default=False,
     help="Allow installation of unstable releases (e.g., 1.7.0-beta1)",
-    multiple=True,
 )
 @click.option(
     "--keep-downloads/--no-keep-downloads",
     "--keep_downloads/--no_keep_downloads",
     default=False,
     help="Keep downloaded files",
-    multiple=True,
 )
 @click.option(
     "--confirm/--no-confirm",
     "--confirm/--no_confirm",
     default=False,
     help="Skip interactive prompt",
-    multiple=True,
 )
 @click.option(
     "--reinstall/--no-reinstall",
     "--reinstall/--no_reinstall",
     default=False,
     help="Force reinstallation even if version exists",
-    multiple=True,
 )
 @click.option(
     "--bypass-ssl/--no-bypass-ssl",
     "--bypass_ssl/--no_bypass_ssl",
     default=False,
     help="Skip SSL certificate validation",
-    multiple=True,
 )
 @click.option(
     "--skip-symlinks/--no-skip-symlinks",
     "--skip_symlinks/--no_skip_symlinks",
     default=False,
     help="Skip creating symlinks",
-    multiple=True,
 )
 def install(**kwargs):
     """Install Julia programming language.
@@ -103,13 +100,15 @@ def install(**kwargs):
 
 @cli.command()
 @click.argument("version", required=False)
-@click.option("--upstream", help="Custom upstream URL", multiple=True)
+@click.option(
+    "--upstream",
+    help="Custom upstream URL",
+)
 @click.option(
     "--unstable/--no-unstable",
     "--unstable/--no_unstable",
     default=False,
     help="Show unstable versions",
-    multiple=True,
 )
 def list(**kwargs):
     """List installed Julia versions.
@@ -126,24 +125,20 @@ def list(**kwargs):
 @click.option(
     "--sys",
     help="Target system (linux, musl, macos, freebsd, windows/winnt/win)",
-    multiple=True,
 )
 @click.option(
     "--arch",
     help="Target architecture (i686/x86, x86_64/x64, ARMv7/armv7l, ARMv8/aarch64)",
-    multiple=True,
 )
 @click.option(
     "--upstream",
     help='Custom upstream URL (e.g., "Official" for JuliaComputing\'s s3 buckets)',
-    multiple=True,
 )
 @click.option(
     "--unstable/--no-unstable",
     "--unstable/--no_unstable",
     default=False,
     help="Allow downloading unstable releases",
-    multiple=True,
 )
 @click.option("--outdir", help="Output directory (default: current directory)")
 @click.option(
@@ -151,14 +146,12 @@ def list(**kwargs):
     "--overwrite/--no_overwrite",
     default=False,
     help="Overwrite existing files",
-    multiple=True,
 )
 @click.option(
     "--bypass-ssl/--no-bypass-ssl",
     "--bypass_ssl/--no_bypass_ssl",
     default=False,
     help="Skip SSL certificate validation",
-    multiple=True,
 )
 def download(**kwargs):
     """Download Julia release from nearest servers.

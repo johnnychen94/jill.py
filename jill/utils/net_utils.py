@@ -134,23 +134,10 @@ def download(url, outpath, *, bypass_ssl=False):
     with httpx.Client(verify=verify, follow_redirects=True) as client:
         with client.stream("GET", url) as response:
             response.raise_for_status()
-            total_size = int(response.headers.get("content-length", 0))
-            downloaded = 0
             filename = Path(outpath).name
 
             with open(outpath, "wb") as f:
                 for chunk in response.iter_bytes():
                     if chunk:
                         f.write(chunk)
-                        downloaded += len(chunk)
-                        if total_size:
-                            percent = downloaded * 100 / total_size
-                            # Use \r to return to start of line and overwrite with spaces to clear
-                            sys.stdout.write("\r" + " " * 80)  # Clear line with spaces
-                            sys.stdout.write(
-                                f"\r{filename}: {percent:.1f}% [{downloaded}/{total_size} bytes]"
-                            )
-                            sys.stdout.flush()
-                # Clear the final progress line
-                sys.stdout.write("\r" + " " * 80 + "\r")
                 print(f"Downloaded {filename} successfully")
